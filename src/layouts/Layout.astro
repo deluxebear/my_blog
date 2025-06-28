@@ -252,6 +252,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     max-width: 100%; /* 强制限制最大宽度 */
   }
 
+  /* 深色模式下的代码块背景增强 */
+  .dark pre {
+    background-color: #282c34 !important; /* 使用 highlight.js 的深色背景 */
+    border-color: #4a5568;
+  }
+
   pre code {
     background: none;
     padding: 0;
@@ -282,6 +288,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     z-index: 10;
   }
 
+  /* 深色模式下的复制按钮 */
+  .dark pre:not(.code-block pre):not(.code-container pre)::after {
+    background: #3a3a3a;
+    color: #d4c4a0;
+    border-color: #5a5a5a;
+  }
+
   pre:not(.code-block pre):not(.code-container pre):hover::after {
     opacity: 1;
   }
@@ -309,6 +322,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     overflow: hidden;
     width: 100%; /* 确保不超出父容器 */
     max-width: 100%; /* 强制限制最大宽度 */
+    background-color: inherit; /* 继承父元素背景色 */
+  }
+
+  /* 深色模式下的代码包装器 */
+  .dark .code-wrapper {
+    background-color: #282c34;
   }
 
   /* 行号样式 - 修复：移除滚动条 */
@@ -328,6 +347,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     flex-shrink: 0; /* 防止收缩 */
   }
 
+  /* 深色模式下的行号 */
+  .dark .line-numbers {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-right-color: #4a5568;
+    color: #6b7280;
+  }
+
   /* 代码容器样式 - 关键修复 */
   .code-container {
     flex: 1;
@@ -335,12 +361,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     min-width: 0; /* 允许收缩 */
     width: 0; /* 强制收缩到可用空间 */
     max-width: 100%; /* 限制最大宽度 */
+    background-color: inherit; /* 继承父元素背景色 */
+  }
+
+  /* 深色模式下的代码容器 */
+  .dark .code-container {
+    background-color: #282c34;
   }
 
   .code-container pre {
     margin: 0;
     padding: 1rem;
-    background: none;
+    background: none !important; /* 强制移除背景，让容器背景显示 */
     border: none;
     overflow: visible; /* 让父容器处理滚动 */
     font-family: var(--font-mono);
@@ -350,10 +382,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     min-width: 100%; /* 确保至少占满容器宽度 */
   }
 
+  /* 深色模式下的内部 pre 元素 */
+  .dark .code-container pre {
+    background: transparent !important;
+  }
+
   .code-container code {
     white-space: pre; /* 确保代码不换行 */
     display: block;
     width: max-content; /* 让代码撑开到实际宽度 */
+    background: transparent !important; /* 确保代码背景透明 */
+  }
+
+  /* 深色模式下的代码元素 */
+  .dark .code-container code {
+    background: transparent !important;
   }
 
   /* 滚动条样式 - 只为代码容器设置 */
@@ -368,15 +411,33 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     background: var(--color-code-bg);
   }
 
+  /* 深色模式下的滚动条轨道 */
+  .dark .code-container::-webkit-scrollbar-track,
+  .dark pre::-webkit-scrollbar-track {
+    background: #1e2124;
+  }
+
   .code-container::-webkit-scrollbar-thumb,
   pre::-webkit-scrollbar-thumb {
     background: var(--color-border);
     border-radius: 4px;
   }
 
+  /* 深色模式下的滚动条滑块 */
+  .dark .code-container::-webkit-scrollbar-thumb,
+  .dark pre::-webkit-scrollbar-thumb {
+    background: #4a5568;
+  }
+
   .code-container::-webkit-scrollbar-thumb:hover,
   pre::-webkit-scrollbar-thumb:hover {
     background: var(--color-secondary);
+  }
+
+  /* 深色模式下的滚动条滑块悬停 */
+  .dark .code-container::-webkit-scrollbar-thumb:hover,
+  .dark pre::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
   }
 
   /* 行号区域不显示滚动条 */
@@ -398,10 +459,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     color: var(--color-text) !important;
   }
 
-  /* 深色主题保持 highlight.js 的默认样式 */
+  /* 深色主题保持 highlight.js 的默认样式，但确保背景透明 */
   .dark pre code.hljs {
-    background: #282c34 !important;
+    background: transparent !important; /* 让容器背景显示 */
     color: #abb2bf !important;
+  }
+
+  /* 确保深色模式下整个代码块区域都有背景 */
+  .dark pre,
+  .dark .code-wrapper,
+  .dark .code-container {
+    background-color: #282c34 !important;
   }
 
   /* 浅色主题的语法高亮颜色 */
