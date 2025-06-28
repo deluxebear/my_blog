@@ -202,25 +202,29 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
             {projects.map(project => (
               <article class={`project-card industrial-border ${project.isArchived ? 'archived' : ''} ${project.isPinned ? 'pinned' : 'featured'}`} data-topics={project.topics.join(',')}>
                 <div class="project-header">
-                  <h3 class="project-title">
-                    <a href={project.url} target="_blank" rel="noopener noreferrer">
-                      {project.name}
-                    </a>
-                  </h3>
-                  <div class="project-badges">
-                    {project.isPinned && (
-                      <span class="pinned-badge">📌 PINNED</span>
-                    )}
-                    {!project.isPinned && (
-                      <span class="featured-badge">⭐ FEATURED</span>
-                    )}
-                    {project.isArchived && (
-                      <span class="archived-badge">已归档</span>
-                    )}
+                  <div class="project-title-section">
+                    <h3 class="project-title">
+                      <a href={project.url} target="_blank" rel="noopener noreferrer">
+                        {project.name}
+                      </a>
+                    </h3>
+                    <div class="project-badges">
+                      {project.isPinned && (
+                        <span class="pinned-badge">📌 PINNED</span>
+                      )}
+                      {!project.isPinned && (
+                        <span class="featured-badge">⭐ FEATURED</span>
+                      )}
+                      {project.isArchived && (
+                        <span class="archived-badge">已归档</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 
-                <p class="project-description">{project.description}</p>
+                <div class="project-description-container">
+                  <p class="project-description">{project.description}</p>
+                </div>
                 
                 <div class="project-meta">
                   {project.language && (
@@ -247,16 +251,18 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
                   </div>
                 </div>
                 
-                {project.topics.length > 0 && (
-                  <div class="project-topics">
-                    {project.topics.slice(0, 5).map(topic => (
-                      <span class="topic-tag">{topic}</span>
-                    ))}
-                    {project.topics.length > 5 && (
-                      <span class="topic-more">+{project.topics.length - 5}</span>
-                    )}
-                  </div>
-                )}
+                <div class="project-topics-container">
+                  {project.topics.length > 0 && (
+                    <div class="project-topics">
+                      {project.topics.slice(0, 4).map(topic => (
+                        <span class="topic-tag">{topic}</span>
+                      ))}
+                      {project.topics.length > 4 && (
+                        <span class="topic-more">+{project.topics.length - 4}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
                 
                 <div class="project-footer">
                   <div class="project-links">
@@ -391,18 +397,26 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     margin-bottom: 3rem;
   }
 
+  /* 统一项目网格 - 关键修改 */
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 2rem;
+    align-items: stretch; /* 确保所有卡片高度一致 */
   }
 
+  /* 统一项目卡片尺寸 - 关键修改 */
   .project-card {
     background-color: var(--color-card);
-    padding: 1.5rem;
+    padding: 0; /* 移除内边距，由内部元素控制 */
     transition: all 0.3s ease;
-    height: fit-content;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 420px; /* 固定高度 */
+    min-height: 420px; /* 确保最小高度 */
+    max-height: 420px; /* 确保最大高度 */
+    overflow: hidden; /* 防止内容溢出 */
   }
 
   .project-card:hover {
@@ -424,22 +438,39 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     border-color: var(--color-secondary);
   }
 
+  /* 项目头部 - 固定高度 */
   .project-header {
+    padding: 1.5rem 1.5rem 0;
+    flex-shrink: 0; /* 防止收缩 */
+    height: 80px; /* 固定头部高度 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .project-title-section {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
     gap: 1rem;
+    height: 100%;
   }
 
   .project-title {
     font-family: var(--font-mono);
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 1px;
     flex: 1;
+    line-height: 1.3;
+    /* 限制标题最多显示2行 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .project-title a {
@@ -456,57 +487,68 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     flex-direction: column;
     gap: 0.25rem;
     align-items: flex-end;
+    flex-shrink: 0;
+  }
+
+  .pinned-badge,
+  .featured-badge,
+  .archived-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border-radius: 2px;
   }
 
   .pinned-badge {
     background-color: var(--color-accent);
     color: var(--color-bg);
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
   }
 
   .featured-badge {
     background-color: var(--color-secondary);
     color: var(--color-bg);
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
   }
 
   .archived-badge {
     background-color: var(--color-muted);
     color: var(--color-bg);
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
+  }
+
+  /* 项目描述容器 - 固定高度 */
+  .project-description-container {
+    padding: 0 1.5rem;
+    height: 80px; /* 固定描述区域高度 */
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
   }
 
   .project-description {
     color: var(--color-secondary);
     font-size: 0.9rem;
     line-height: 1.5;
-    margin-bottom: 1rem;
+    margin: 0;
     font-family: var(--font-sans);
+    /* 限制描述最多显示3行 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  /* 项目元信息 - 固定高度 */
   .project-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    padding: 0 1.5rem;
+    height: 40px; /* 固定元信息高度 */
+    flex-shrink: 0;
     gap: 1rem;
   }
 
@@ -517,6 +559,7 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     font-size: 0.875rem;
     font-family: var(--font-mono);
     font-weight: 500;
+    flex-shrink: 0;
   }
 
   .language-dot {
@@ -524,11 +567,13 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     height: 12px;
     border-radius: 50%;
     border: var(--border-width) var(--border-style) var(--color-border);
+    flex-shrink: 0;
   }
 
   .project-stats {
     display: flex;
     gap: 1rem;
+    flex-shrink: 0;
   }
 
   .stat {
@@ -540,11 +585,23 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     font-family: var(--font-mono);
   }
 
+  /* 项目标签容器 - 固定高度 */
+  .project-topics-container {
+    padding: 0 1.5rem;
+    height: 60px; /* 固定标签区域高度 */
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
   .project-topics {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    width: 100%;
+    /* 限制标签区域最多显示2行 */
+    max-height: 50px;
+    overflow: hidden;
   }
 
   .topic-tag {
@@ -552,32 +609,40 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     color: var(--color-accent);
     padding: 0.25rem 0.5rem;
     border: var(--border-width) var(--border-style) var(--color-border);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-family: var(--font-mono);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    border-radius: 2px;
   }
 
   .topic-more {
     color: var(--color-secondary);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-family: var(--font-mono);
     font-weight: 500;
+    padding: 0.25rem 0.5rem;
   }
 
+  /* 项目底部 - 固定在底部 */
   .project-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    padding-top: 1rem;
+    padding: 1rem 1.5rem 1.5rem;
     border-top: var(--border-width) var(--border-style) var(--color-border);
+    margin-top: auto; /* 推到底部 */
+    flex-shrink: 0;
+    height: 60px; /* 固定底部高度 */
   }
 
   .project-links {
     display: flex;
     gap: 1rem;
+    flex-shrink: 0;
   }
 
   .project-link {
@@ -591,6 +656,7 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     letter-spacing: 0.5px;
     color: var(--color-accent);
     text-decoration: none;
+    white-space: nowrap;
   }
 
   .project-link:hover {
@@ -603,6 +669,8 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     font-family: var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .no-projects,
@@ -622,6 +690,13 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     display: none;
   }
 
+  /* 响应式设计 */
+  @media (max-width: 1200px) {
+    .projects-grid {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+  }
+
   @media (max-width: 768px) {
     .page-title {
       font-size: 2rem;
@@ -636,6 +711,38 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
       gap: 1.5rem;
     }
 
+    /* 移动端调整卡片高度 */
+    .project-card {
+      height: 380px;
+      min-height: 380px;
+      max-height: 380px;
+    }
+
+    .project-header {
+      height: 70px;
+      padding: 1rem 1rem 0;
+    }
+
+    .project-description-container {
+      height: 70px;
+      padding: 0 1rem;
+    }
+
+    .project-meta {
+      padding: 0 1rem;
+      height: 35px;
+    }
+
+    .project-topics-container {
+      height: 50px;
+      padding: 0 1rem;
+    }
+
+    .project-footer {
+      padding: 0.75rem 1rem 1rem;
+      height: 55px;
+    }
+
     .filter-tags {
       gap: 0.5rem;
     }
@@ -645,26 +752,64 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
       padding: 0.375rem 0.75rem;
     }
 
-    .project-meta {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
+    .project-title {
+      font-size: 1rem;
     }
 
-    .project-footer {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
+    .project-description {
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* 超小屏幕进一步调整 */
+    .project-card {
+      height: 360px;
+      min-height: 360px;
+      max-height: 360px;
     }
 
     .project-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
+      height: 65px;
+      padding: 0.75rem 0.75rem 0;
     }
 
-    .project-badges {
+    .project-description-container {
+      height: 65px;
+      padding: 0 0.75rem;
+    }
+
+    .project-meta {
+      padding: 0 0.75rem;
+      height: 30px;
+      flex-direction: column;
       align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .project-topics-container {
+      height: 45px;
+      padding: 0 0.75rem;
+    }
+
+    .project-footer {
+      padding: 0.5rem 0.75rem 0.75rem;
+      height: 50px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .project-title {
+      font-size: 0.9rem;
+    }
+
+    .project-description {
+      font-size: 0.8rem;
     }
   }
 </style>
