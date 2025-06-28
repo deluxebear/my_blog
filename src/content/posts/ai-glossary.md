@@ -2,7 +2,7 @@
 title: "AI术语通识指南：一份技术小白也能看懂的AI词汇解释清单"
 description: "不再被AI术语吓退！这是一份人人可读、持续更新的AI核心概念手册，适合会议讨论、技术入门、AI项目部署前的知识储备。"
 pubDate: 2025-06-27
-tags: ["AI术语", "大语言模型", "生成式AI", "Prompt工程", "技术科普"]
+tags: ["AI"]
 featured: true
 image: "/post_imgs/ai-glossary.png"
 ---
