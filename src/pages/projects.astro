@@ -74,8 +74,7 @@ async function fetchPinnedProjects() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 注意：在生产环境中，你需要使用环境变量来存储 GitHub token
-        'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+        'Authorization': `Bearer ${import.meta.env.GITHUB_TOKEN}`,
       },
       body: JSON.stringify({ query })
     });
