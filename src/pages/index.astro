@@ -1,29 +1,36 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import PostCard from '../components/PostCard.astro';
-import SearchBox from '../components/SearchBox.astro';
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import PostCard from "../components/PostCard.astro";
+import SearchBox from "../components/SearchBox.astro";
 
 // Get all posts and sort by date
-const allPosts = await Astro.glob('../content/posts/*.{md,mdx}');
+const allPosts = await Astro.glob("../content/posts/*.{md,mdx}");
 const posts = allPosts
-  .map(post => ({
-    slug: post.file.split('/').pop()?.replace(/\.mdx?$/, '') || '',
+  .map((post) => ({
+    slug:
+      post.file
+        .split("/")
+        .pop()
+        ?.replace(/\.mdx?$/, "") || "",
     data: {
       ...post.frontmatter,
-      pubDate: new Date(post.frontmatter.pubDate)
+      pubDate: new Date(post.frontmatter.pubDate),
     },
-    content: post.compiledContent?.() || ''
+    content: post.compiledContent?.() || "",
   }))
-  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+  .sort(
+    (a, b) =>
+      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+  );
 
-const featuredPosts = posts.filter(post => post.data.featured).slice(0, 3);
+const featuredPosts = posts.filter((post) => post.data.featured).slice(0, 3);
 const recentPosts = posts.slice(0, 6);
 ---
 
 <Layout title="数字花园 - 探索web开发与创意编程">
   <Header />
-  
+
   <main class="main">
     <div class="container">
       <!-- Hero Section -->
@@ -34,7 +41,7 @@ const recentPosts = posts.slice(0, 6);
             <span class="hero-subtitle">DIGITAL GARDEN</span>
           </h1>
           <p class="hero-description">
-            探索 WEB 开发的奥秘，分享创意编程的灵感。<br>
+            探索 WEB 开发的奥秘，分享创意编程的灵感。<br />
             从前端技术到后端架构，从算法思维到设计美学。
           </p>
           <div class="hero-stats industrial-border">
@@ -82,33 +89,35 @@ const recentPosts = posts.slice(0, 6);
       </section>
 
       <!-- Featured Posts -->
-      {featuredPosts.length > 0 && (
-        <section class="featured-section">
-          <h2 class="section-title">精选文章</h2>
-          <div class="posts-grid featured-grid">
-            {featuredPosts.map(post => (
-              <PostCard post={post} />
-            ))}
-          </div>
-        </section>
-      )}
+      {
+        featuredPosts.length > 0 && (
+          <section class="featured-section">
+            <h2 class="section-title">精选文章</h2>
+            <div class="posts-grid featured-grid">
+              {featuredPosts.map((post) => (
+                <PostCard post={post} />
+              ))}
+            </div>
+          </section>
+        )
+      }
 
       <!-- Recent Posts -->
       <section class="recent-section">
         <h2 class="section-title">最新文章</h2>
         <div class="posts-grid">
-          {recentPosts.map(post => (
-            <PostCard post={post} />
-          ))}
+          {recentPosts.map((post) => <PostCard post={post} />)}
         </div>
-        
-        {posts.length > 6 && (
-          <div class="section-footer">
-            <a href="/posts" class="btn btn-primary">
-              查看所有文章 →
-            </a>
-          </div>
-        )}
+
+        {
+          posts.length > 6 && (
+            <div class="section-footer">
+              <a href="/posts" class="btn btn-primary">
+                查看所有文章 →
+              </a>
+            </div>
+          )
+        }
       </section>
     </div>
   </main>
@@ -198,7 +207,7 @@ const recentPosts = posts.slice(0, 6);
     background-color: var(--color-card);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
-    max-width: 400px;
+    max-width: 450px;
     width: 100%;
   }
 
@@ -238,14 +247,32 @@ const recentPosts = posts.slice(0, 6);
     line-height: 1.5;
   }
 
-  .keyword { color: var(--color-accent); font-weight: bold; }
-  .variable { color: var(--color-text); }
-  .operator { color: var(--color-secondary); }
-  .string { color: var(--color-accent); }
-  .template { color: var(--color-accent); }
-  .punctuation { color: var(--color-secondary); }
-  .function { color: var(--color-text); font-weight: bold; }
-  .method { color: var(--color-accent); }
+  .keyword {
+    color: var(--color-accent);
+    font-weight: bold;
+  }
+  .variable {
+    color: var(--color-text);
+  }
+  .operator {
+    color: var(--color-secondary);
+  }
+  .string {
+    color: var(--color-accent);
+  }
+  .template {
+    color: var(--color-accent);
+  }
+  .punctuation {
+    color: var(--color-secondary);
+  }
+  .function {
+    color: var(--color-text);
+    font-weight: bold;
+  }
+  .method {
+    color: var(--color-accent);
+  }
 
   .search-section {
     padding: 2rem 0;
@@ -263,7 +290,7 @@ const recentPosts = posts.slice(0, 6);
   }
 
   .section-title::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -0.5rem;
     left: 50%;
