@@ -1,7 +1,4 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-
 // 编程语言颜色映射函数
 function getLanguageColor(language) {
   const colors = {
@@ -405,7 +402,7 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     align-items: stretch; /* 确保所有卡片高度一致 */
   }
 
-  /* 统一项目卡片尺寸 - 关键修改 */
+  /* 统一项目卡片尺寸 - 大幅压缩高度 */
   .project-card {
     background-color: var(--color-card);
     padding: 0; /* 移除内边距，由内部元素控制 */
@@ -413,9 +410,9 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 420px; /* 固定高度 */
-    min-height: 420px; /* 确保最小高度 */
-    max-height: 420px; /* 确保最大高度 */
+    height: 320px; /* 从420px减少到320px */
+    min-height: 320px; /* 确保最小高度 */
+    max-height: 320px; /* 确保最大高度 */
     overflow: hidden; /* 防止内容溢出 */
   }
 
@@ -438,11 +435,11 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     border-color: var(--color-secondary);
   }
 
-  /* 项目头部 - 固定高度 */
+  /* 项目头部 - 压缩高度 */
   .project-header {
-    padding: 1.5rem 1.5rem 0;
+    padding: 1rem 1rem 0; /* 减少内边距 */
     flex-shrink: 0; /* 防止收缩 */
-    height: 80px; /* 固定头部高度 */
+    height: 60px; /* 从80px减少到60px */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -458,13 +455,13 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
 
   .project-title {
     font-family: var(--font-mono);
-    font-size: 1.125rem;
+    font-size: 1rem; /* 从1.125rem减少到1rem */
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 1px;
     flex: 1;
-    line-height: 1.3;
+    line-height: 1.2; /* 减少行高 */
     /* 限制标题最多显示2行 */
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -493,8 +490,8 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
   .pinned-badge,
   .featured-badge,
   .archived-badge {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem; /* 减少内边距 */
+    font-size: 0.65rem; /* 减少字体大小 */
     font-family: var(--font-mono);
     font-weight: 700;
     text-transform: uppercase;
@@ -518,10 +515,10 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     color: var(--color-bg);
   }
 
-  /* 项目描述容器 - 固定高度 */
+  /* 项目描述容器 - 压缩高度 */
   .project-description-container {
-    padding: 0 1.5rem;
-    height: 80px; /* 固定描述区域高度 */
+    padding: 0 1rem; /* 减少内边距 */
+    height: 60px; /* 从80px减少到60px */
     display: flex;
     align-items: flex-start;
     flex-shrink: 0;
@@ -529,8 +526,8 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
 
   .project-description {
     color: var(--color-secondary);
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 0.85rem; /* 减少字体大小 */
+    line-height: 1.4; /* 减少行高 */
     margin: 0;
     font-family: var(--font-sans);
     /* 限制描述最多显示3行 */
@@ -541,13 +538,13 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     text-overflow: ellipsis;
   }
 
-  /* 项目元信息 - 固定高度 */
+  /* 项目元信息 - 压缩高度 */
   .project-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1.5rem;
-    height: 40px; /* 固定元信息高度 */
+    padding: 0 1rem; /* 减少内边距 */
+    height: 35px; /* 从40px减少到35px */
     flex-shrink: 0;
     gap: 1rem;
   }
@@ -556,15 +553,15 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.8rem; /* 减少字体大小 */
     font-family: var(--font-mono);
     font-weight: 500;
     flex-shrink: 0;
   }
 
   .language-dot {
-    width: 12px;
-    height: 12px;
+    width: 10px; /* 减少大小 */
+    height: 10px;
     border-radius: 50%;
     border: var(--border-width) var(--border-style) var(--color-border);
     flex-shrink: 0;
@@ -580,15 +577,15 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 0.875rem;
+    font-size: 0.8rem; /* 减少字体大小 */
     color: var(--color-secondary);
     font-family: var(--font-mono);
   }
 
-  /* 项目标签容器 - 固定高度 */
+  /* 项目标签容器 - 压缩高度 */
   .project-topics-container {
-    padding: 0 1.5rem;
-    height: 60px; /* 固定标签区域高度 */
+    padding: 0 1rem; /* 减少内边距 */
+    height: 50px; /* 从60px减少到50px */
     display: flex;
     align-items: flex-start;
     flex-shrink: 0;
@@ -597,19 +594,19 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
   .project-topics {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem; /* 减少间距 */
     width: 100%;
     /* 限制标签区域最多显示2行 */
-    max-height: 50px;
+    max-height: 40px; /* 减少最大高度 */
     overflow: hidden;
   }
 
   .topic-tag {
     background-color: var(--color-code-bg);
     color: var(--color-accent);
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem; /* 减少内边距 */
     border: var(--border-width) var(--border-style) var(--color-border);
-    font-size: 0.7rem;
+    font-size: 0.65rem; /* 减少字体大小 */
     font-family: var(--font-mono);
     font-weight: 500;
     text-transform: uppercase;
@@ -620,23 +617,23 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
 
   .topic-more {
     color: var(--color-secondary);
-    font-size: 0.7rem;
+    font-size: 0.65rem; /* 减少字体大小 */
     font-family: var(--font-mono);
     font-weight: 500;
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem; /* 减少内边距 */
   }
 
-  /* 项目底部 - 固定在底部 */
+  /* 项目底部 - 压缩高度 */
   .project-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    padding: 1rem 1.5rem 1.5rem;
+    padding: 0.75rem 1rem 1rem; /* 减少内边距 */
     border-top: var(--border-width) var(--border-style) var(--color-border);
     margin-top: auto; /* 推到底部 */
     flex-shrink: 0;
-    height: 60px; /* 固定底部高度 */
+    height: 50px; /* 从60px减少到50px */
   }
 
   .project-links {
@@ -649,7 +646,7 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 0.875rem;
+    font-size: 0.8rem; /* 减少字体大小 */
     font-family: var(--font-mono);
     font-weight: 500;
     text-transform: uppercase;
@@ -664,7 +661,7 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
   }
 
   .project-updated {
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* 减少字体大小 */
     color: var(--color-secondary);
     font-family: var(--font-mono);
     text-transform: uppercase;
@@ -713,34 +710,34 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
 
     /* 移动端调整卡片高度 */
     .project-card {
-      height: 380px;
-      min-height: 380px;
-      max-height: 380px;
+      height: 300px; /* 从380px减少到300px */
+      min-height: 300px;
+      max-height: 300px;
     }
 
     .project-header {
-      height: 70px;
-      padding: 1rem 1rem 0;
+      height: 55px; /* 从70px减少到55px */
+      padding: 0.75rem 0.75rem 0; /* 减少内边距 */
     }
 
     .project-description-container {
-      height: 70px;
-      padding: 0 1rem;
+      height: 55px; /* 从70px减少到55px */
+      padding: 0 0.75rem;
     }
 
     .project-meta {
-      padding: 0 1rem;
-      height: 35px;
+      padding: 0 0.75rem;
+      height: 30px; /* 从35px减少到30px */
     }
 
     .project-topics-container {
-      height: 50px;
-      padding: 0 1rem;
+      height: 45px; /* 从50px减少到45px */
+      padding: 0 0.75rem;
     }
 
     .project-footer {
-      padding: 0.75rem 1rem 1rem;
-      height: 55px;
+      padding: 0.5rem 0.75rem 0.75rem; /* 减少内边距 */
+      height: 45px; /* 从55px减少到45px */
     }
 
     .filter-tags {
@@ -753,11 +750,11 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     }
 
     .project-title {
-      font-size: 1rem;
+      font-size: 0.9rem; /* 进一步减少字体大小 */
     }
 
     .project-description {
-      font-size: 0.85rem;
+      font-size: 0.8rem; /* 进一步减少字体大小 */
     }
   }
 
@@ -768,48 +765,48 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
 
     /* 超小屏幕进一步调整 */
     .project-card {
-      height: 360px;
-      min-height: 360px;
-      max-height: 360px;
+      height: 280px; /* 从360px减少到280px */
+      min-height: 280px;
+      max-height: 280px;
     }
 
     .project-header {
-      height: 65px;
-      padding: 0.75rem 0.75rem 0;
+      height: 50px; /* 从65px减少到50px */
+      padding: 0.5rem 0.5rem 0; /* 进一步减少内边距 */
     }
 
     .project-description-container {
-      height: 65px;
-      padding: 0 0.75rem;
+      height: 50px; /* 从65px减少到50px */
+      padding: 0 0.5rem;
     }
 
     .project-meta {
-      padding: 0 0.75rem;
-      height: 30px;
+      padding: 0 0.5rem;
+      height: 25px; /* 从30px减少到25px */
       flex-direction: column;
       align-items: flex-start;
       gap: 0.25rem;
     }
 
     .project-topics-container {
-      height: 45px;
-      padding: 0 0.75rem;
+      height: 40px; /* 从45px减少到40px */
+      padding: 0 0.5rem;
     }
 
     .project-footer {
-      padding: 0.5rem 0.75rem 0.75rem;
-      height: 50px;
+      padding: 0.25rem 0.5rem 0.5rem; /* 进一步减少内边距 */
+      height: 40px; /* 从50px减少到40px */
       flex-direction: column;
       align-items: flex-start;
       gap: 0.25rem;
     }
 
     .project-title {
-      font-size: 0.9rem;
+      font-size: 0.85rem; /* 进一步减少字体大小 */
     }
 
     .project-description {
-      font-size: 0.8rem;
+      font-size: 0.75rem; /* 进一步减少字体大小 */
     }
   }
 </style>
