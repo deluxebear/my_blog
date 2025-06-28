@@ -69,7 +69,7 @@ const recentPosts = posts.slice(0, 6);
 <span class="keyword">const</span> <span class="variable">journey</span> <span class="operator">=</span> <span class="string">'开始'</span><span class="punctuation">;</span>
 
 <span class="function">console</span><span class="punctuation">.</span><span class="method">log</span><span class="punctuation">(</span>
-  <span class="template">`欢迎 ${'${'}explorer} ${'${'}journey} 探索！`</span>
+  <span class="template">`欢迎 {'${'}explorer} {'${'}journey} 探索！`</span>
 <span class="punctuation">);</span></code></pre>
             </div>
           </div>
@@ -192,18 +192,14 @@ const recentPosts = posts.slice(0, 6);
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden; /* 防止内容溢出 */
   }
 
   .code-snippet {
     background-color: var(--color-card);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
+    max-width: 400px;
     width: 100%;
-    max-width: 450px; /* 限制最大宽度 */
-    min-width: 300px; /* 设置最小宽度 */
   }
 
   .code-header {
@@ -238,33 +234,8 @@ const recentPosts = posts.slice(0, 6);
   .code-content {
     padding: 1rem;
     font-family: var(--font-mono);
-    font-size: 0.8rem; /* 稍微减小字体大小 */
-    line-height: 1.4; /* 减小行高 */
-    overflow: hidden; /* 防止内容溢出 */
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .code-content pre {
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    overflow: visible; /* 允许内容可见 */
-    white-space: pre-wrap; /* 允许换行 */
-    word-wrap: break-word; /* 强制换行 */
-    word-break: break-all; /* 在必要时断开单词 */
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .code-content code {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    overflow-wrap: break-word; /* 强制换行 */
-    word-wrap: break-word;
-    white-space: pre-wrap; /* 保持格式但允许换行 */
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 
   .keyword { color: var(--color-accent); font-weight: bold; }
@@ -338,10 +309,6 @@ const recentPosts = posts.slice(0, 6);
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
     }
-
-    .code-snippet {
-      max-width: 100%; /* 在中等屏幕上占满可用宽度 */
-    }
   }
 
   @media (max-width: 768px) {
@@ -373,33 +340,6 @@ const recentPosts = posts.slice(0, 6);
 
     .section-title {
       font-size: 1.5rem;
-    }
-
-    .code-snippet {
-      min-width: 280px; /* 移动端最小宽度 */
-      max-width: 100%;
-    }
-
-    .code-content {
-      padding: 0.75rem;
-      font-size: 0.75rem; /* 移动端进一步减小字体 */
-      line-height: 1.3;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .code-snippet {
-      min-width: 260px; /* 超小屏幕最小宽度 */
-    }
-
-    .code-content {
-      padding: 0.5rem;
-      font-size: 0.7rem; /* 超小屏幕字体 */
-      line-height: 1.2;
-    }
-
-    .hero-visual {
-      padding: 0 0.5rem; /* 添加左右内边距 */
     }
   }
 </style>
