@@ -20,7 +20,7 @@ const posts = allPosts
 const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort();
 ---
 
-<Layout title="所有文章 - 数字花园">
+<Layout title="所有文章 - 数得其道">
   <Header />
   
   <main class="main">
@@ -28,7 +28,7 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
       <header class="page-header">
         <h1 class="page-title">所有文章</h1>
         <p class="page-description">
-          探索 {posts.length} 篇技术文章，涵盖前端开发、JavaScript、React等多个技术领域
+          探索 {posts.length} 篇文章，道可道，非常道，名可名，非常名。
         </p>
       </header>
 

@@ -1,4 +1,5 @@
 ---
+import logo from "../assets/logo.png";
 ---
 
 <header class="header industrial-border">
@@ -6,34 +7,33 @@
     <div class="header-content">
       <div class="logo-section">
         <div class="logo">
-          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- 工业风格齿轮图标 -->
-            <circle cx="30" cy="30" r="25" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <!-- 齿轮齿 -->
-            <path d="M30 5L32 10L28 10Z M55 30L50 32L50 28Z M30 55L28 50L32 50Z M5 30L10 28L10 32Z" fill="currentColor"/>
-            <path d="M47 13L49 17L43 19Z M47 47L43 41L49 43Z M13 47L17 49L19 43Z M13 13L19 17L17 11Z" fill="currentColor"/>
-            <!-- 中心圆 -->
-            <circle cx="30" cy="30" r="8" fill="currentColor"/>
-            <circle cx="30" cy="30" r="4" fill="var(--color-bg)"/>
-          </svg>
+          <img src={logo.src} alt="数得其道 Logo" width="60" height="60" />
         </div>
         <div class="site-info">
           <h1 class="site-title">
-            <a href="/">数字花园</a>
+            <a href="/">数得其道</a>
           </h1>
-          <p class="site-subtitle">WEB 开发 · 创意编程</p>
+          <p class="site-subtitle">道 · 法 · 术 · 器</p>
         </div>
       </div>
-      
+
       <nav class="nav">
         <ul class="nav-list">
           <li><a href="/" class="nav-link" data-page="home">首页</a></li>
           <li><a href="/posts" class="nav-link" data-page="posts">文章</a></li>
-          <li><a href="/projects" class="nav-link" data-page="projects">项目</a></li>
+          <li>
+            <a href="/projects" class="nav-link" data-page="projects">项目</a>
+          </li>
           <li><a href="/about" class="nav-link" data-page="about">关于</a></li>
-          <li><a href="/rss.xml" class="nav-link rss-link" data-page="rss">RSS</a></li>
+          <li>
+            <a href="/rss.xml" class="nav-link rss-link" data-page="rss">RSS</a>
+          </li>
         </ul>
-        <button id="theme-toggle" class="theme-toggle industrial-border" aria-label="切换主题">
+        <button
+          id="theme-toggle"
+          class="theme-toggle industrial-border"
+          aria-label="切换主题"
+        >
           <span class="theme-icon">◐</span>
         </button>
       </nav>
@@ -77,17 +77,14 @@
   }
 
   .logo {
-    color: var(--color-accent);
-    transition: transform 0.3s ease;
     flex-shrink: 0; /* 防止 logo 被压缩 */
   }
 
-  .logo:hover {
-    transform: rotate(45deg);
-  }
-
-  .logo svg {
-    display: block; /* 确保 SVG 正确显示 */
+  .logo img {
+    display: block; /* 确保图片正确显示 */
+    background: transparent; /* 透明背景 */
+    border: none; /* 去掉边框 */
+    border-radius: 0; /* 去掉圆角 */
   }
 
   .site-info {
@@ -178,7 +175,7 @@
 
   /* 当前页面指示器 - 底部边框 */
   .nav-link.active::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -2px;
     left: 50%;
@@ -191,7 +188,7 @@
 
   /* 当前页面指示器 - 顶部标记 */
   .nav-link.active::before {
-    content: '●';
+    content: "●";
     position: absolute;
     top: -8px;
     left: 50%;
@@ -266,7 +263,7 @@
       gap: 0.75rem; /* 稍微减少间距 */
     }
 
-    .logo svg {
+    .logo img {
       width: 50px; /* 移动端稍微缩小 logo */
       height: 50px;
     }
@@ -334,7 +331,7 @@
       gap: 0.5rem;
     }
 
-    .logo svg {
+    .logo img {
       width: 45px;
       height: 45px;
     }
@@ -364,26 +361,30 @@
 </style>
 
 <script>
-  const themeToggle = document.getElementById('theme-toggle');
-  const themeIcon = themeToggle?.querySelector('.theme-icon');
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle?.querySelector(".theme-icon");
 
   function updateThemeIcon() {
     if (themeIcon) {
-      themeIcon.textContent = document.documentElement.classList.contains('dark') ? '◑' : '◐';
+      themeIcon.textContent = document.documentElement.classList.contains(
+        "dark"
+      )
+        ? "◑"
+        : "◐";
     }
   }
 
-  themeToggle?.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.contains('dark');
-    
+  themeToggle?.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.contains("dark");
+
     if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     }
-    
+
     updateThemeIcon();
   });
 
@@ -393,39 +394,39 @@
   // 当前页面高亮功能
   function setActiveNavLink() {
     const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('.nav-link');
-    
+    const navLinks = document.querySelectorAll(".nav-link");
+
     // 移除所有激活状态
-    navLinks.forEach(link => link.classList.remove('active'));
-    
+    navLinks.forEach((link) => link.classList.remove("active"));
+
     // 根据当前路径设置激活状态
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      const page = link.getAttribute('data-page');
-      
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href");
+      const page = link.getAttribute("data-page");
+
       // 精确匹配首页
-      if (currentPath === '/' && href === '/') {
-        link.classList.add('active');
+      if (currentPath === "/" && href === "/") {
+        link.classList.add("active");
       }
       // 匹配文章页面（包括文章列表和具体文章）
-      else if (currentPath.startsWith('/posts') && page === 'posts') {
-        link.classList.add('active');
+      else if (currentPath.startsWith("/posts") && page === "posts") {
+        link.classList.add("active");
       }
       // 匹配项目页面
-      else if (currentPath.startsWith('/projects') && page === 'projects') {
-        link.classList.add('active');
+      else if (currentPath.startsWith("/projects") && page === "projects") {
+        link.classList.add("active");
       }
       // 匹配关于页面
-      else if (currentPath.startsWith('/about') && page === 'about') {
-        link.classList.add('active');
+      else if (currentPath.startsWith("/about") && page === "about") {
+        link.classList.add("active");
       }
       // RSS 链接不需要激活状态，因为它是外部链接
     });
   }
 
   // 页面加载时设置激活状态
-  document.addEventListener('DOMContentLoaded', setActiveNavLink);
-  
+  document.addEventListener("DOMContentLoaded", setActiveNavLink);
+
   // 监听路由变化（适用于 SPA 应用）
-  window.addEventListener('popstate', setActiveNavLink);
+  window.addEventListener("popstate", setActiveNavLink);
 </script>

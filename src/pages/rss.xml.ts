@@ -6,8 +6,8 @@ export const GET: APIRoute = async (context) => {
   const posts = Object.values(allPostModules) as any[];
   
   return rss({
-    title: '数字花园',
-    description: '探索web开发与创意编程的数字花园',
+    title: '数得其道',
+    description: '探索数字世界中的道法术器',
     site: context.site || 'http://localhost:4321',
     items: posts
       .map(post => ({

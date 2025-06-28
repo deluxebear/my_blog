@@ -7,7 +7,7 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://www.jetems.com',
   integrations: [
     mdx(),
     sitemap(),

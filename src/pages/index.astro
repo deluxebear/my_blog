@@ -28,7 +28,7 @@ const featuredPosts = posts.filter((post) => post.data.featured).slice(0, 3);
 const recentPosts = posts.slice(0, 6);
 ---
 
-<Layout title="数字花园 - 探索web开发与创意编程">
+<Layout title="数得其道 - 探索数字世界中的道法术器">
   <Header />
 
   <main class="main">
@@ -37,12 +37,12 @@ const recentPosts = posts.slice(0, 6);
       <section class="hero">
         <div class="hero-content">
           <h1 class="hero-title">
-            数字花园
+            数得其道
             <span class="hero-subtitle">DIGITAL GARDEN</span>
           </h1>
+          <p class="hero-description">探索数字世界中的道法术器。</p>
           <p class="hero-description">
-            探索 WEB 开发的奥秘，分享创意编程的灵感。<br />
-            从前端技术到后端架构，从算法思维到设计美学。
+            从数据分析到系统架构，从哲学思考到人生感悟。
           </p>
           <div class="hero-stats industrial-border">
             <div class="stat">
@@ -64,7 +64,7 @@ const recentPosts = posts.slice(0, 6);
         <div class="hero-visual">
           <div class="code-snippet industrial-border">
             <div class="code-header">
-              <span class="code-title">WELCOME.JS</span>
+              <span class="code-title">AI_PROMPT.md</span>
               <div class="window-controls">
                 <div class="control"></div>
                 <div class="control"></div>
@@ -72,12 +72,18 @@ const recentPosts = posts.slice(0, 6);
               </div>
             </div>
             <div class="code-content">
-              <pre><code><span class="keyword">const</span> <span class="variable">explorer</span> <span class="operator">=</span> <span class="string">'你'</span><span class="punctuation">;</span>
-<span class="keyword">const</span> <span class="variable">journey</span> <span class="operator">=</span> <span class="string">'开始'</span><span class="punctuation">;</span>
+              <pre><code><span class="prompt-role"># 系统角色</span>
+<span class="ai-response">你是一位知识探索者的引导者</span>
 
-<span class="function">console</span><span class="punctuation">.</span><span class="method">log</span><span class="punctuation">(</span>
-  <span class="template">`欢迎 {'${'}explorer} {'${'}journey} 探索！`</span>
-<span class="punctuation">);</span></code></pre>
+<span class="prompt-task"># 任务</span>
+<span class="ai-instruction">为用户创造温馨的欢迎体验</span>
+
+<span class="prompt-input"># 输入</span>
+<span class="variable">探索者</span><span class="operator">:</span> <span class="string">你</span>
+<span class="variable">旅程状态</span><span class="operator">:</span> <span class="string">刚刚开始</span>
+
+<span class="prompt-output"># 输出</span>
+<span class="ai-response">欢迎你开始探索！在这里发现道法术器的智慧。</span></code></pre>
             </div>
           </div>
         </div>
@@ -247,31 +253,63 @@ const recentPosts = posts.slice(0, 6);
     line-height: 1.5;
   }
 
-  .keyword {
-    color: var(--color-accent);
+  /* AI自然语言编程样式 */
+  .prompt-role {
+    color: #8b4513;
     font-weight: bold;
+    font-size: 0.9em;
   }
+
+  .prompt-task,
+  .prompt-input,
+  .prompt-output {
+    color: #8b4513;
+    font-weight: bold;
+    font-size: 0.9em;
+  }
+
+  .ai-response {
+    color: #228b22;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .ai-instruction {
+    color: #4169e1;
+    font-weight: 500;
+  }
+
   .variable {
     color: var(--color-text);
+    font-weight: 600;
   }
+
   .operator {
     color: var(--color-secondary);
   }
+
   .string {
-    color: var(--color-accent);
+    color: #dc143c;
   }
-  .template {
-    color: var(--color-accent);
+
+  /* 深色模式下的AI样式 */
+  .dark .prompt-role,
+  .dark .prompt-task,
+  .dark .prompt-input,
+  .dark .prompt-output {
+    color: #cd853f;
   }
-  .punctuation {
-    color: var(--color-secondary);
+
+  .dark .ai-response {
+    color: #90ee90;
   }
-  .function {
-    color: var(--color-text);
-    font-weight: bold;
+
+  .dark .ai-instruction {
+    color: #87ceeb;
   }
-  .method {
-    color: var(--color-accent);
+
+  .dark .string {
+    color: #ffb6c1;
   }
 
   .search-section {

@@ -1,11 +1,15 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import avatar from "../assets/avatar.png";
 ---
 
-<Layout title="关于 Eric - 数字花园" description="了解 Eric，一名工程师和系统思维实践者，专注于技术赋能业务和数字化建设">
+<Layout
+  title="关于 Eric - 数得其道"
+  description="了解 Eric，一名工程师和系统思维实践者，专注于技术赋能业务和数字化建设"
+>
   <Header />
-  
+
   <main class="main">
     <div class="container">
       <article class="about-content">
@@ -14,29 +18,20 @@ import Header from '../components/Header.astro';
           <div class="intro-content">
             <div class="avatar-section">
               <div class="avatar industrial-border">
-                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <!-- 工程师头像图标 -->
-                  <circle cx="60" cy="60" r="55" stroke="currentColor" stroke-width="2" fill="var(--color-card)"/>
-                  <!-- 头部 -->
-                  <circle cx="60" cy="45" r="15" fill="currentColor"/>
-                  <!-- 身体 -->
-                  <path d="M35 85 C35 70, 45 65, 60 65 C75 65, 85 70, 85 85 L85 105 L35 105 Z" fill="currentColor"/>
-                  <!-- 工具符号 -->
-                  <path d="M45 25 L50 30 L55 25 M65 25 L70 30 L75 25" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <!-- 齿轮装饰 -->
-                  <circle cx="25" cy="25" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                  <path d="M25 17 L27 22 L23 22 Z M33 25 L28 27 L28 23 Z M25 33 L23 28 L27 28 Z M17 25 L22 23 L22 27 Z" fill="currentColor"/>
-                  
-                  <circle cx="95" cy="95" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                  <path d="M95 87 L97 92 L93 92 Z M103 95 L98 97 L98 93 Z M95 103 L93 98 L97 98 Z M87 95 L92 93 L92 97 Z" fill="currentColor"/>
-                </svg>
+                <img
+                  src={avatar.src}
+                  alt="Eric 的头像"
+                  width="120"
+                  height="120"
+                  class="avatar-image"
+                />
               </div>
               <div class="name-title">
                 <h1 class="name">ERIC</h1>
                 <p class="title">工程师 · 系统思维实践者</p>
               </div>
             </div>
-            
+
             <div class="intro-text">
               <div class="quote-block industrial-border">
                 <blockquote>
@@ -55,8 +50,12 @@ import Header from '../components/Header.astro';
               <h2 class="block-title">关于我</h2>
               <div class="block-content">
                 <p>我是 Eric，一名工程师，也是一位系统思维的实践者。</p>
-                
-                <p>多年来，我一直在探索如何用技术为业务赋能——从流程设计、数据治理到平台搭建，我始终坚持<strong>「不重复造轮子，一切服务业务，小步快跑」</strong>的理念。在构建系统时，我关注的不仅是技术选型，更在意它与业务的耦合程度与落地效果。</p>
+
+                <p>
+                  多年来，我一直在探索如何用技术为业务赋能——从流程设计、数据治理到平台搭建，我始终坚持<strong
+                    >「不重复造轮子，一切服务业务，小步快跑」</strong
+                  >的理念。在构建系统时，我关注的不仅是技术选型，更在意它与业务的耦合程度与落地效果。
+                </p>
               </div>
             </div>
 
@@ -93,8 +92,11 @@ import Header from '../components/Header.astro';
             <div class="content-block industrial-border">
               <h2 class="block-title">博客理念</h2>
               <div class="block-content">
-                <p>这个博客，记录我在数字化建设、流程管理、数据平台、AI 应用等领域的思考与实践，也偶尔写一些对人性、成长与父子关系的观察。</p>
-                
+                <p>
+                  这个博客，记录我在数字化建设、流程管理、数据平台、AI
+                  应用等领域的思考与实践，也偶尔写一些对人性、成长与父子关系的观察。
+                </p>
+
                 <div class="principles">
                   <div class="principle-item">
                     <span class="principle-icon">🛠️</span>
@@ -117,25 +119,55 @@ import Header from '../components/Header.astro';
               <h2 class="block-title">联系交流</h2>
               <div class="block-content">
                 <p>欢迎交流，期待与你在思维的边界处相遇。</p>
-                
+
                 <div class="contact-links">
-                  <a href="mailto:eric@example.com" class="contact-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                      <polyline points="22,6 12,13 2,6"></polyline>
+                  <a
+                    href="https://x.com/deluxebear"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="contact-link"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                      ></path>
                     </svg>
-                    邮箱联系
+                    X / Twitter
                   </a>
-                  
-                  <a href="https://github.com/deluxebear" target="_blank" rel="noopener noreferrer" class="contact-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+
+                  <a
+                    href="https://github.com/deluxebear"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="contact-link"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                      ></path>
                     </svg>
                     GitHub
                   </a>
-                  
+
                   <a href="/rss.xml" class="contact-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
                       <path d="M4 11a9 9 0 0 1 9 9"></path>
                       <path d="M4 4a16 16 0 0 1 16 16"></path>
                       <circle cx="5" cy="19" r="1"></circle>
@@ -156,26 +188,32 @@ import Header from '../components/Header.astro';
               <div class="timeline-marker"></div>
               <div class="timeline-content">
                 <h3>系统思维实践</h3>
-                <p>深入研究系统性思考方法，将其应用于技术架构和业务流程设计中</p>
+                <p>
+                  深入研究系统性思考方法，将其应用于技术架构和业务流程设计中
+                </p>
               </div>
             </div>
-            
+
             <div class="timeline-item">
               <div class="timeline-marker"></div>
               <div class="timeline-content">
                 <h3>数字化转型</h3>
-                <p>主导多个企业数字化项目，积累了丰富的平台搭建和数据治理经验</p>
+                <p>
+                  主导多个企业数字化项目，积累了丰富的平台搭建和数据治理经验
+                </p>
               </div>
             </div>
-            
+
             <div class="timeline-item">
               <div class="timeline-marker"></div>
               <div class="timeline-content">
                 <h3>AI 技术探索</h3>
-                <p>关注人工智能在业务场景中的实际应用，推动技术与业务的深度融合</p>
+                <p>
+                  关注人工智能在业务场景中的实际应用，推动技术与业务的深度融合
+                </p>
               </div>
             </div>
-            
+
             <div class="timeline-item">
               <div class="timeline-marker"></div>
               <div class="timeline-content">
@@ -225,6 +263,21 @@ import Header from '../components/Header.astro';
     padding: 1rem;
     background-color: var(--color-card);
     color: var(--color-accent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .avatar-image {
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s ease;
+  }
+
+  .avatar-image:hover {
+    transform: scale(1.05);
   }
 
   .name {
@@ -409,7 +462,7 @@ import Header from '../components/Header.astro';
   }
 
   .section-title::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -0.5rem;
     left: 50%;
@@ -426,7 +479,7 @@ import Header from '../components/Header.astro';
   }
 
   .timeline::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 2rem;
     top: 2rem;
