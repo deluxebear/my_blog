@@ -1,0 +1,777 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, description = "探索web开发、创意编程的数字花园", image = "/og-image.jpg" } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+    
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title={title} href="/rss.xml" />
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  </head>
+  <body>
+    <slot />
+    <script>
+      // Theme toggle functionality
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      
+      if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+      
+      window.localStorage.setItem('theme', theme);
+    </script>
+    
+    <!-- Highlight.js JavaScript - 修复加载顺序 -->
+    <script 
+      src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+      onload="
+        // 主库加载完成后再加载语言包
+        const languages = [
+          'javascript',
+          'typescript', 
+          'css',
+          'html',
+          'python',
+          'java',
+          'json',
+          'bash',
+          'sql',
+          'xml'
+        ];
+        
+        let loadedCount = 0;
+        const totalLanguages = languages.length;
+        
+        languages.forEach(lang => {
+          const script = document.createElement('script');
+          script.src = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/${lang}.min.js`;
+          script.onload = () => {
+            loadedCount++;
+            if (loadedCount === totalLanguages) {
+              // 所有语言包加载完成后触发自定义事件
+              document.dispatchEvent(new Event('hljsReady'));
+            }
+          };
+          document.head.appendChild(script);
+        });
+      "
+    ></script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    /* 复古工业风格配色 */
+    --color-bg: #d4c4a0;
+    --color-text: #2c2416;
+    --color-accent: #8b4513;
+    --color-secondary: #5d4e37;
+    --color-border: #8b7355;
+    --color-card: #e8dcc0;
+    --color-code-bg: #f0e6d2;
+    --color-hover: rgba(139, 69, 19, 0.1);
+    --color-muted: #a0906c;
+    
+    --font-mono: 'JetBrains Mono', 'Courier Prime', monospace;
+    --font-sans: 'Courier Prime', 'JetBrains Mono', monospace;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(44, 36, 22, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(44, 36, 22, 0.15);
+    --shadow-lg: 0 10px 15px -3px rgba(44, 36, 22, 0.2);
+    
+    --border-width: 1px;
+    --border-style: solid;
+  }
+
+  .dark {
+    --color-bg: #2c2416;
+    --color-text: #d4c4a0;
+    --color-accent: #cd853f;
+    --color-secondary: #a0906c;
+    --color-border: #5d4e37;
+    --color-card: #3a3020;
+    --color-code-bg: #4a3f2a;
+    --color-hover: rgba(205, 133, 63, 0.1);
+    --color-muted: #8b7355;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    font-size: 16px;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: 400;
+    overflow-x: hidden; /* 防止整个页面横向滚动 */
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.5em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.25rem; }
+
+  p {
+    margin-bottom: 1rem;
+    font-family: var(--font-sans);
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: 500;
+  }
+
+  a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    background-color: var(--color-code-bg);
+    padding: 0.125rem 0.25rem;
+    border-radius: 2px;
+    font-size: 0.875em;
+    border: var(--border-width) var(--border-style) var(--color-border);
+  }
+
+  /* 增强的代码块样式 - 关键修复 */
+  pre {
+    background-color: var(--color-code-bg);
+    border: var(--border-width) var(--border-style) var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    position: relative;
+    font-family: var(--font-mono);
+    max-height: 500px;
+    width: 100%; /* 确保不超出父容器 */
+    max-width: 100%; /* 强制限制最大宽度 */
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border: none;
+    display: block;
+  }
+
+  /* 复制按钮 */
+  pre:not(.code-block pre)::after {
+    content: '复制';
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--color-card);
+    color: var(--color-secondary);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    border: var(--border-width) var(--border-style) var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+  }
+
+  pre:not(.code-block pre):hover::after {
+    opacity: 1;
+  }
+
+  pre:not(.code-block pre)::after:hover {
+    color: var(--color-accent);
+    background-color: var(--color-hover);
+    transform: translateY(-1px);
+  }
+
+  /* 复制成功状态 */
+  pre:not(.code-block pre).copied::after {
+    content: '已复制!';
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  /* 代码块包装器样式 - 关键修复 */
+  .code-wrapper {
+    display: flex;
+    max-height: 500px;
+    overflow: hidden;
+    width: 100%; /* 确保不超出父容器 */
+    max-width: 100%; /* 强制限制最大宽度 */
+  }
+
+  /* 行号样式 - 修复：移除滚动条 */
+  .line-numbers {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-right: var(--border-width) var(--border-style) var(--color-border);
+    padding: 1rem 0.75rem;
+    user-select: none;
+    min-width: 3rem;
+    max-width: 4rem;
+    text-align: right;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-family: var(--font-mono);
+    overflow: hidden; /* 关键修复：隐藏行号区域的滚动条 */
+    flex-shrink: 0; /* 防止收缩 */
+  }
+
+  /* 代码容器样式 - 关键修复 */
+  .code-container {
+    flex: 1;
+    overflow: auto; /* 只有代码区域有滚动条 */
+    min-width: 0; /* 允许收缩 */
+    width: 0; /* 强制收缩到可用空间 */
+    max-width: 100%; /* 限制最大宽度 */
+  }
+
+  .code-container pre {
+    margin: 0;
+    padding: 1rem;
+    background: none;
+    border: none;
+    overflow: visible; /* 让父容器处理滚动 */
+    font-family: var(--font-mono);
+    white-space: pre; /* 保持代码格式，不换行 */
+    min-height: 100%;
+    width: max-content; /* 让内容撑开到实际宽度 */
+    min-width: 100%; /* 确保至少占满容器宽度 */
+  }
+
+  .code-container code {
+    white-space: pre; /* 确保代码不换行 */
+    display: block;
+    width: max-content; /* 让代码撑开到实际宽度 */
+  }
+
+  /* 滚动条样式 - 只为代码容器设置 */
+  .code-container::-webkit-scrollbar,
+  pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .code-container::-webkit-scrollbar-track,
+  pre::-webkit-scrollbar-track {
+    background: var(--color-code-bg);
+  }
+
+  .code-container::-webkit-scrollbar-thumb,
+  pre::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+  }
+
+  .code-container::-webkit-scrollbar-thumb:hover,
+  pre::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+  }
+
+  /* 行号区域不显示滚动条 */
+  .line-numbers::-webkit-scrollbar {
+    display: none; /* 隐藏行号区域的滚动条 */
+  }
+
+  /* 同步滚动 */
+  .code-wrapper .line-numbers,
+  .code-wrapper .code-container {
+    scroll-behavior: smooth;
+  }
+
+  /* ===== 语法高亮样式覆盖 ===== */
+  
+  /* 浅色主题的语法高亮 */
+  :root:not(.dark) pre code.hljs {
+    background: var(--color-code-bg) !important;
+    color: var(--color-text) !important;
+  }
+
+  /* 深色主题保持 highlight.js 的默认样式 */
+  .dark pre code.hljs {
+    background: #282c34 !important;
+    color: #abb2bf !important;
+  }
+
+  /* 浅色主题的语法高亮颜色 */
+  :root:not(.dark) .hljs-keyword,
+  :root:not(.dark) .hljs-selector-tag,
+  :root:not(.dark) .hljs-literal,
+  :root:not(.dark) .hljs-section,
+  :root:not(.dark) .hljs-link {
+    color: #8b4513 !important; /* 使用主题色 */
+    font-weight: 600;
+  }
+
+  :root:not(.dark) .hljs-function .hljs-keyword {
+    color: #8b4513 !important;
+  }
+
+  :root:not(.dark) .hljs-subst {
+    color: var(--color-text) !important;
+  }
+
+  :root:not(.dark) .hljs-string,
+  :root:not(.dark) .hljs-title,
+  :root:not(.dark) .hljs-name,
+  :root:not(.dark) .hljs-type,
+  :root:not(.dark) .hljs-attribute,
+  :root:not(.dark) .hljs-symbol,
+  :root:not(.dark) .hljs-bullet,
+  :root:not(.dark) .hljs-addition,
+  :root:not(.dark) .hljs-variable,
+  :root:not(.dark) .hljs-template-tag,
+  :root:not(.dark) .hljs-template-variable {
+    color: #228B22 !important; /* 绿色 */
+  }
+
+  :root:not(.dark) .hljs-comment,
+  :root:not(.dark) .hljs-quote,
+  :root:not(.dark) .hljs-deletion,
+  :root:not(.dark) .hljs-meta {
+    color: #6c757d !important; /* 灰色注释 */
+    font-style: italic;
+  }
+
+  :root:not(.dark) .hljs-number,
+  :root:not(.dark) .hljs-regexp,
+  :root:not(.dark) .hljs-symbol,
+  :root:not(.dark) .hljs-literal {
+    color: #DC143C !important; /* 红色数字 */
+  }
+
+  :root:not(.dark) .hljs-class .hljs-title,
+  :root:not(.dark) .hljs-function .hljs-title {
+    color: #4169E1 !important; /* 蓝色函数名 */
+    font-weight: 600;
+  }
+
+  :root:not(.dark) .hljs-tag,
+  :root:not(.dark) .hljs-name,
+  :root:not(.dark) .hljs-selector-id,
+  :root:not(.dark) .hljs-selector-class,
+  :root:not(.dark) .hljs-selector-attr,
+  :root:not(.dark) .hljs-selector-pseudo {
+    color: #8b4513 !important;
+  }
+
+  :root:not(.dark) .hljs-built_in,
+  :root:not(.dark) .hljs-builtin-name {
+    color: #6f42c1 !important; /* 紫色内置函数 */
+  }
+
+  :root:not(.dark) .hljs-attr {
+    color: #FF8C00 !important; /* 橙色属性 */
+  }
+
+  :root:not(.dark) .hljs-variable {
+    color: #2F4F4F !important; /* 深灰绿色变量 */
+  }
+
+  :root:not(.dark) .hljs-params {
+    color: var(--color-text) !important;
+  }
+
+  /* CSS 特定样式 */
+  :root:not(.dark) .hljs-selector-tag {
+    color: #8b4513 !important;
+  }
+
+  :root:not(.dark) .hljs-selector-class {
+    color: #4169E1 !important;
+  }
+
+  :root:not(.dark) .hljs-selector-id {
+    color: #DC143C !important;
+  }
+
+  :root:not(.dark) .hljs-property {
+    color: #228B22 !important;
+  }
+
+  :root:not(.dark) .hljs-value {
+    color: #DC143C !important;
+  }
+
+  /* JavaScript/TypeScript 特定样式 */
+  :root:not(.dark) .hljs-title.function_ {
+    color: #4169E1 !important;
+    font-weight: 600;
+  }
+
+  :root:not(.dark) .hljs-title.class_ {
+    color: #6f42c1 !important;
+    font-weight: 600;
+  }
+
+  :root:not(.dark) .hljs-operator {
+    color: var(--color-text) !important;
+  }
+
+  :root:not(.dark) .hljs-punctuation {
+    color: var(--color-secondary) !important;
+  }
+
+  /* 确保代码块字体一致 */
+  .hljs {
+    font-family: var(--font-mono) !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--color-secondary);
+    background-color: var(--color-hover);
+    padding: 1rem;
+    border-radius: 4px;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: var(--border-width) var(--border-style) var(--color-border);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    width: 100%; /* 确保容器不超出视口 */
+    overflow-x: hidden; /* 防止容器内容溢出 */
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* 工业风格装饰元素 - 极细边框 */
+  .industrial-border {
+    border: var(--border-width) var(--border-style) var(--color-border);
+    position: relative;
+  }
+
+  .industrial-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px solid var(--color-muted);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* 按钮样式 */
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-card);
+    border: var(--border-width) var(--border-style) var(--color-border);
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-text);
+  }
+
+  @media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    
+    .container {
+      padding: 0 0.75rem;
+    }
+
+    /* 移动端代码块优化 */
+    pre {
+      max-height: 300px; /* 移动端降低最大高度 */
+    }
+
+    .code-wrapper {
+      max-height: 300px;
+    }
+
+    .line-numbers {
+      min-width: 2.5rem;
+      max-width: 3rem;
+      padding: 1rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .code-container pre {
+      padding: 1rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+<script>
+  // 为所有代码块添加行号和复制功能，并应用语法高亮
+  function initializeCodeBlocks() {
+    const codeBlocks = document.querySelectorAll('pre:not(.code-block pre)');
+    
+    codeBlocks.forEach((pre, index) => {
+      const code = pre.querySelector('code');
+      if (!code) return;
+      
+      // 获取代码内容
+      const codeText = code.textContent || '';
+      const lines = codeText.split('\n');
+      
+      // 如果最后一行是空的，移除它
+      if (lines[lines.length - 1] === '') {
+        lines.pop();
+      }
+      
+      // 检测语言类型
+      let language = 'text';
+      const classList = code.className;
+      
+      // 从 class 中提取语言
+      if (classList) {
+        const langMatch = classList.match(/language-(\w+)/);
+        if (langMatch) {
+          language = langMatch[1];
+        }
+      }
+      
+      // 如果没有明确的语言，尝试自动检测
+      if (language === 'text' && typeof hljs !== 'undefined') {
+        const detected = hljs.highlightAuto(codeText);
+        if (detected.language) {
+          language = detected.language;
+        }
+      }
+      
+      // 应用语法高亮
+      if (typeof hljs !== 'undefined' && language !== 'text') {
+        try {
+          const highlighted = hljs.highlight(codeText, { language: language });
+          code.innerHTML = highlighted.value;
+          code.className = `hljs language-${language}`;
+        } catch (e) {
+          // 如果特定语言高亮失败，使用自动检测
+          try {
+            const autoHighlighted = hljs.highlightAuto(codeText);
+            code.innerHTML = autoHighlighted.value;
+            code.className = `hljs language-${autoHighlighted.language || 'text'}`;
+          } catch (e2) {
+            console.warn('语法高亮失败:', e2);
+          }
+        }
+      }
+      
+      // 创建带行号的结构
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-wrapper';
+      
+      // 行号容器
+      const lineNumbers = document.createElement('div');
+      lineNumbers.className = 'line-numbers';
+      
+      // 生成行号
+      lines.forEach((_, i) => {
+        const lineNumber = document.createElement('div');
+        lineNumber.textContent = (i + 1).toString();
+        lineNumbers.appendChild(lineNumber);
+      });
+      
+      // 代码容器
+      const codeContainer = document.createElement('div');
+      codeContainer.className = 'code-container';
+      
+      // 重新创建 pre 和 code 元素
+      const newPre = document.createElement('pre');
+      const newCode = document.createElement('code');
+      newCode.className = code.className;
+      newCode.innerHTML = code.innerHTML; // 使用已高亮的 HTML
+      
+      newPre.appendChild(newCode);
+      codeContainer.appendChild(newPre);
+      
+      // 组装结构
+      wrapper.appendChild(lineNumbers);
+      wrapper.appendChild(codeContainer);
+      
+      // 替换原来的内容
+      pre.innerHTML = '';
+      pre.appendChild(wrapper);
+      
+      // 同步滚动功能 - 只同步垂直滚动
+      codeContainer.addEventListener('scroll', () => {
+        lineNumbers.scrollTop = codeContainer.scrollTop;
+      });
+      
+      // 添加复制功能
+      pre.addEventListener('click', async (e) => {
+        // 检查点击是否在复制按钮区域
+        const rect = pre.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        
+        // 复制按钮大概在右上角
+        if (clickX > rect.width - 100 && clickY < 50) {
+          try {
+            await navigator.clipboard.writeText(codeText);
+            
+            // 显示复制成功反馈
+            pre.classList.add('copied');
+            
+            // 2秒后恢复
+            setTimeout(() => {
+              pre.classList.remove('copied');
+            }, 2000);
+            
+          } catch (err) {
+            console.error('复制失败:', err);
+            
+            // 降级方案
+            const textArea = document.createElement('textarea');
+            textArea.value = codeText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+              document.execCommand('copy');
+              pre.classList.add('copied');
+              setTimeout(() => {
+                pre.classList.remove('copied');
+              }, 2000);
+            } catch (fallbackErr) {
+              console.error('降级复制也失败了:', fallbackErr);
+            }
+            
+            document.body.removeChild(textArea);
+          }
+        }
+      });
+    });
+  }
+
+  // 等待 Highlight.js 完全加载后再初始化代码块
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof hljs !== 'undefined') {
+      // 如果 hljs 已经可用，直接初始化
+      hljs.highlightAll();
+      initializeCodeBlocks();
+    } else {
+      // 否则等待自定义事件
+      document.addEventListener('hljsReady', () => {
+        hljs.highlightAll();
+        initializeCodeBlocks();
+      });
+    }
+  });
+</script>

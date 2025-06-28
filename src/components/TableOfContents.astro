@@ -1,0 +1,531 @@
+---
+export interface Props {
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
+
+const { headings } = Astro.props;
+---
+
+<!-- 目录导航组件 - 只在桌面端显示 -->
+<aside class="toc industrial-border">
+  <div class="toc-header">
+    <h3 class="toc-title">目录导航</h3>
+    <button class="toc-toggle" aria-label="切换目录显示">
+      <svg class="toc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  
+  <div class="toc-content">
+    {headings && headings.length > 0 ? (
+      <nav class="toc-nav">
+        <ul class="toc-list">
+          {headings.map((heading) => (
+            <li class={`toc-item toc-level-${heading.depth}`}>
+              <a href={`#${heading.slug}`} class="toc-link" data-target={heading.slug}>
+                <span class="toc-bullet">•</span>
+                <span class="toc-text">{heading.text}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ) : (
+      <div class="toc-empty">
+        <p>正在加载目录...</p>
+      </div>
+    )}
+    
+    <!-- 阅读进度条 -->
+    <div class="reading-progress">
+      <div class="progress-label">阅读进度</div>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-text">0%</div>
+    </div>
+  </div>
+</aside>
+
+<style>
+  /* 基础样式 */
+  .toc {
+    background-color: var(--color-card);
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border-bottom: var(--border-width) var(--border-style) var(--color-border);
+    cursor: pointer;
+  }
+
+  .toc-title {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    color: var(--color-accent);
+    pointer-events: none;
+  }
+
+  .toc-toggle {
+    background: none;
+    border: var(--border-width) var(--border-style) var(--color-border);
+    color: var(--color-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .toc-toggle:hover {
+    color: var(--color-accent);
+    background-color: var(--color-hover);
+  }
+
+  .toc-content {
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .toc-nav {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  .toc-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc-item {
+    margin-bottom: 0.25rem;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .toc-link:hover {
+    color: var(--color-accent);
+    background-color: var(--color-hover);
+    transform: translateX(2px);
+  }
+
+  .toc-link.active {
+    color: var(--color-accent);
+    font-weight: 600;
+    background-color: var(--color-hover);
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .toc-bullet {
+    font-size: 1.2rem;
+    line-height: 1;
+    color: var(--color-muted);
+    transition: color 0.2s ease;
+  }
+
+  .toc-link:hover .toc-bullet,
+  .toc-link.active .toc-bullet {
+    color: var(--color-accent);
+  }
+
+  .toc-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 不同层级的缩进 */
+  .toc-level-1 .toc-link { padding-left: 0.75rem; }
+  .toc-level-2 .toc-link { padding-left: 1rem; }
+  .toc-level-3 .toc-link { padding-left: 1.5rem; }
+  .toc-level-4 .toc-link { padding-left: 2rem; }
+  .toc-level-5 .toc-link { padding-left: 2.5rem; }
+  .toc-level-6 .toc-link { padding-left: 3rem; }
+
+  /* 阅读进度 */
+  .reading-progress {
+    padding: 1rem;
+    border-top: var(--border-width) var(--border-style) var(--color-border);
+    background-color: var(--color-code-bg);
+  }
+
+  .progress-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background-color: var(--color-accent);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    text-align: center;
+  }
+
+  /* 滚动条样式 */
+  .toc-nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .toc-nav::-webkit-scrollbar-track {
+    background: var(--color-code-bg);
+  }
+
+  .toc-nav::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 2px;
+  }
+
+  .toc-nav::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+  }
+
+  /* 桌面端样式 - 当目录在右侧固定时 */
+  @media (min-width: 1201px) {
+    .toc {
+      position: fixed;
+      top: 120px;
+      right: 20px;
+      width: 300px;
+      max-height: calc(100vh - 140px);
+      z-index: 50;
+    }
+
+    /* 桌面端折叠状态 */
+    .toc.collapsed .toc-content {
+      max-height: 0;
+      padding: 0;
+      opacity: 0;
+    }
+
+    .toc.collapsed {
+      width: 60px;
+    }
+
+    .toc.collapsed .toc-header {
+      justify-content: center;
+      padding: 1rem 0.5rem;
+    }
+
+    .toc.collapsed .toc-title {
+      display: none;
+    }
+  }
+
+  /* 移动端和平板端完全隐藏目录 */
+  @media (max-width: 1200px) {
+    .toc {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 只在桌面端（大于1200px）执行目录相关逻辑
+    if (window.innerWidth <= 1200) {
+      return; // 移动端和平板端直接退出
+    }
+
+    const toc = document.querySelector('.toc');
+    const tocHeader = document.querySelector('.toc-header');
+    const tocToggle = document.querySelector('.toc-toggle');
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelector('.progress-text');
+    
+    if (!toc) {
+      return;
+    }
+
+    // 切换目录显示/隐藏（仅桌面端）
+    function toggleToc() {
+      toc.classList.toggle('collapsed');
+    }
+
+    // 绑定点击事件 - 整个头部都可以点击
+    if (tocHeader) {
+      tocHeader.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleToc();
+      });
+    }
+
+    // 也保留按钮的点击事件作为备用
+    if (tocToggle) {
+      tocToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleToc();
+      });
+    }
+
+    // 如果没有找到目录链接，尝试动态生成
+    if (tocLinks.length === 0) {
+      // 查找页面中的所有标题
+      const headings = document.querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]');
+      
+      if (headings.length > 0) {
+        const tocContent = document.querySelector('.toc-content');
+        const tocEmpty = document.querySelector('.toc-empty');
+        
+        if (tocEmpty) {
+          tocEmpty.style.display = 'none';
+        }
+        
+        // 查找或创建导航容器
+        let tocNav = document.querySelector('.toc-nav');
+        
+        if (!tocNav) {
+          // 创建导航容器
+          tocNav = document.createElement('nav');
+          tocNav.className = 'toc-nav';
+          
+          const tocList = document.createElement('ul');
+          tocList.className = 'toc-list';
+          
+          headings.forEach(heading => {
+            const level = parseInt(heading.tagName.substring(1));
+            const id = heading.id;
+            const text = heading.textContent?.replace(/^[#\s]+/, '') || '';
+            
+            const listItem = document.createElement('li');
+            listItem.className = `toc-item toc-level-${level}`;
+            
+            const link = document.createElement('a');
+            link.href = `#${id}`;
+            link.className = 'toc-link';
+            link.setAttribute('data-target', id);
+            
+            const bullet = document.createElement('span');
+            bullet.className = 'toc-bullet';
+            bullet.textContent = '•';
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'toc-text';
+            textSpan.textContent = text;
+            
+            link.appendChild(bullet);
+            link.appendChild(textSpan);
+            listItem.appendChild(link);
+            tocList.appendChild(listItem);
+          });
+          
+          tocNav.appendChild(tocList);
+          
+          // 插入到内容区域的开头
+          if (tocContent) {
+            const readingProgress = tocContent.querySelector('.reading-progress');
+            if (readingProgress) {
+              tocContent.insertBefore(tocNav, readingProgress);
+            } else {
+              tocContent.appendChild(tocNav);
+            }
+          }
+          
+          // 重新获取链接并绑定事件
+          setTimeout(() => {
+            bindTocEvents();
+          }, 100);
+        }
+      }
+    } else {
+      bindTocEvents();
+    }
+
+    function bindTocEvents() {
+      const updatedTocLinks = document.querySelectorAll('.toc-link');
+      
+      // 平滑滚动到目标位置
+      updatedTocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('data-target');
+          const target = document.getElementById(targetId);
+          
+          if (target) {
+            const headerHeight = 120; // 考虑固定头部的高度
+            const targetPosition = target.offsetTop - headerHeight;
+            
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+
+      // 高亮当前章节和更新阅读进度
+      function updateActiveSection() {
+        const headings = document.querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]');
+        const scrollTop = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // 修复阅读进度计算
+        let progress;
+        
+        // 检查是否接近页面底部（距离底部小于100px时认为已读完）
+        const distanceFromBottom = documentHeight - (scrollTop + windowHeight);
+        
+        if (distanceFromBottom <= 100) {
+          // 接近底部时直接设为100%
+          progress = 100;
+        } else {
+          // 正常计算进度，但确保不会超过95%（为接近底部的情况留出空间）
+          const maxScrollableHeight = documentHeight - windowHeight;
+          progress = Math.min(95, Math.max(0, (scrollTop / maxScrollableHeight) * 100));
+        }
+        
+        if (progressFill) {
+          progressFill.style.width = `${progress}%`;
+        }
+        
+        if (progressText) {
+          progressText.textContent = `${Math.round(progress)}%`;
+        }
+        
+        // 修复最后一个标题的激活逻辑
+        let activeHeading = null;
+        const offset = 120; // 偏移量
+        
+        // 如果进度达到100%，激活最后一个标题
+        if (progress === 100 && headings.length > 0) {
+          activeHeading = headings[headings.length - 1];
+        } else {
+          // 正常逻辑：找到当前可见的标题
+          for (let i = headings.length - 1; i >= 0; i--) {
+            const heading = headings[i];
+            if (heading.offsetTop <= scrollTop + offset) {
+              activeHeading = heading;
+              break;
+            }
+          }
+        }
+        
+        // 更新目录链接的激活状态
+        updatedTocLinks.forEach(link => {
+          link.classList.remove('active');
+          
+          if (activeHeading && link.getAttribute('data-target') === activeHeading.id) {
+            link.classList.add('active');
+            
+            // 确保激活的链接在可视区域内
+            const tocNav = document.querySelector('.toc-nav');
+            if (tocNav && !toc.classList.contains('collapsed')) {
+              const linkRect = link.getBoundingClientRect();
+              const navRect = tocNav.getBoundingClientRect();
+              
+              if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
+                link.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center'
+                });
+              }
+            }
+          }
+        });
+      }
+
+      // 节流函数
+      function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+          const args = arguments;
+          const context = this;
+          if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+          }
+        }
+      }
+
+      // 监听滚动事件
+      window.addEventListener('scroll', throttle(updateActiveSection, 50));
+      
+      // 初始化
+      updateActiveSection();
+    }
+
+    // 响应式处理 - 如果窗口大小变化到移动端，隐藏目录
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 1200) {
+        if (toc) {
+          toc.style.display = 'none';
+        }
+      } else {
+        if (toc) {
+          toc.style.display = 'block';
+        }
+      }
+    });
+  });
+</script>

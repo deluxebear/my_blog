@@ -1,0 +1,247 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
+import SearchBox from '../../components/SearchBox.astro';
+
+// Get all posts and sort by date
+const allPosts = await Astro.glob('../../content/posts/*.{md,mdx}');
+const posts = allPosts
+  .map(post => ({
+    slug: post.file.split('/').pop()?.replace(/\.mdx?$/, '') || '',
+    data: {
+      ...post.frontmatter,
+      pubDate: new Date(post.frontmatter.pubDate)
+    },
+  }))
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+
+// Get all unique tags
+const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort();
+---
+
+<Layout title="所有文章 - 数字花园">
+  <Header />
+  
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">所有文章</h1>
+        <p class="page-description">
+          探索 {posts.length} 篇技术文章，涵盖前端开发、JavaScript、React等多个技术领域
+        </p>
+      </header>
+
+      <!-- Search Section -->
+      <section class="search-section">
+        <SearchBox />
+      </section>
+
+      <!-- Tags Filter -->
+      <section class="tags-section">
+        <h2 class="tags-title">按标签筛选</h2>
+        <div class="tags-container">
+          <button class="tag-filter active" data-tag="all">
+            全部 ({posts.length})
+          </button>
+          {allTags.map(tag => {
+            const count = posts.filter(post => post.data.tags?.includes(tag)).length;
+            return (
+              <button class="tag-filter" data-tag={tag}>
+                {tag} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <!-- Posts Grid -->
+      <section class="posts-section">
+        <div class="posts-grid" id="posts-grid">
+          {posts.map(post => (
+            <PostCard post={post} />
+          ))}
+        </div>
+        
+        <div class="no-results hidden" id="no-results">
+          <p>没有找到符合条件的文章</p>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .page-description {
+    font-size: 1.25rem;
+    color: var(--color-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .search-section {
+    margin-bottom: 3rem;
+  }
+
+  .tags-section {
+    margin-bottom: 3rem;
+  }
+
+  .tags-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .tag-filter {
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-filter:hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-hover);
+  }
+
+  .tag-filter.active {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+  }
+
+  .posts-section {
+    margin-bottom: 3rem;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  .posts-grid.hidden {
+    display: none;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-secondary);
+    font-size: 1.125rem;
+  }
+
+  .no-results.hidden {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1rem;
+    }
+
+    .posts-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .tags-container {
+      gap: 0.5rem;
+    }
+
+    .tag-filter {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tagFilters = document.querySelectorAll('.tag-filter');
+    const postsGrid = document.getElementById('posts-grid');
+    const noResults = document.getElementById('no-results');
+    
+    // Get all post cards
+    const allPosts = Array.from(postsGrid?.children || []);
+    
+    tagFilters.forEach(filter => {
+      filter.addEventListener('click', () => {
+        const selectedTag = filter.getAttribute('data-tag');
+        
+        // Update active state
+        tagFilters.forEach(f => f.classList.remove('active'));
+        filter.classList.add('active');
+        
+        // Filter posts
+        let visiblePosts = 0;
+        
+        allPosts.forEach(post => {
+          const postElement = post;
+          if (selectedTag === 'all') {
+            postElement.style.display = 'block';
+            visiblePosts++;
+          } else {
+            // Check if post has the selected tag
+            const postTags = postElement.querySelector('.post-tags')?.textContent || '';
+            if (postTags.toLowerCase().includes(selectedTag.toLowerCase())) {
+              postElement.style.display = 'block';
+              visiblePosts++;
+            } else {
+              postElement.style.display = 'none';
+            }
+          }
+        });
+        
+        // Show/hide no results message
+        if (visiblePosts === 0) {
+          noResults?.classList.remove('hidden');
+        } else {
+          noResults?.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>

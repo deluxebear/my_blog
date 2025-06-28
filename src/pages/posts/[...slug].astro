@@ -1,0 +1,375 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+
+export async function getStaticPaths() {
+  const posts = await Astro.glob('../../content/posts/*.{md,mdx}');
+  
+  return posts.map(post => ({
+    params: { 
+      slug: post.file.split('/').pop()?.replace(/\.mdx?$/, '') 
+    },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = post;
+const { title, description, tags, image, featured } = post.frontmatter;
+
+// Convert pubDate to Date object
+const pubDate = new Date(post.frontmatter.pubDate);
+
+// 计算阅读时间
+function calculateReadingTime(content: string) {
+  const wordsPerMinute = 200;
+  const words = content.split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
+}
+
+const readingTime = calculateReadingTime(String(post.compiledContent?.() || ''));
+
+// 处理 headings 数据
+let processedHeadings = headings;
+
+if (!headings || headings.length === 0) {
+  // 尝试从 post 对象的其他属性中获取
+  if (post.getHeadings) {
+    processedHeadings = await post.getHeadings();
+  } else {
+    // 手动从内容中提取标题
+    const content = post.compiledContent?.() || '';
+    const headingRegex = /<h([1-6])[^>]*id="([^"]*)"[^>]*>(.*?)<\/h[1-6]>/gi;
+    const extractedHeadings = [];
+    let match;
+    
+    while ((match = headingRegex.exec(content)) !== null) {
+      extractedHeadings.push({
+        depth: parseInt(match[1]),
+        slug: match[2],
+        text: match[3].replace(/<[^>]*>/g, '') // 移除HTML标签
+      });
+    }
+    
+    processedHeadings = extractedHeadings;
+  }
+}
+---
+
+<Layout title={title} description={description} image={image}>
+  <Header />
+  
+  <main class="main">
+    <div class="container">
+      <article class="article">
+        <header class="article-header">
+          {featured && (
+            <div class="featured-badge">
+              ⭐ 精选文章
+            </div>
+          )}
+          
+          <h1 class="article-title">{title}</h1>
+          
+          <div class="article-meta">
+            <time class="article-date" datetime={pubDate.toISOString()}>
+              {pubDate.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+            
+            <span class="article-reading-time">
+              约 {readingTime} 分钟阅读
+            </span>
+            
+            {tags && tags.length > 0 && (
+              <div class="article-tags">
+                {tags.map(tag => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {image && (
+            <div class="article-image">
+              <img src={image} alt={title} />
+            </div>
+          )}
+        </header>
+
+        <div class="article-layout">
+          <div class="article-content">
+            <Content />
+          </div>
+        </div>
+      </article>
+    </div>
+    
+    <!-- 桌面端目录导航 - 固定在右侧，移动端隐藏 -->
+    <div class="desktop-toc">
+      <TableOfContents headings={processedHeadings || []} />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+    position: relative;
+  }
+
+  .article {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .article-header {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .featured-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-accent), #e67e22);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .article-title {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    color: var(--color-secondary);
+  }
+
+  .article-date,
+  .article-reading-time {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background-color: var(--color-code-bg);
+    color: var(--color-accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .article-image {
+    margin: 2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .article-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+  }
+
+  /* 桌面端目录 - 固定在右侧 */
+  .desktop-toc {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .desktop-toc :global(.toc) {
+    pointer-events: all;
+  }
+
+  .article-layout {
+    display: block;
+    width: 100%;
+  }
+
+  .article-content {
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* 在大屏幕上，整个文章容器向左偏移，为右侧目录留出空间 */
+  @media (min-width: 1201px) {
+    .article {
+      margin-left: 0;
+      margin-right: 340px; /* 为右侧目录留出空间 */
+    }
+  }
+
+  .article-content :global(h1),
+  .article-content :global(h2),
+  .article-content :global(h3),
+  .article-content :global(h4),
+  .article-content :global(h5),
+  .article-content :global(h6) {
+    font-family: var(--font-mono);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    scroll-margin-top: 120px; /* 为固定头部留出空间 */
+  }
+
+  .article-content :global(h1) {
+    font-size: 2.5rem;
+    border-bottom: 3px solid var(--color-accent);
+    padding-bottom: 0.5rem;
+  }
+
+  .article-content :global(h2) {
+    font-size: 2rem;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  .article-content :global(h3) {
+    font-size: 1.5rem;
+    color: var(--color-accent);
+  }
+
+  .article-content :global(p) {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+
+  .article-content :global(ul),
+  .article-content :global(ol) {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+  }
+
+  .article-content :global(li) {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  .article-content :global(blockquote) {
+    background-color: var(--color-hover);
+    border-left: 4px solid var(--color-accent);
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .article-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background-color: var(--color-code-bg);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .article-content :global(th),
+  .article-content :global(td) {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .article-content :global(th) {
+    background-color: var(--color-hover);
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+
+  .article-content :global(.heading-link) {
+    opacity: 0;
+    margin-left: 0.5rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .article-content :global(h1:hover .heading-link),
+  .article-content :global(h2:hover .heading-link),
+  .article-content :global(h3:hover .heading-link),
+  .article-content :global(h4:hover .heading-link),
+  .article-content :global(h5:hover .heading-link),
+  .article-content :global(h6:hover .heading-link) {
+    opacity: 1;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 1200px) {
+    .article {
+      margin-right: 0; /* 移除右边距 */
+    }
+    
+    /* 隐藏桌面端目录 */
+    .desktop-toc {
+      display: none;
+    }
+    
+    .article-content {
+      padding: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .article-meta {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .article-title {
+      font-size: 2rem;
+    }
+
+    .article-content {
+      padding: 1.5rem;
+    }
+
+    .article-content :global(h1) {
+      font-size: 2rem;
+    }
+
+    .article-content :global(h2) {
+      font-size: 1.5rem;
+    }
+
+    .article-image img {
+      height: 250px;
+    }
+  }
+</style>

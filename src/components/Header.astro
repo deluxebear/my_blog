@@ -1,0 +1,319 @@
+---
+---
+
+<header class="header industrial-border">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- 工业风格齿轮图标 -->
+            <circle cx="30" cy="30" r="25" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <!-- 齿轮齿 -->
+            <path d="M30 5L32 10L28 10Z M55 30L50 32L50 28Z M30 55L28 50L32 50Z M5 30L10 28L10 32Z" fill="currentColor"/>
+            <path d="M47 13L49 17L43 19Z M47 47L43 41L49 43Z M13 47L17 49L19 43Z M13 13L19 17L17 11Z" fill="currentColor"/>
+            <!-- 中心圆 -->
+            <circle cx="30" cy="30" r="8" fill="currentColor"/>
+            <circle cx="30" cy="30" r="4" fill="var(--color-bg)"/>
+          </svg>
+        </div>
+        <div class="site-info">
+          <h1 class="site-title">
+            <a href="/">数字花园</a>
+          </h1>
+          <p class="site-subtitle">WEB 开发 · 创意编程</p>
+        </div>
+      </div>
+      
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="/" class="nav-link">首页</a></li>
+          <li><a href="/posts" class="nav-link">文章</a></li>
+          <li><a href="/projects" class="nav-link">项目</a></li>
+          <li><a href="/about" class="nav-link">关于</a></li>
+          <li><a href="/rss.xml" class="nav-link rss-link">RSS</a></li>
+        </ul>
+        <button id="theme-toggle" class="theme-toggle industrial-border" aria-label="切换主题">
+          <span class="theme-icon">◐</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    background-color: var(--color-card);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    overflow: hidden; /* 防止内容溢出 */
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    gap: 2rem;
+    width: 100%;
+    min-height: 80px; /* 确保最小高度 */
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0; /* 防止 logo 区域被压缩 */
+  }
+
+  .logo {
+    color: var(--color-accent);
+    transition: transform 0.3s ease;
+    flex-shrink: 0; /* 防止 logo 被压缩 */
+  }
+
+  .logo:hover {
+    transform: rotate(45deg);
+  }
+
+  .logo svg {
+    display: block; /* 确保 SVG 正确显示 */
+  }
+
+  .site-info {
+    flex-shrink: 1; /* 允许文字部分适当收缩 */
+    min-width: 0; /* 允许文字换行 */
+  }
+
+  .site-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.2;
+  }
+
+  .site-title a {
+    color: var(--color-text);
+  }
+
+  .site-subtitle {
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+    margin: 0;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-shrink: 0; /* 防止导航被过度压缩 */
+  }
+
+  .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    white-space: nowrap; /* 防止导航链接换行 */
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    border-bottom-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .rss-link {
+    color: var(--color-accent) !important;
+  }
+
+  .theme-toggle {
+    background: var(--color-card);
+    border-radius: 0;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    flex-shrink: 0; /* 防止主题切换按钮被压缩 */
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    transform: translateY(-1px);
+  }
+
+  .theme-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  /* 移动端优化 */
+  @media (max-width: 768px) {
+    .header {
+      position: sticky;
+      top: 0; /* 确保贴顶显示 */
+    }
+
+    .container {
+      padding: 0 0.75rem; /* 减少左右边距 */
+    }
+
+    .header-content {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem 0; /* 保持上下内边距 */
+      min-height: auto; /* 移动端允许自适应高度 */
+    }
+
+    .logo-section {
+      justify-content: center;
+      width: 100%;
+      gap: 0.75rem; /* 稍微减少间距 */
+    }
+
+    .logo svg {
+      width: 50px; /* 移动端稍微缩小 logo */
+      height: 50px;
+    }
+
+    .site-title {
+      font-size: 1.25rem; /* 移动端稍微缩小标题 */
+      letter-spacing: 1px;
+    }
+
+    .site-subtitle {
+      font-size: 0.7rem;
+    }
+
+    .nav {
+      width: 100%;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .nav-list {
+      gap: 0.75rem; /* 减少导航间距 */
+      flex-wrap: wrap; /* 允许换行 */
+      justify-content: center;
+      flex: 1;
+    }
+
+    .nav-link {
+      font-size: 0.75rem;
+      padding: 0.375rem 0;
+    }
+
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+    }
+
+    .theme-icon {
+      font-size: 1rem;
+    }
+  }
+
+  /* 超小屏幕优化 */
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 0.5rem;
+    }
+
+    .header-content {
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+    }
+
+    .logo-section {
+      gap: 0.5rem;
+    }
+
+    .logo svg {
+      width: 45px;
+      height: 45px;
+    }
+
+    .site-title {
+      font-size: 1.125rem;
+    }
+
+    .site-subtitle {
+      font-size: 0.65rem;
+    }
+
+    .nav-list {
+      gap: 0.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.7rem;
+    }
+
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+    }
+  }
+</style>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = themeToggle?.querySelector('.theme-icon');
+
+  function updateThemeIcon() {
+    if (themeIcon) {
+      themeIcon.textContent = document.documentElement.classList.contains('dark') ? '◑' : '◐';
+    }
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+    
+    updateThemeIcon();
+  });
+
+  // Initialize theme icon
+  updateThemeIcon();
+</script>
