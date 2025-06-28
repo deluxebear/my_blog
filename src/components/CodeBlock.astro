@@ -6,14 +6,14 @@ export interface Props {
   showLineNumbers?: boolean;
 }
 
-const { code, language = 'text', title, showLineNumbers = true } = Astro.props;
+const { code, language = "text", title, showLineNumbers = true } = Astro.props;
 
 // 处理代码，为每行添加行号
 function addLineNumbers(codeString: string) {
-  const lines = codeString.split('\n');
+  const lines = codeString.split("\n");
   return lines.map((line, index) => ({
     number: index + 1,
-    content: line
+    content: line,
   }));
 }
 
@@ -21,51 +21,31 @@ const codeLines = showLineNumbers ? addLineNumbers(code) : null;
 ---
 
 <div class="code-block industrial-border">
-  {title && (
-    <div class="code-header">
-      <span class="code-title">{title}</span>
-      <button class="copy-button" data-code={code} aria-label="复制代码">
-        <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <svg class="success-icon hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <polyline points="20,6 9,17 4,12"></polyline>
-        </svg>
-        <span class="copy-text">复制</span>
-      </button>
-    </div>
-  )}
   <div class="code-content">
-    {showLineNumbers ? (
-      <div class="code-with-lines">
-        <div class="line-numbers">
-          {codeLines?.map(line => (
-            <span class="line-number">{line.number}</span>
-          ))}
+    {
+      showLineNumbers ? (
+        <div class="code-with-lines">
+          <div class="line-numbers">
+            {codeLines?.map((line) => (
+              <span class="line-number">{line.number}</span>
+            ))}
+          </div>
+          <div class="code-lines">
+            <pre class={`language-${language}`}>
+              <code>
+                {codeLines?.map((line) => (
+                  <span class="code-line">{line.content}</span>
+                ))}
+              </code>
+            </pre>
+          </div>
         </div>
-        <div class="code-lines">
-          <pre class={`language-${language}`}><code>{codeLines?.map(line => (
-            <span class="code-line">{line.content}</span>
-          ))}</code></pre>
-        </div>
-      </div>
-    ) : (
-      <pre class={`language-${language}`}><code set:html={code}></code></pre>
-    )}
-    
-    {!title && (
-      <button class="copy-button copy-button-overlay" data-code={code} aria-label="复制代码">
-        <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <svg class="success-icon hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <polyline points="20,6 9,17 4,12"></polyline>
-        </svg>
-        <span class="copy-text">复制</span>
-      </button>
-    )}
+      ) : (
+        <pre class={`language-${language}`}>
+          <code set:html={code} />
+        </pre>
+      )
+    }
   </div>
 </div>
 
@@ -75,24 +55,6 @@ const codeLines = showLineNumbers ? addLineNumbers(code) : null;
     overflow: hidden;
     background-color: var(--color-code-bg);
     position: relative;
-  }
-
-  .code-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-bottom: var(--border-width) var(--border-style) var(--color-border);
-  }
-
-  .code-title {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--color-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
   }
 
   .code-content {
@@ -144,66 +106,6 @@ const codeLines = showLineNumbers ? addLineNumbers(code) : null;
     background: none;
     overflow-x: auto;
     border: none;
-  }
-
-  .copy-button {
-    background: none;
-    border: var(--border-width) var(--border-style) var(--color-border);
-    color: var(--color-secondary);
-    cursor: pointer;
-    padding: 0.5rem 0.75rem;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-  }
-
-  .copy-button:hover {
-    color: var(--color-accent);
-    background-color: var(--color-hover);
-    transform: translateY(-1px);
-  }
-
-  .copy-button-overlay {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    background-color: var(--color-card);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .code-content:hover .copy-button-overlay {
-    opacity: 1;
-  }
-
-  .copy-text {
-    font-size: 0.75rem;
-  }
-
-  .success-icon.hidden,
-  .copy-icon.hidden {
-    display: none;
-  }
-
-  /* 复制成功状态 */
-  .copy-button.copied {
-    color: #28a745;
-    border-color: #28a745;
-  }
-
-  .copy-button.copied .copy-text::after {
-    content: '已复制!';
-  }
-
-  .copy-button.copied .copy-text {
-    color: transparent;
   }
 
   /* Syntax highlighting styles */
@@ -273,86 +175,9 @@ const codeLines = showLineNumbers ? addLineNumbers(code) : null;
       padding: 1rem 0.75rem;
     }
 
-    .copy-button-overlay {
-      position: static;
-      opacity: 1;
-      margin: 0.75rem;
-      align-self: flex-end;
-    }
-
     .code-content {
       display: flex;
       flex-direction: column;
     }
   }
 </style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const copyButtons = document.querySelectorAll('.copy-button');
-    
-    copyButtons.forEach(button => {
-      button.addEventListener('click', async () => {
-        const code = button.getAttribute('data-code');
-        if (!code) return;
-
-        try {
-          await navigator.clipboard.writeText(code);
-          
-          // Show success state
-          const copyIcon = button.querySelector('.copy-icon');
-          const successIcon = button.querySelector('.success-icon');
-          const copyText = button.querySelector('.copy-text');
-          
-          // Add copied class for styling
-          button.classList.add('copied');
-          
-          // Toggle icons
-          copyIcon?.classList.add('hidden');
-          successIcon?.classList.remove('hidden');
-          
-          // Update text
-          if (copyText) {
-            copyText.textContent = '已复制!';
-          }
-          
-          // Reset after 2 seconds
-          setTimeout(() => {
-            button.classList.remove('copied');
-            copyIcon?.classList.remove('hidden');
-            successIcon?.classList.add('hidden');
-            if (copyText) {
-              copyText.textContent = '复制';
-            }
-          }, 2000);
-          
-        } catch (err) {
-          console.error('Failed to copy code:', err);
-          
-          // Fallback for older browsers
-          const textArea = document.createElement('textarea');
-          textArea.value = code;
-          document.body.appendChild(textArea);
-          textArea.select();
-          
-          try {
-            document.execCommand('copy');
-            // Show success feedback even for fallback
-            const copyText = button.querySelector('.copy-text');
-            if (copyText) {
-              const originalText = copyText.textContent;
-              copyText.textContent = '已复制!';
-              setTimeout(() => {
-                copyText.textContent = originalText;
-              }, 2000);
-            }
-          } catch (fallbackErr) {
-            console.error('Fallback copy failed:', fallbackErr);
-          }
-          
-          document.body.removeChild(textArea);
-        }
-      });
-    });
-  });
-</script>
