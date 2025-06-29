@@ -21,110 +21,38 @@ const { title, description, tags, image, featured } = post.frontmatter;
 // Convert pubDate to Date object
 const pubDate = new Date(post.frontmatter.pubDate);
 
-// 改进的阅读时间计算（包含代码段）
+// 改进的中文阅读时间计算
 function calculateReadingTime(content: string) {
-  if (!content || content.length === 0) {
-    return 1;
-  }
-
-  // 获取原始内容长度用于调试
-  const originalLength = content.length;
-  
-  // 提取代码块内容
-  const codeBlocks = content.match(/```[\s\S]*?```/g) || [];
-  const inlineCode = content.match(/`[^`]*`/g) || [];
-  
-  // 计算代码行数和字符数
-  let codeLines = 0;
-  let totalCodeChars = 0;
-  
-  // 统计代码块
-  codeBlocks.forEach(block => {
-    const lines = block.split('\n');
-    // 减去开始和结束的```行，但至少为0
-    codeLines += Math.max(0, lines.length - 2);
-    // 移除```标记后计算字符数
-    const codeContent = block.replace(/```[\w]*\n?/g, '').replace(/\n```$/g, '');
-    totalCodeChars += codeContent.length;
-  });
-  
-  // 统计行内代码
-  inlineCode.forEach(code => {
-    const codeContent = code.replace(/`/g, '');
-    totalCodeChars += codeContent.length;
-  });
-  
-  // 移除代码后的正文内容
-  let textContent = content
+  // 移除HTML标签和Markdown语法
+  const cleanContent = content
+    .replace(/<[^>]*>/g, '') // 移除HTML标签
     .replace(/```[\s\S]*?```/g, '') // 移除代码块
     .replace(/`[^`]*`/g, '') // 移除行内代码
-    .replace(/<[^>]*>/g, '') // 移除HTML标签
     .replace(/!\[.*?\]\(.*?\)/g, '') // 移除图片
     .replace(/\[.*?\]\(.*?\)/g, '') // 移除链接
-    .replace(/[#*_~-]/g, '') // 移除Markdown标记
+    .replace(/[#*_~`]/g, '') // 移除Markdown标记
     .replace(/\s+/g, ' ') // 合并多个空格
     .trim();
 
-  // 分别计算正文的中文字符和英文单词
-  const chineseChars = (textContent.match(/[\u4e00-\u9fa5]/g) || []).length;
-  const englishWords = textContent.split(/\s+/).filter(word => 
-    word.length > 0 && /[a-zA-Z]/.test(word)
-  ).length;
+  // 分别计算中文字符和英文单词
+  const chineseChars = (cleanContent.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const englishWords = (cleanContent.match(/[a-zA-Z]+/g) || []).length;
   
-  // 阅读速度设定（调整为更合理的数值）
-  const chineseWordsPerMinute = 400; // 中文字符/分钟
-  const englishWordsPerMinute = 200;  // 英文单词/分钟
-  const codeLinesPerMinute = 15;      // 代码行/分钟
-  const codeCharsPerMinute = 150;     // 代码字符/分钟
+  // 中文阅读速度：约300-400字/分钟，这里取350字/分钟
+  // 英文阅读速度：约200-250词/分钟，这里取225词/分钟
+  const chineseWordsPerMinute = 350;
+  const englishWordsPerMinute = 225;
   
-  // 分别计算各部分阅读时间
   const chineseReadingTime = chineseChars / chineseWordsPerMinute;
   const englishReadingTime = englishWords / englishWordsPerMinute;
-  const codeReadingTime = (codeLines / codeLinesPerMinute) + (totalCodeChars / codeCharsPerMinute);
   
-  const totalReadingTime = chineseReadingTime + englishReadingTime + codeReadingTime;
+  const totalReadingTime = chineseReadingTime + englishReadingTime;
   
-  // 调试信息（在开发环境中显示）
-  if (import.meta.env.DEV) {
-    console.log('阅读时间计算调试:', {
-      title,
-      originalLength,
-      chineseChars,
-      englishWords,
-      codeLines,
-      totalCodeChars,
-      chineseReadingTime: chineseReadingTime.toFixed(2),
-      englishReadingTime: englishReadingTime.toFixed(2),
-      codeReadingTime: codeReadingTime.toFixed(2),
-      totalReadingTime: totalReadingTime.toFixed(2),
-      finalResult: Math.max(1, Math.ceil(totalReadingTime))
-    });
-  }
-  
-  // 最少显示1分钟，但如果内容很长，应该显示更多
+  // 最少显示1分钟
   return Math.max(1, Math.ceil(totalReadingTime));
 }
 
-// 尝试获取文章的实际内容
-let articleContent = '';
-try {
-  // 尝试获取编译后的内容
-  if (post.compiledContent) {
-    articleContent = String(post.compiledContent());
-  } else if (post.rawContent) {
-    articleContent = String(post.rawContent());
-  } else if (post.body) {
-    articleContent = String(post.body);
-  } else {
-    // 如果都没有，使用一个默认的估算
-    articleContent = description || '';
-  }
-} catch (error) {
-  console.warn('获取文章内容失败:', error);
-  articleContent = description || '';
-}
-
-const readingTime = calculateReadingTime(articleContent);
+const readingTime = calculateReadingTime(String(post.compiledContent?.() || ''));
 
 // 处理 headings 数据
 let processedHeadings = headings;
