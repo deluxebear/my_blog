@@ -21,11 +21,35 @@ const { title, description, tags, image, featured } = post.frontmatter;
 // Convert pubDate to Date object
 const pubDate = new Date(post.frontmatter.pubDate);
 
-// 计算阅读时间
+// 改进的中文阅读时间计算
 function calculateReadingTime(content: string) {
-  const wordsPerMinute = 200;
-  const words = content.split(/\s+/).length;
-  return Math.ceil(words / wordsPerMinute);
+  // 移除HTML标签和Markdown语法
+  const cleanContent = content
+    .replace(/<[^>]*>/g, '') // 移除HTML标签
+    .replace(/```[\s\S]*?```/g, '') // 移除代码块
+    .replace(/`[^`]*`/g, '') // 移除行内代码
+    .replace(/!\[.*?\]\(.*?\)/g, '') // 移除图片
+    .replace(/\[.*?\]\(.*?\)/g, '') // 移除链接
+    .replace(/[#*_~`]/g, '') // 移除Markdown标记
+    .replace(/\s+/g, ' ') // 合并多个空格
+    .trim();
+
+  // 分别计算中文字符和英文单词
+  const chineseChars = (cleanContent.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const englishWords = (cleanContent.match(/[a-zA-Z]+/g) || []).length;
+  
+  // 中文阅读速度：约300-400字/分钟，这里取350字/分钟
+  // 英文阅读速度：约200-250词/分钟，这里取225词/分钟
+  const chineseWordsPerMinute = 350;
+  const englishWordsPerMinute = 225;
+  
+  const chineseReadingTime = chineseChars / chineseWordsPerMinute;
+  const englishReadingTime = englishWords / englishWordsPerMinute;
+  
+  const totalReadingTime = chineseReadingTime + englishReadingTime;
+  
+  // 最少显示1分钟
+  return Math.max(1, Math.ceil(totalReadingTime));
 }
 
 const readingTime = calculateReadingTime(String(post.compiledContent?.() || ''));
