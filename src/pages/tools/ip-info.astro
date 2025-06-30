@@ -1,0 +1,1152 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+---
+
+<Layout title="IP信息查看器 - 数字花园" description="检测当前外网IP地址，支持多个API源对比，帮助用户了解翻墙软件分配的IP地址">
+  <Header />
+  
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">IP信息查看器</h1>
+        <p class="page-description">
+          查看你的外网IP地址及对应的地理位置信息。使用翻墙软件时，不同API可能显示不同的IP地址。
+        </p>
+      </header>
+
+      <!-- 你的IP地址显示 -->
+      <section class="current-ip-section">
+        <div class="current-ip-card industrial-border">
+          <h2 class="current-ip-title">你的IP地址</h2>
+          <div class="current-ip-display" id="current-ip-display">
+            <div class="ip-value-container">
+              <div class="ip-value" id="main-ip-value">检测中...</div>
+              <button class="copy-ip-btn" id="copy-main-ip" title="复制IP地址">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="current-ip-details" id="current-ip-details">
+            <div class="detail-item">
+              <span class="detail-label">地理位置:</span>
+              <span class="detail-value" id="main-location">获取中...</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">ISP提供商:</span>
+              <span class="detail-value" id="main-isp">获取中...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- API对比结果 -->
+      <section class="api-comparison-section">
+        <div class="comparison-header">
+          <h2 class="comparison-title">多源IP对比</h2>
+          <div class="refresh-controls">
+            <button class="refresh-btn" id="refresh-all-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="23,4 23,10 17,10"></polyline>
+                <polyline points="1,20 1,14 7,14"></polyline>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+              </svg>
+              刷新检测
+            </button>
+          </div>
+        </div>
+
+        <div class="api-results-table">
+          <table class="ip-comparison-table" id="ip-comparison-table">
+            <thead>
+              <tr>
+                <th>API来源</th>
+                <th>IP地址</th>
+                <th>地理位置</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="comparison-tbody">
+              <!-- 动态生成内容 -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 功能说明 -->
+      <section class="features-section">
+        <div class="features-content industrial-border">
+          <h2 class="features-title">功能特点</h2>
+          <div class="features-grid">
+            <div class="feature-item">
+              <div class="feature-icon">🌐</div>
+              <h3>多源对比</h3>
+              <p>同时查询多个IP地址API服务，对比不同数据源的信息差异</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🔍</div>
+              <h3>翻墙检测</h3>
+              <p>帮助用户了解翻墙软件分配的IP地址，检测网络代理状态</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📍</div>
+              <h3>地理位置</h3>
+              <p>显示IP地址对应的国家、地区、城市等详细地理位置信息</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">⚡</div>
+              <h3>实时查询</h3>
+              <p>实时查询最新的IP地址信息，支持手动刷新重新检测</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🔒</div>
+              <h3>隐私保护</h3>
+              <p>所有查询在本地执行，不会存储你的IP信息</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📋</div>
+              <h3>一键复制</h3>
+              <p>支持复制IP地址，方便后续使用</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 使用说明 -->
+      <section class="usage-section">
+        <div class="usage-content industrial-border">
+          <h2 class="usage-title">使用说明</h2>
+          <div class="usage-list">
+            <div class="usage-item">
+              <strong>自动检测:</strong> 页面加载时自动检测你的当前外网IP地址及相关信息。
+            </div>
+            <div class="usage-item">
+              <strong>多源对比:</strong> 同时查询国内外多个API服务，对比不同数据源的结果。
+            </div>
+            <div class="usage-item">
+              <strong>翻墙检测:</strong> 当使用翻墙软件时，不同API可能返回不同的IP地址。
+            </div>
+            <div class="usage-item">
+              <strong>隐私说明:</strong> 本工具仅显示公开的IP信息，不会收集或存储你的个人信息。
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-family: var(--font-sans);
+  }
+
+  /* 当前IP显示区域 */
+  .current-ip-section {
+    margin-bottom: 3rem;
+  }
+
+  .current-ip-card {
+    background-color: var(--color-card);
+    padding: 2rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .current-ip-title {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .current-ip-display {
+    margin-bottom: 2rem;
+  }
+
+  /* 修改IP值容器布局 - 关键修复 */
+  .ip-value-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .ip-value {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 2px;
+    padding: 1rem 2rem;
+    background-color: var(--color-code-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    min-width: 200px;
+    flex-shrink: 0;
+  }
+
+  /* 复制按钮现在在IP地址右侧 */
+  .copy-ip-btn {
+    background: var(--color-card);
+    border: 2px solid var(--color-border);
+    color: var(--color-secondary);
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: fit-content;
+  }
+
+  .copy-ip-btn:hover {
+    color: var(--color-accent);
+    background-color: var(--color-hover);
+    transform: translateY(-1px);
+  }
+
+  .copy-ip-btn.copied {
+    color: #28a745;
+    border-color: #28a745;
+  }
+
+  .current-ip-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .detail-label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-secondary);
+  }
+
+  .detail-value {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--color-text);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  /* API对比区域 */
+  .api-comparison-section {
+    margin-bottom: 3rem;
+  }
+
+  .comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .comparison-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    margin: 0;
+  }
+
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .refresh-btn:hover {
+    background-color: var(--color-text);
+    border-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  .refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* 对比表格 */
+  .api-results-table {
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .ip-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .ip-comparison-table th {
+    background-color: var(--color-code-bg);
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--color-border);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text);
+  }
+
+  .ip-comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-secondary);
+    vertical-align: top;
+  }
+
+  .ip-comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .ip-comparison-table tr:hover {
+    background-color: var(--color-hover);
+  }
+
+  .api-source {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .api-source.domestic {
+    color: var(--color-accent);
+  }
+
+  .api-source.foreign {
+    color: #007bff;
+  }
+
+  .ip-address {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 1px;
+  }
+
+  .location-info {
+    font-family: var(--font-sans);
+    line-height: 1.4;
+  }
+
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .status-indicator.success { background-color: #28a745; }
+  .status-indicator.error { background-color: #dc3545; }
+  .status-indicator.loading { 
+    background-color: #ffc107; 
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .status-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-text.success { color: #28a745; }
+  .status-text.error { color: #dc3545; }
+  .status-text.loading { color: #ffc107; }
+
+  /* 功能特点 */
+  .features-section {
+    margin-bottom: 3rem;
+  }
+
+  .features-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .features-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-item {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .feature-item p {
+    color: var(--color-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  /* 使用说明 */
+  .usage-section {
+    margin-bottom: 2rem;
+  }
+
+  .usage-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .usage-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .usage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .usage-item {
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    color: var(--color-secondary);
+  }
+
+  .usage-item strong {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1rem;
+    }
+
+    .current-ip-card {
+      padding: 1.5rem;
+    }
+
+    /* 移动端调整IP值容器布局 */
+    .ip-value-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ip-value {
+      font-size: 1.5rem;
+      padding: 0.75rem 1rem;
+      min-width: 150px;
+      width: 100%;
+    }
+
+    .copy-ip-btn {
+      align-self: center;
+    }
+
+    .current-ip-details {
+      grid-template-columns: 1fr;
+    }
+
+    .comparison-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .ip-comparison-table {
+      font-size: 0.8rem;
+    }
+
+    .ip-comparison-table th,
+    .ip-comparison-table td {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .features-content,
+    .usage-content {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  // 改进的IP信息查看器 - 移除时区和经纬度功能
+  class SimpleIPViewer {
+    constructor() {
+      this.apis = [
+        {
+          id: 'ipip-net',
+          name: 'IPIP.net',
+          category: '国内',
+          url: 'https://myip.ipip.net/',
+          timeout: 8000,
+          type: 'text',
+          priority: 1 // 最高优先级
+        },
+        {
+          id: 'ip138',
+          name: 'IP138.com',
+          category: '国内',
+          url: 'https://2025.ip138.com/',
+          timeout: 8000,
+          type: 'html',
+          priority: 2
+        },
+        {
+          id: 'ipapi-co',
+          name: 'ipapi.co',
+          category: '国外',
+          url: 'https://ipapi.co/json/',
+          timeout: 8000,
+          type: 'json',
+          priority: 3
+        },
+        {
+          id: 'ipinfo',
+          name: 'ipinfo.io',
+          category: '国外',
+          url: 'https://ipinfo.io/json',
+          timeout: 8000,
+          type: 'json',
+          priority: 4
+        },
+        {
+          id: 'httpbin',
+          name: 'httpbin.org',
+          category: '国外',
+          url: 'https://httpbin.org/ip',
+          timeout: 8000,
+          type: 'json',
+          priority: 5
+        }
+      ];
+
+      this.results = {};
+      this.retryAttempts = new Map(); // 记录重试次数
+      this.initElements();
+      this.bindEvents();
+      this.startDetection();
+    }
+
+    initElements() {
+      this.mainIpValue = document.getElementById('main-ip-value');
+      this.mainLocation = document.getElementById('main-location');
+      this.mainIsp = document.getElementById('main-isp');
+      this.copyMainIpBtn = document.getElementById('copy-main-ip');
+      this.refreshAllBtn = document.getElementById('refresh-all-btn');
+      this.comparisonTbody = document.getElementById('comparison-tbody');
+    }
+
+    bindEvents() {
+      this.refreshAllBtn.addEventListener('click', () => {
+        this.startDetection();
+      });
+
+      this.copyMainIpBtn.addEventListener('click', () => {
+        this.copyMainIP();
+      });
+    }
+
+    async startDetection() {
+      this.refreshAllBtn.disabled = true;
+      this.results = {};
+      this.retryAttempts.clear();
+      
+      // 重置显示
+      this.mainIpValue.textContent = '检测中...';
+      this.mainLocation.textContent = '获取中...';
+      this.mainIsp.textContent = '获取中...';
+
+      // 创建表格行
+      this.createTableRows();
+
+      // 按优先级排序API，优先查询可靠的API
+      const sortedApis = [...this.apis].sort((a, b) => a.priority - b.priority);
+      
+      // 分批查询API以避免同时发送太多请求
+      const batchSize = 2;
+      for (let i = 0; i < sortedApis.length; i += batchSize) {
+        const batch = sortedApis.slice(i, i + batchSize);
+        const promises = batch.map(api => this.queryAPIWithRetry(api));
+        
+        try {
+          await Promise.allSettled(promises);
+          // 每批之间稍作延迟
+          if (i + batchSize < sortedApis.length) {
+            await this.delay(500);
+          }
+        } catch (error) {
+          console.error('批量查询过程中发生错误:', error);
+        }
+      }
+
+      this.updateMainDisplay();
+      this.refreshAllBtn.disabled = false;
+    }
+
+    async queryAPIWithRetry(api, maxRetries = 2) {
+      const retryKey = api.id;
+      let currentAttempt = this.retryAttempts.get(retryKey) || 0;
+      
+      try {
+        await this.queryAPI(api);
+      } catch (error) {
+        console.error(`API ${api.id} 第${currentAttempt + 1}次查询失败:`, error);
+        
+        // 对于403错误，增加重试延迟
+        if (error.message.includes('403') && currentAttempt < maxRetries) {
+          this.retryAttempts.set(retryKey, currentAttempt + 1);
+          
+          // 更新状态显示为重试中
+          this.updateTableRow(api.id, 'loading', null, `重试中 (${currentAttempt + 1}/${maxRetries})`);
+          
+          // 等待一段时间后重试
+          const retryDelay = api.retryDelay || 1000;
+          await this.delay(retryDelay * (currentAttempt + 1)); // 递增延迟
+          
+          return this.queryAPIWithRetry(api, maxRetries);
+        }
+        
+        // 如果是其他错误或重试次数已达上限，记录最终失败
+        this.results[api.id] = {
+          success: false,
+          error: error.message,
+          attempts: currentAttempt + 1
+        };
+        
+        this.updateTableRow(api.id, 'error', null, this.getErrorMessage(error.message, currentAttempt + 1));
+      }
+    }
+
+    getErrorMessage(originalError, attempts) {
+      if (originalError.includes('403')) {
+        return attempts > 1 ? `访问受限 (已重试${attempts}次)` : '访问受限';
+      } else if (originalError.includes('timeout') || originalError.includes('超时')) {
+        return '请求超时';
+      } else if (originalError.includes('CORS')) {
+        return '跨域限制';
+      } else {
+        return '查询失败';
+      }
+    }
+
+    delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    createTableRows() {
+      this.comparisonTbody.innerHTML = '';
+      
+      // 按优先级排序显示
+      const sortedApis = [...this.apis].sort((a, b) => a.priority - b.priority);
+      
+      sortedApis.forEach(api => {
+        const row = document.createElement('tr');
+        row.id = `api-row-${api.id}`;
+        
+        row.innerHTML = `
+          <td class="api-source ${api.category === '国内' ? 'domestic' : 'foreign'}">
+            ${api.name}
+            <br><small>(${api.category})</small>
+          </td>
+          <td class="ip-address" id="ip-${api.id}">检测中...</td>
+          <td class="location-info" id="location-${api.id}">获取中...</td>
+          <td class="api-status">
+            <div class="status-indicator loading" id="status-${api.id}"></div>
+            <span class="status-text loading" id="status-text-${api.id}">查询中</span>
+          </td>
+        `;
+        
+        this.comparisonTbody.appendChild(row);
+      });
+    }
+
+    async queryAPI(api) {
+      const startTime = Date.now();
+      
+      try {
+        const response = await this.fetchWithTimeout(api.url, api.timeout);
+        const endTime = Date.now();
+        const responseTime = endTime - startTime;
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        let data;
+        if (api.type === 'html') {
+          const htmlText = await response.text();
+          data = this.parseIP138HTML(htmlText);
+        } else if (api.type === 'text') {
+          const textContent = await response.text();
+          data = this.parseIPIPNetText(textContent);
+        } else {
+          data = await response.json();
+        }
+        
+        const standardizedData = this.standardizeData(api.id, data);
+        
+        this.results[api.id] = {
+          success: true,
+          data: standardizedData,
+          responseTime: responseTime
+        };
+        
+        this.updateTableRow(api.id, 'success', standardizedData);
+        
+      } catch (error) {
+        throw error; // 重新抛出错误，让重试机制处理
+      }
+    }
+
+    // 解析IPIP.net的文本响应
+    parseIPIPNetText(textContent) {
+      try {
+        // 解析格式：当前 IP：14.153.129.147  来自于：中国 广东 深圳  电信
+        const ipMatch = textContent.match(/当前\s*IP[：:]\s*(\d+\.\d+\.\d+\.\d+)/);
+        const ip = ipMatch ? ipMatch[1] : '';
+        
+        const locationMatch = textContent.match(/来自于[：:]\s*([^\n\r]+)/);
+        let location = '';
+        let isp = '';
+        
+        if (locationMatch) {
+          const locationText = locationMatch[1].trim();
+          // 分离地理位置和ISP信息
+          const parts = locationText.split(/\s+/);
+          if (parts.length > 0) {
+            // 最后一个通常是ISP
+            isp = parts[parts.length - 1];
+            // 其余的是地理位置
+            location = parts.slice(0, -1).join(' ');
+          }
+        }
+        
+        return {
+          ip: ip,
+          location: location,
+          isp: isp
+        };
+        
+      } catch (error) {
+        console.error('解析IPIP.net文本失败:', error);
+        throw new Error('文本解析失败');
+      }
+    }
+
+    // 解析IP138的HTML响应
+    parseIP138HTML(htmlText) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        
+        const title = doc.querySelector('title')?.textContent || '';
+        const ipMatch = title.match(/您的IP地址是：(\d+\.\d+\.\d+\.\d+)/);
+        const ip = ipMatch ? ipMatch[1] : '';
+        
+        const viewDiv = doc.querySelector('.view');
+        let location = '';
+        
+        if (viewDiv) {
+          const spans = viewDiv.querySelectorAll('span');
+          for (let span of spans) {
+            const text = span.textContent || '';
+            if (text.includes('来自：')) {
+              location = text.replace('来自：', '').trim();
+              break;
+            }
+          }
+        }
+        
+        if (!location) {
+          const bodyText = doc.body.textContent || '';
+          const locationMatch = bodyText.match(/来自：([^<\n]+)/);
+          if (locationMatch) {
+            location = locationMatch[1].trim();
+          }
+        }
+        
+        return {
+          ip: ip,
+          location: location
+        };
+        
+      } catch (error) {
+        console.error('解析IP138 HTML失败:', error);
+        throw new Error('HTML解析失败');
+      }
+    }
+
+    async fetchWithTimeout(url, timeout) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          mode: 'cors',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error('请求超时');
+        }
+        throw error;
+      }
+    }
+
+    standardizeData(apiId, rawData) {
+      const standardized = {
+        ip: '',
+        country: '',
+        region: '',
+        city: '',
+        isp: '',
+        org: ''
+      };
+
+      switch (apiId) {
+        case 'ipip-net':
+          standardized.ip = rawData.ip || '';
+          standardized.isp = rawData.isp || '';
+          if (rawData.location) {
+            // 解析地理位置信息，例如：中国 广东 深圳
+            const locationParts = rawData.location.split(/\s+/);
+            if (locationParts.length >= 1) {
+              standardized.country = locationParts[0] || '';
+            }
+            if (locationParts.length >= 2) {
+              standardized.region = locationParts[1] || '';
+            }
+            if (locationParts.length >= 3) {
+              standardized.city = locationParts[2] || '';
+            }
+          }
+          break;
+          
+        case 'ip138':
+          standardized.ip = rawData.ip || '';
+          if (rawData.location) {
+            const locationParts = rawData.location.split(' ');
+            if (locationParts.length >= 2) {
+              standardized.isp = locationParts[locationParts.length - 1];
+              const geoLocation = locationParts.slice(0, -1).join(' ');
+              
+              if (geoLocation.includes('中国')) {
+                standardized.country = '中国';
+                const remaining = geoLocation.replace('中国', '');
+                
+                if (remaining.includes('广东')) {
+                  standardized.region = '广东';
+                  standardized.city = remaining.replace('广东', '');
+                } else if (remaining.includes('北京')) {
+                  standardized.region = '北京';
+                  standardized.city = '北京';
+                } else if (remaining.includes('上海')) {
+                  standardized.region = '上海';
+                  standardized.city = '上海';
+                } else {
+                  standardized.city = remaining;
+                }
+              } else {
+                standardized.country = geoLocation;
+              }
+            } else {
+              standardized.country = rawData.location;
+            }
+          }
+          break;
+          
+        case 'ipapi-co':
+          standardized.ip = rawData.ip || '';
+          standardized.country = rawData.country_name || '';
+          standardized.region = rawData.region || '';
+          standardized.city = rawData.city || '';
+          standardized.isp = rawData.org || '';
+          standardized.org = rawData.org || '';
+          break;
+          
+        case 'ipinfo':
+          standardized.ip = rawData.ip || '';
+          standardized.country = rawData.country || '';
+          standardized.region = rawData.region || '';
+          standardized.city = rawData.city || '';
+          standardized.isp = rawData.org || '';
+          standardized.org = rawData.org || '';
+          break;
+          
+        case 'httpbin':
+          standardized.ip = rawData.origin || '';
+          // httpbin只返回IP地址，其他信息为空
+          break;
+      }
+
+      return standardized;
+    }
+
+    updateTableRow(apiId, status, data, errorMessage) {
+      const ipElement = document.getElementById(`ip-${apiId}`);
+      const locationElement = document.getElementById(`location-${apiId}`);
+      const statusIndicator = document.getElementById(`status-${apiId}`);
+      const statusText = document.getElementById(`status-text-${apiId}`);
+      
+      if (!ipElement || !locationElement || !statusIndicator || !statusText) {
+        return;
+      }
+      
+      statusIndicator.className = `status-indicator ${status}`;
+      statusText.className = `status-text ${status}`;
+      
+      if (status === 'success' && data) {
+        ipElement.textContent = data.ip || '未知';
+        
+        const location = [data.city, data.region, data.country]
+          .filter(v => v && v !== '未知')
+          .join(', ') || '未知';
+        locationElement.textContent = location;
+        
+        statusText.textContent = '成功';
+      } else if (status === 'error') {
+        ipElement.textContent = '获取失败';
+        locationElement.textContent = errorMessage || '查询失败';
+        statusText.textContent = '失败';
+      } else if (status === 'loading') {
+        ipElement.textContent = '检测中...';
+        locationElement.textContent = errorMessage || '获取中...';
+        statusText.textContent = errorMessage || '查询中';
+      }
+    }
+
+    updateMainDisplay() {
+      const successfulResults = Object.values(this.results).filter(r => r.success);
+      
+      if (successfulResults.length === 0) {
+        this.mainIpValue.textContent = '检测失败';
+        this.mainLocation.textContent = '无法获取';
+        this.mainIsp.textContent = '无法获取';
+        return;
+      }
+
+      // 优先使用IPIP.net的结果，如果失败则使用其他成功的结果
+      let primaryResult = this.results['ipip-net'];
+      if (!primaryResult || !primaryResult.success) {
+        // 按优先级选择第一个成功的结果
+        const sortedResults = Object.entries(this.results)
+          .filter(([_, result]) => result.success)
+          .sort(([aId], [bId]) => {
+            const aApi = this.apis.find(api => api.id === aId);
+            const bApi = this.apis.find(api => api.id === bId);
+            return (aApi?.priority || 999) - (bApi?.priority || 999);
+          });
+        
+        if (sortedResults.length > 0) {
+          primaryResult = sortedResults[0][1];
+        }
+      }
+
+      if (primaryResult && primaryResult.success) {
+        const data = primaryResult.data;
+        
+        // 更新主显示
+        this.mainIpValue.textContent = data.ip || '未知';
+        
+        const location = [data.city, data.region, data.country]
+          .filter(v => v && v !== '未知')
+          .join(', ') || '未知';
+        this.mainLocation.textContent = location;
+        
+        this.mainIsp.textContent = data.isp || '未知';
+      } else {
+        // 如果没有成功的结果，显示失败信息
+        this.mainIpValue.textContent = '检测失败';
+        this.mainLocation.textContent = '无法获取';
+        this.mainIsp.textContent = '无法获取';
+      }
+    }
+
+    async copyMainIP() {
+      const ip = this.mainIpValue.textContent;
+      
+      if (!ip || ip === '未知' || ip === '检测中...' || ip === '检测失败') return;
+
+      try {
+        await navigator.clipboard.writeText(ip);
+        this.showCopyFeedback(this.copyMainIpBtn);
+      } catch (error) {
+        this.fallbackCopy(ip, this.copyMainIpBtn);
+      }
+    }
+
+    fallbackCopy(text, button) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        this.showCopyFeedback(button);
+      } catch (error) {
+        console.error('复制失败:', error);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+
+    showCopyFeedback(button) {
+      const originalHTML = button.innerHTML;
+      
+      button.classList.add('copied');
+      button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+      `;
+      
+      setTimeout(() => {
+        button.classList.remove('copied');
+        button.innerHTML = originalHTML;
+      }, 2000);
+    }
+  }
+
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', () => {
+    new SimpleIPViewer();
+  });
+</script>

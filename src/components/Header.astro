@@ -21,9 +21,8 @@ import logo from "../assets/logo.png";
         <ul class="nav-list">
           <li><a href="/" class="nav-link" data-page="home">首页</a></li>
           <li><a href="/posts" class="nav-link" data-page="posts">文章</a></li>
-          <li>
-            <a href="/projects" class="nav-link" data-page="projects">项目</a>
-          </li>
+          <li><a href="/tools" class="nav-link" data-page="tools">工具</a></li>
+          <li><a href="/projects" class="nav-link" data-page="projects">项目</a></li>
           <li><a href="/about" class="nav-link" data-page="about">关于</a></li>
           <li>
             <a href="/rss.xml" class="nav-link rss-link" data-page="rss">RSS</a>
@@ -49,7 +48,7 @@ import logo from "../assets/logo.png";
     z-index: 100;
     backdrop-filter: blur(10px);
     width: 100%;
-    overflow: hidden; /* 防止内容溢出 */
+    overflow: hidden; /* 恢复为 hidden */
   }
 
   .container {
@@ -66,30 +65,33 @@ import logo from "../assets/logo.png";
     padding: 1rem 0;
     gap: 2rem;
     width: 100%;
-    min-height: 80px; /* 确保最小高度 */
+    min-height: 80px;
   }
 
   .logo-section {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-shrink: 0; /* 防止 logo 区域被压缩 */
+    flex-shrink: 0;
   }
 
   .logo {
-    flex-shrink: 0; /* 防止 logo 被压缩 */
+    color: var(--color-accent);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
   }
 
-  .logo img {
-    display: block; /* 确保图片正确显示 */
-    background: transparent; /* 透明背景 */
-    border: none; /* 去掉边框 */
-    border-radius: 0; /* 去掉圆角 */
+  .logo:hover {
+    transform: rotate(45deg);
+  }
+
+  .logo svg {
+    display: block;
   }
 
   .site-info {
-    flex-shrink: 1; /* 允许文字部分适当收缩 */
-    min-width: 0; /* 允许文字换行 */
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .site-title {
@@ -120,7 +122,7 @@ import logo from "../assets/logo.png";
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    flex-shrink: 0; /* 防止导航被过度压缩 */
+    flex-shrink: 0;
   }
 
   .nav-list {
@@ -129,6 +131,7 @@ import logo from "../assets/logo.png";
     gap: 1.5rem;
     margin: 0;
     padding: 0;
+    align-items: center;
   }
 
   .nav-link {
@@ -140,7 +143,7 @@ import logo from "../assets/logo.png";
     text-decoration: none;
     transition: all 0.3s ease;
     font-size: 0.875rem;
-    white-space: nowrap; /* 防止导航链接换行 */
+    white-space: nowrap;
     position: relative;
     color: var(--color-secondary);
     border: 2px solid transparent;
@@ -225,7 +228,7 @@ import logo from "../assets/logo.png";
     justify-content: center;
     transition: all 0.2s ease;
     font-family: var(--font-mono);
-    flex-shrink: 0; /* 防止主题切换按钮被压缩 */
+    flex-shrink: 0;
   }
 
   .theme-toggle:hover {
@@ -243,33 +246,33 @@ import logo from "../assets/logo.png";
   @media (max-width: 768px) {
     .header {
       position: sticky;
-      top: 0; /* 确保贴顶显示 */
+      top: 0;
     }
 
     .container {
-      padding: 0 0.75rem; /* 减少左右边距 */
+      padding: 0 0.75rem;
     }
 
     .header-content {
       flex-direction: column;
       gap: 1rem;
-      padding: 1rem 0; /* 保持上下内边距 */
-      min-height: auto; /* 移动端允许自适应高度 */
+      padding: 1rem 0;
+      min-height: auto;
     }
 
     .logo-section {
       justify-content: center;
       width: 100%;
-      gap: 0.75rem; /* 稍微减少间距 */
+      gap: 0.75rem;
     }
 
-    .logo img {
-      width: 50px; /* 移动端稍微缩小 logo */
+    .logo svg {
+      width: 50px;
       height: 50px;
     }
 
     .site-title {
-      font-size: 1.25rem; /* 移动端稍微缩小标题 */
+      font-size: 1.25rem;
       letter-spacing: 1px;
     }
 
@@ -284,8 +287,8 @@ import logo from "../assets/logo.png";
     }
 
     .nav-list {
-      gap: 0.5rem; /* 减少导航间距 */
-      flex-wrap: wrap; /* 允许换行 */
+      gap: 0.5rem;
+      flex-wrap: wrap;
       justify-content: center;
       flex: 1;
     }
@@ -409,8 +412,12 @@ import logo from "../assets/logo.png";
         link.classList.add("active");
       }
       // 匹配文章页面（包括文章列表和具体文章）
-      else if (currentPath.startsWith("/posts") && page === "posts") {
-        link.classList.add("active");
+      else if (currentPath.startsWith('/posts') && page === 'posts') {
+        link.classList.add('active');
+      }
+      // 匹配工具页面
+      else if (currentPath.startsWith('/tools') && page === 'tools') {
+        link.classList.add('active');
       }
       // 匹配项目页面
       else if (currentPath.startsWith("/projects") && page === "projects") {
