@@ -594,7 +594,7 @@ import Header from '../../components/Header.astro';
 </style>
 
 <script>
-  // 改进的IP信息查看器 - 增强错误处理和API管理
+  // 改进的IP信息查看器 - 移除ip-api.com
   class SimpleIPViewer {
     constructor() {
       this.apis = [
@@ -633,16 +633,6 @@ import Header from '../../components/Header.astro';
           timeout: 8000,
           type: 'json',
           priority: 4
-        },
-        {
-          id: 'ip-api',
-          name: 'ip-api.com',
-          category: '国外',
-          url: 'https://ip-api.com/json/',
-          timeout: 10000,
-          type: 'json',
-          priority: 5, // 降低优先级，因为容易出现403错误
-          retryDelay: 2000 // 添加重试延迟
         }
       ];
 
@@ -947,18 +937,6 @@ import Header from '../../components/Header.astro';
           standardized.longitude = rawData.longitude || '';
           standardized.timezone = rawData.timezone || '';
           standardized.isp = rawData.org || '';
-          standardized.org = rawData.org || '';
-          break;
-          
-        case 'ip-api':
-          standardized.ip = rawData.query || '';
-          standardized.country = rawData.country || '';
-          standardized.region = rawData.regionName || '';
-          standardized.city = rawData.city || '';
-          standardized.latitude = rawData.lat || '';
-          standardized.longitude = rawData.lon || '';
-          standardized.timezone = rawData.timezone || '';
-          standardized.isp = rawData.isp || '';
           standardized.org = rawData.org || '';
           break;
           
