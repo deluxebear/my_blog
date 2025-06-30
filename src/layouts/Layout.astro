@@ -11,6 +11,9 @@ const {
   image = "/og-image.jpg",
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Import noise texture
+import noiseTexture from '../assets/noise.webp';
 ---
 
 <!doctype html>
@@ -125,7 +128,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   </body>
 </html>
 
-<style is:global>
+<style is:global define:vars={{ noiseTexture }}>
   :root {
     /* 复古工业风格配色 */
     --color-bg: #d4c4a0;
@@ -147,6 +150,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     --border-width: 1px;
     --border-style: solid;
+
+    /* 噪点纹理变量 */
+    --noise-texture: var(--noiseTexture);
   }
 
   .dark {
@@ -174,6 +180,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
   body {
     background-color: var(--color-bg);
+    /* 添加噪点纹理背景 */
+    background-image: url(var(--noise-texture));
+    background-repeat: repeat;
+    background-size: 200px 200px; /* 调整纹理大小 */
+    background-attachment: fixed; /* 固定背景，滚动时不移动 */
     color: var(--color-text);
     line-height: 1.6;
     font-size: 16px;
@@ -183,6 +194,46 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       color 0.3s ease;
     font-weight: 400;
     overflow-x: hidden; /* 防止整个页面横向滚动 */
+    position: relative;
+  }
+
+  /* 为深色模式调整噪点纹理的混合模式 */
+  .dark body {
+    background-blend-mode: multiply;
+    background-color: var(--color-bg);
+  }
+
+  /* 为了确保内容在纹理上清晰可见，给主要内容区域添加轻微的背景 */
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 为卡片和重要内容区域添加轻微的背景增强 */
+  .industrial-border,
+  .post-card,
+  .project-card,
+  .article-content,
+  .hero-stats,
+  .code-snippet {
+    position: relative;
+    backdrop-filter: blur(0.5px); /* 轻微模糊背景纹理 */
+  }
+
+  /* 确保卡片背景在纹理上更突出 */
+  .post-card,
+  .project-card {
+    background-color: var(--color-card);
+    box-shadow: 
+      var(--shadow-md),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* 内阴影增强边界 */
+  }
+
+  .article-content {
+    background-color: var(--color-card);
+    box-shadow: 
+      var(--shadow-sm),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
   h1,
@@ -720,6 +771,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     .code-container pre {
       padding: 1rem 0.75rem;
       font-size: 0.875rem;
+    }
+
+    /* 移动端背景纹理调整 */
+    body {
+      background-size: 150px 150px; /* 移动端使用更小的纹理 */
     }
   }
 </style>
