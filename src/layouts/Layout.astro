@@ -239,14 +239,89 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       0 0 0 1px rgba(0, 0, 0, 0.03);
   }
 
-  /* 为头部和重要区域添加轻微的背景增强 */
+  /* Header 专用的致密纹理背景 - 与主体内容保持差异性 */
   .header {
-    backdrop-filter: blur(1px) saturate(1.1); /* 增强头部背景 */
-    background-color: rgba(232, 220, 192, 0.95); /* 半透明背景 */
+    position: relative;
+    /* 为 header 添加独特的纹理背景 */
+    background-image: 
+      url('/src/assets/noise.webp'),
+      linear-gradient(135deg, transparent 48%, rgba(139, 69, 19, 0.03) 50%, transparent 52%),
+      linear-gradient(45deg, transparent 48%, rgba(139, 69, 19, 0.02) 50%, transparent 52%);
+    background-size: 
+      60px 60px,    /* 比主体更小更致密的噪点纹理 */
+      8px 8px,      /* 对角线纹理1 */
+      12px 12px;    /* 对角线纹理2 */
+    background-repeat: repeat;
+    background-attachment: fixed;
+    background-color: rgba(232, 220, 192, 0.98); /* 稍微增强不透明度 */
+    backdrop-filter: blur(1px) saturate(1.1);
+    /* 添加细微的内阴影增强纹理感 */
+    box-shadow: 
+      var(--shadow-md),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    /* 添加边框增强分离感 */
+    border-bottom: 2px solid var(--color-border);
   }
 
+  /* 深色模式下的 Header 纹理 */
   .dark .header {
-    background-color: rgba(58, 48, 32, 0.95);
+    background-image: 
+      url('/src/assets/noise.webp'),
+      linear-gradient(135deg, transparent 48%, rgba(205, 133, 63, 0.04) 50%, transparent 52%),
+      linear-gradient(45deg, transparent 48%, rgba(205, 133, 63, 0.03) 50%, transparent 52%),
+      linear-gradient(90deg, transparent 49%, rgba(0, 0, 0, 0.02) 50%, transparent 51%);
+    background-size: 
+      60px 60px,    /* 致密噪点 */
+      8px 8px,      /* 对角线纹理1 */
+      12px 12px,    /* 对角线纹理2 */
+      6px 6px;      /* 水平线纹理 */
+    background-color: rgba(58, 48, 32, 0.98);
+    background-blend-mode: multiply, overlay, soft-light, normal;
+    box-shadow: 
+      var(--shadow-md),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    border-bottom-color: var(--color-border);
+  }
+
+  /* Header 内容的额外增强 */
+  .header .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* 为 Header 添加轻微的纹理动画效果 */
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.02) 1px, transparent 1px),
+      radial-gradient(circle at 75% 75%, rgba(139, 69, 19, 0.02) 1px, transparent 1px);
+    background-size: 16px 16px, 20px 20px;
+    background-position: 0 0, 8px 8px;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: headerTextureShift 60s linear infinite;
+  }
+
+  .dark .header::before {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(205, 133, 63, 0.03) 1px, transparent 1px),
+      radial-gradient(circle at 75% 75%, rgba(205, 133, 63, 0.03) 1px, transparent 1px);
+  }
+
+  /* 轻微的纹理动画 */
+  @keyframes headerTextureShift {
+    0% { transform: translateX(0) translateY(0); }
+    25% { transform: translateX(1px) translateY(0); }
+    50% { transform: translateX(1px) translateY(1px); }
+    75% { transform: translateX(0) translateY(1px); }
+    100% { transform: translateX(0) translateY(0); }
   }
 
   /* 为搜索框等交互元素增强背景 */
@@ -806,6 +881,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         60px 60px,
         3px 3px; /* 移动端的对角线纹理也更小 */
     }
+
+    /* 移动端 Header 纹理调整 */
+    .header {
+      background-size: 
+        45px 45px,    /* 移动端更致密的噪点 */
+        6px 6px,      
+        9px 9px;      
+    }
+
+    .dark .header {
+      background-size: 
+        45px 45px,    
+        6px 6px,      
+        9px 9px,      
+        4px 4px;      
+    }
   }
 
   /* 超小屏幕的纹理优化 */
@@ -818,6 +909,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       background-size: 
         50px 50px,
         2px 2px;
+    }
+
+    /* 超小屏幕 Header 纹理 */
+    .header {
+      background-size: 
+        35px 35px,    /* 超小屏幕最致密的噪点 */
+        4px 4px,      
+        6px 6px;      
+    }
+
+    .dark .header {
+      background-size: 
+        35px 35px,    
+        4px 4px,      
+        6px 6px,      
+        3px 3px;      
     }
   }
 </style>
