@@ -1,0 +1,1268 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+---
+
+<Layout title="URL编解码工具 - 数字花园" description="URL编码和解码工具，支持中文URL编码、批量处理和格式验证">
+  <Header />
+  
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">URL编解码工具</h1>
+        <p class="page-description">
+          专业的URL编码和解码工具，支持中文字符、批量处理和格式验证
+        </p>
+      </header>
+
+      <!-- URL编解码主界面 -->
+      <section class="encoder-section">
+        <div class="encoder-card industrial-border">
+          <!-- 操作模式选择 -->
+          <div class="mode-selector">
+            <div class="mode-tabs">
+              <button class="mode-tab active" data-mode="single" id="single-mode-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                单个处理
+              </button>
+              <button class="mode-tab" data-mode="batch" id="batch-mode-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  <path d="M9 14l2 2 4-4"></path>
+                </svg>
+                批量处理
+              </button>
+            </div>
+          </div>
+
+          <!-- 单个处理模式 -->
+          <div class="processing-mode" id="single-mode">
+            <div class="input-section">
+              <div class="input-group">
+                <label for="url-input" class="input-label">输入URL或文本:</label>
+                <textarea 
+                  id="url-input" 
+                  class="url-textarea" 
+                  placeholder="请输入需要编码或解码的URL或文本..."
+                  rows="4"
+                ></textarea>
+                <div class="input-info">
+                  <span class="char-count" id="input-char-count">0 字符</span>
+                  <span class="url-status" id="url-status"></span>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                <button class="action-btn encode-btn" id="encode-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="16,18 22,12 16,6"></polyline>
+                    <polyline points="8,6 2,12 8,18"></polyline>
+                  </svg>
+                  URL编码
+                </button>
+                <button class="action-btn decode-btn" id="decode-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="8,18 2,12 8,6"></polyline>
+                    <polyline points="16,6 22,12 16,18"></polyline>
+                  </svg>
+                  URL解码
+                </button>
+                <button class="action-btn clear-btn" id="clear-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="M19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+                  </svg>
+                  清空
+                </button>
+              </div>
+            </div>
+
+            <div class="output-section">
+              <div class="output-group">
+                <label for="url-output" class="output-label">
+                  处理结果:
+                  <button class="copy-result-btn" id="copy-result-btn" title="复制结果">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                </label>
+                <textarea 
+                  id="url-output" 
+                  class="url-textarea output-textarea" 
+                  placeholder="处理结果将显示在这里..."
+                  rows="4"
+                  readonly
+                ></textarea>
+                <div class="output-info">
+                  <span class="char-count" id="output-char-count">0 字符</span>
+                  <span class="validation-status" id="validation-status"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 批量处理模式 -->
+          <div class="processing-mode hidden" id="batch-mode">
+            <div class="batch-input-section">
+              <div class="input-group">
+                <label for="batch-input" class="input-label">批量输入 (每行一个URL):</label>
+                <textarea 
+                  id="batch-input" 
+                  class="url-textarea batch-textarea" 
+                  placeholder="请输入多个URL，每行一个..."
+                  rows="8"
+                ></textarea>
+                <div class="batch-info">
+                  <span class="line-count" id="batch-line-count">0 行</span>
+                  <span class="valid-count" id="batch-valid-count">0 个有效URL</span>
+                </div>
+              </div>
+
+              <div class="batch-actions">
+                <button class="action-btn batch-encode-btn" id="batch-encode-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="16,18 22,12 16,6"></polyline>
+                    <polyline points="8,6 2,12 8,18"></polyline>
+                  </svg>
+                  批量编码
+                </button>
+                <button class="action-btn batch-decode-btn" id="batch-decode-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="8,18 2,12 8,6"></polyline>
+                    <polyline points="16,6 22,12 16,18"></polyline>
+                  </svg>
+                  批量解码
+                </button>
+                <button class="action-btn clear-batch-btn" id="clear-batch-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="M19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+                  </svg>
+                  清空
+                </button>
+              </div>
+            </div>
+
+            <div class="batch-output-section">
+              <div class="output-group">
+                <label for="batch-output" class="output-label">
+                  批量处理结果:
+                  <button class="copy-batch-btn" id="copy-batch-btn" title="复制所有结果">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                </label>
+                <textarea 
+                  id="batch-output" 
+                  class="url-textarea batch-textarea output-textarea" 
+                  placeholder="批量处理结果将显示在这里..."
+                  rows="8"
+                  readonly
+                ></textarea>
+                <div class="batch-result-info">
+                  <span class="processed-count" id="processed-count">已处理: 0</span>
+                  <span class="success-count" id="success-count">成功: 0</span>
+                  <span class="error-count" id="error-count">失败: 0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 编码选项 -->
+          <div class="encoding-options">
+            <h3 class="options-title">编码选项</h3>
+            <div class="options-grid">
+              <label class="option-item">
+                <input type="radio" name="encoding-type" value="standard" checked />
+                <span class="option-text">标准编码</span>
+                <span class="option-desc">RFC 3986 标准</span>
+              </label>
+              <label class="option-item">
+                <input type="radio" name="encoding-type" value="component" />
+                <span class="option-text">组件编码</span>
+                <span class="option-desc">encodeURIComponent</span>
+              </label>
+              <label class="option-item">
+                <input type="checkbox" id="preserve-chinese" />
+                <span class="option-text">保留中文可读性</span>
+                <span class="option-desc">仅编码特殊字符</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 常用示例 -->
+      <section class="examples-section">
+        <div class="examples-content industrial-border">
+          <h2 class="examples-title">常用示例</h2>
+          <div class="examples-grid">
+            <div class="example-item">
+              <h3 class="example-title">中文URL编码</h3>
+              <div class="example-demo">
+                <div class="example-input">
+                  <strong>原始:</strong> https://example.com/搜索?q=测试
+                </div>
+                <div class="example-output">
+                  <strong>编码:</strong> https://example.com/%E6%90%9C%E7%B4%A2?q=%E6%B5%8B%E8%AF%95
+                </div>
+              </div>
+              <button class="try-example-btn" data-input="https://example.com/搜索?q=测试">试试这个</button>
+            </div>
+
+            <div class="example-item">
+              <h3 class="example-title">特殊字符编码</h3>
+              <div class="example-demo">
+                <div class="example-input">
+                  <strong>原始:</strong> https://example.com/path with spaces & symbols!
+                </div>
+                <div class="example-output">
+                  <strong>编码:</strong> https://example.com/path%20with%20spaces%20%26%20symbols!
+                </div>
+              </div>
+              <button class="try-example-btn" data-input="https://example.com/path with spaces & symbols!">试试这个</button>
+            </div>
+
+            <div class="example-item">
+              <h3 class="example-title">查询参数编码</h3>
+              <div class="example-demo">
+                <div class="example-input">
+                  <strong>原始:</strong> ?name=张三&age=25&city=北京
+                </div>
+                <div class="example-output">
+                  <strong>编码:</strong> ?name=%E5%BC%A0%E4%B8%89&age=25&city=%E5%8C%97%E4%BA%AC
+                </div>
+              </div>
+              <button class="try-example-btn" data-input="?name=张三&age=25&city=北京">试试这个</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 功能说明 -->
+      <section class="features-section">
+        <div class="features-content industrial-border">
+          <h2 class="features-title">功能特点</h2>
+          <div class="features-grid">
+            <div class="feature-item">
+              <div class="feature-icon">🔗</div>
+              <h3>URL编解码</h3>
+              <p>支持完整URL和URL组件的编码解码，兼容RFC 3986标准</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🇨🇳</div>
+              <h3>中文支持</h3>
+              <p>完美支持中文字符编解码，可选择保留中文可读性</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📋</div>
+              <h3>批量处理</h3>
+              <p>支持批量处理多个URL，提高工作效率</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">✅</div>
+              <h3>格式验证</h3>
+              <p>自动验证URL格式，识别有效和无效的URL</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">⚡</div>
+              <h3>实时处理</h3>
+              <p>输入即时处理，无需等待，提供流畅的用户体验</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🔒</div>
+              <h3>本地处理</h3>
+              <p>所有处理在本地完成，保护你的数据隐私</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 使用说明 -->
+      <section class="usage-section">
+        <div class="usage-content industrial-border">
+          <h2 class="usage-title">使用说明</h2>
+          <div class="usage-list">
+            <div class="usage-item">
+              <strong>URL编码:</strong> 将URL中的特殊字符转换为百分号编码格式，确保URL在传输过程中的正确性。
+            </div>
+            <div class="usage-item">
+              <strong>URL解码:</strong> 将百分号编码的URL还原为原始格式，便于阅读和理解。
+            </div>
+            <div class="usage-item">
+              <strong>中文处理:</strong> 自动识别和处理中文字符，支持UTF-8编码格式。
+            </div>
+            <div class="usage-item">
+              <strong>批量操作:</strong> 在批量模式下，每行输入一个URL，工具会自动处理所有有效的URL。
+            </div>
+            <div class="usage-item">
+              <strong>格式验证:</strong> 工具会自动检测输入的URL格式，并在处理结果中标注验证状态。
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-family: var(--font-sans);
+  }
+
+  .encoder-section {
+    margin-bottom: 3rem;
+  }
+
+  .encoder-card {
+    background-color: var(--color-card);
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* 模式选择器 */
+  .mode-selector {
+    margin-bottom: 2rem;
+  }
+
+  .mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background-color: var(--color-code-bg);
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+  }
+
+  .mode-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .mode-tab:hover {
+    color: var(--color-text);
+    background-color: var(--color-hover);
+  }
+
+  .mode-tab.active {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  /* 处理模式 */
+  .processing-mode {
+    display: block;
+  }
+
+  .processing-mode.hidden {
+    display: none;
+  }
+
+  /* 输入输出区域 */
+  .input-section,
+  .output-section,
+  .batch-input-section,
+  .batch-output-section {
+    margin-bottom: 2rem;
+  }
+
+  .input-group,
+  .output-group {
+    position: relative;
+  }
+
+  .input-label,
+  .output-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-text);
+  }
+
+  .copy-result-btn,
+  .copy-batch-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-secondary);
+    padding: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .copy-result-btn:hover,
+  .copy-batch-btn:hover {
+    color: var(--color-accent);
+    background-color: var(--color-hover);
+  }
+
+  .copy-result-btn.copied,
+  .copy-batch-btn.copied {
+    color: #28a745;
+    border-color: #28a745;
+  }
+
+  .url-textarea {
+    width: 100%;
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    background-color: var(--color-code-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .url-textarea:focus {
+    border-color: var(--color-accent);
+  }
+
+  .url-textarea.output-textarea {
+    background-color: var(--color-hover);
+    cursor: text;
+  }
+
+  .batch-textarea {
+    min-height: 200px;
+  }
+
+  /* 信息显示 */
+  .input-info,
+  .output-info,
+  .batch-info,
+  .batch-result-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+  }
+
+  .char-count,
+  .line-count,
+  .valid-count,
+  .processed-count,
+  .success-count,
+  .error-count {
+    font-weight: 500;
+  }
+
+  .url-status,
+  .validation-status {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .url-status.valid,
+  .validation-status.valid,
+  .success-count {
+    color: #28a745;
+  }
+
+  .url-status.invalid,
+  .validation-status.invalid,
+  .error-count {
+    color: #dc3545;
+  }
+
+  .url-status.partial {
+    color: #ffc107;
+  }
+
+  /* 操作按钮 */
+  .action-buttons,
+  .batch-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+  }
+
+  .action-btn:hover {
+    background-color: var(--color-hover);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .encode-btn:hover,
+  .batch-encode-btn:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+  }
+
+  .decode-btn:hover,
+  .batch-decode-btn:hover {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+  }
+
+  .clear-btn:hover,
+  .clear-batch-btn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+
+  /* 编码选项 */
+  .encoding-options {
+    border-top: 2px solid var(--color-border);
+    padding-top: 2rem;
+    margin-top: 2rem;
+  }
+
+  .options-title {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .option-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .option-item:hover {
+    background-color: var(--color-hover);
+  }
+
+  .option-item input[type="radio"],
+  .option-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .option-text {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .option-desc {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+  }
+
+  /* 示例区域 */
+  .examples-section {
+    margin-bottom: 3rem;
+  }
+
+  .examples-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .examples-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .example-item {
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .example-title {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-text);
+  }
+
+  .example-demo {
+    margin-bottom: 1rem;
+  }
+
+  .example-input,
+  .example-output {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+
+  .example-input strong,
+  .example-output strong {
+    color: var(--color-accent);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .try-example-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .try-example-btn:hover {
+    background-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  /* 功能特点 */
+  .features-section {
+    margin-bottom: 3rem;
+  }
+
+  .features-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .features-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-item {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .feature-item p {
+    color: var(--color-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  /* 使用说明 */
+  .usage-section {
+    margin-bottom: 2rem;
+  }
+
+  .usage-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .usage-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .usage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .usage-item {
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    color: var(--color-secondary);
+  }
+
+  .usage-item strong {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1rem;
+    }
+
+    .encoder-card {
+      padding: 1.5rem;
+    }
+
+    .mode-tabs {
+      flex-direction: column;
+    }
+
+    .action-buttons,
+    .batch-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .action-btn {
+      justify-content: center;
+    }
+
+    .options-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .examples-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .features-content,
+    .usage-content,
+    .examples-content {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  // URL编解码工具类
+  class URLEncoderDecoder {
+    constructor() {
+      this.initElements();
+      this.bindEvents();
+      this.currentMode = 'single';
+    }
+
+    initElements() {
+      // 模式切换
+      this.singleModeTab = document.getElementById('single-mode-tab');
+      this.batchModeTab = document.getElementById('batch-mode-tab');
+      this.singleMode = document.getElementById('single-mode');
+      this.batchMode = document.getElementById('batch-mode');
+
+      // 单个处理模式元素
+      this.urlInput = document.getElementById('url-input');
+      this.urlOutput = document.getElementById('url-output');
+      this.encodeBtn = document.getElementById('encode-btn');
+      this.decodeBtn = document.getElementById('decode-btn');
+      this.clearBtn = document.getElementById('clear-btn');
+      this.copyResultBtn = document.getElementById('copy-result-btn');
+
+      // 批量处理模式元素
+      this.batchInput = document.getElementById('batch-input');
+      this.batchOutput = document.getElementById('batch-output');
+      this.batchEncodeBtn = document.getElementById('batch-encode-btn');
+      this.batchDecodeBtn = document.getElementById('batch-decode-btn');
+      this.clearBatchBtn = document.getElementById('clear-batch-btn');
+      this.copyBatchBtn = document.getElementById('copy-batch-btn');
+
+      // 状态显示元素
+      this.inputCharCount = document.getElementById('input-char-count');
+      this.outputCharCount = document.getElementById('output-char-count');
+      this.urlStatus = document.getElementById('url-status');
+      this.validationStatus = document.getElementById('validation-status');
+      this.batchLineCount = document.getElementById('batch-line-count');
+      this.batchValidCount = document.getElementById('batch-valid-count');
+      this.processedCount = document.getElementById('processed-count');
+      this.successCount = document.getElementById('success-count');
+      this.errorCount = document.getElementById('error-count');
+
+      // 编码选项
+      this.encodingTypeRadios = document.querySelectorAll('input[name="encoding-type"]');
+      this.preserveChineseCheckbox = document.getElementById('preserve-chinese');
+
+      // 示例按钮
+      this.tryExampleBtns = document.querySelectorAll('.try-example-btn');
+    }
+
+    bindEvents() {
+      // 模式切换
+      this.singleModeTab.addEventListener('click', () => this.switchMode('single'));
+      this.batchModeTab.addEventListener('click', () => this.switchMode('batch'));
+
+      // 单个处理模式事件
+      this.urlInput.addEventListener('input', () => {
+        this.updateInputStatus();
+        this.autoProcess();
+      });
+
+      this.encodeBtn.addEventListener('click', () => this.encodeURL());
+      this.decodeBtn.addEventListener('click', () => this.decodeURL());
+      this.clearBtn.addEventListener('click', () => this.clearSingle());
+      this.copyResultBtn.addEventListener('click', () => this.copyResult());
+
+      // 批量处理模式事件
+      this.batchInput.addEventListener('input', () => this.updateBatchStatus());
+      this.batchEncodeBtn.addEventListener('click', () => this.batchEncode());
+      this.batchDecodeBtn.addEventListener('click', () => this.batchDecode());
+      this.clearBatchBtn.addEventListener('click', () => this.clearBatch());
+      this.copyBatchBtn.addEventListener('click', () => this.copyBatchResults());
+
+      // 编码选项变化
+      this.encodingTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => this.autoProcess());
+      });
+      this.preserveChineseCheckbox.addEventListener('change', () => this.autoProcess());
+
+      // 示例按钮
+      this.tryExampleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const input = e.target.getAttribute('data-input');
+          this.loadExample(input);
+        });
+      });
+
+      // 初始化状态
+      this.updateInputStatus();
+      this.updateBatchStatus();
+    }
+
+    switchMode(mode) {
+      this.currentMode = mode;
+      
+      // 更新标签状态
+      if (mode === 'single') {
+        this.singleModeTab.classList.add('active');
+        this.batchModeTab.classList.remove('active');
+        this.singleMode.classList.remove('hidden');
+        this.batchMode.classList.add('hidden');
+      } else {
+        this.batchModeTab.classList.add('active');
+        this.singleModeTab.classList.remove('active');
+        this.batchMode.classList.remove('hidden');
+        this.singleMode.classList.add('hidden');
+      }
+    }
+
+    updateInputStatus() {
+      const input = this.urlInput.value;
+      const charCount = input.length;
+      
+      this.inputCharCount.textContent = `${charCount} 字符`;
+      
+      if (input.trim()) {
+        const isValid = this.isValidURL(input);
+        this.urlStatus.textContent = isValid ? '有效URL' : '文本内容';
+        this.urlStatus.className = `url-status ${isValid ? 'valid' : 'partial'}`;
+      } else {
+        this.urlStatus.textContent = '';
+        this.urlStatus.className = 'url-status';
+      }
+    }
+
+    updateBatchStatus() {
+      const input = this.batchInput.value;
+      const lines = input.split('\n').filter(line => line.trim());
+      const validUrls = lines.filter(line => this.isValidURL(line.trim()));
+      
+      this.batchLineCount.textContent = `${lines.length} 行`;
+      this.batchValidCount.textContent = `${validUrls.length} 个有效URL`;
+    }
+
+    autoProcess() {
+      // 自动处理功能可以根据需要启用
+      // 这里暂时注释掉，避免输入时频繁处理
+      // if (this.urlInput.value.trim()) {
+      //   this.encodeURL();
+      // }
+    }
+
+    encodeURL() {
+      const input = this.urlInput.value.trim();
+      if (!input) return;
+
+      try {
+        const result = this.performEncode(input);
+        this.urlOutput.value = result;
+        this.updateOutputStatus(result, true);
+      } catch (error) {
+        this.urlOutput.value = `编码失败: ${error.message}`;
+        this.updateOutputStatus('', false);
+      }
+    }
+
+    decodeURL() {
+      const input = this.urlInput.value.trim();
+      if (!input) return;
+
+      try {
+        const result = this.performDecode(input);
+        this.urlOutput.value = result;
+        this.updateOutputStatus(result, true);
+      } catch (error) {
+        this.urlOutput.value = `解码失败: ${error.message}`;
+        this.updateOutputStatus('', false);
+      }
+    }
+
+    performEncode(input) {
+      const encodingType = document.querySelector('input[name="encoding-type"]:checked').value;
+      const preserveChinese = this.preserveChineseCheckbox.checked;
+
+      if (preserveChinese) {
+        // 只编码特殊字符，保留中文
+        return input.replace(/[^\u4e00-\u9fa5\w\-\.~:\/\?#\[\]@!$&'\(\)\*\+,;=]/g, (char) => {
+          return encodeURIComponent(char);
+        });
+      } else {
+        // 标准编码
+        if (encodingType === 'component') {
+          return encodeURIComponent(input);
+        } else {
+          return encodeURI(input);
+        }
+      }
+    }
+
+    performDecode(input) {
+      try {
+        return decodeURIComponent(input);
+      } catch (error) {
+        // 如果decodeURIComponent失败，尝试decodeURI
+        try {
+          return decodeURI(input);
+        } catch (error2) {
+          throw new Error('无法解码，可能包含无效的编码序列');
+        }
+      }
+    }
+
+    updateOutputStatus(result, success) {
+      const charCount = result.length;
+      this.outputCharCount.textContent = `${charCount} 字符`;
+      
+      if (success && result) {
+        const isValid = this.isValidURL(result);
+        this.validationStatus.textContent = isValid ? '有效URL' : '文本内容';
+        this.validationStatus.className = `validation-status ${isValid ? 'valid' : 'partial'}`;
+      } else {
+        this.validationStatus.textContent = success ? '' : '处理失败';
+        this.validationStatus.className = `validation-status ${success ? '' : 'invalid'}`;
+      }
+    }
+
+    batchEncode() {
+      const input = this.batchInput.value.trim();
+      if (!input) return;
+
+      const lines = input.split('\n').filter(line => line.trim());
+      const results = [];
+      let successCount = 0;
+      let errorCount = 0;
+
+      lines.forEach((line, index) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return;
+
+        try {
+          const encoded = this.performEncode(trimmedLine);
+          results.push(encoded);
+          successCount++;
+        } catch (error) {
+          results.push(`[错误] ${trimmedLine} - ${error.message}`);
+          errorCount++;
+        }
+      });
+
+      this.batchOutput.value = results.join('\n');
+      this.updateBatchResults(lines.length, successCount, errorCount);
+    }
+
+    batchDecode() {
+      const input = this.batchInput.value.trim();
+      if (!input) return;
+
+      const lines = input.split('\n').filter(line => line.trim());
+      const results = [];
+      let successCount = 0;
+      let errorCount = 0;
+
+      lines.forEach((line, index) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return;
+
+        try {
+          const decoded = this.performDecode(trimmedLine);
+          results.push(decoded);
+          successCount++;
+        } catch (error) {
+          results.push(`[错误] ${trimmedLine} - ${error.message}`);
+          errorCount++;
+        }
+      });
+
+      this.batchOutput.value = results.join('\n');
+      this.updateBatchResults(lines.length, successCount, errorCount);
+    }
+
+    updateBatchResults(processed, success, error) {
+      this.processedCount.textContent = `已处理: ${processed}`;
+      this.successCount.textContent = `成功: ${success}`;
+      this.errorCount.textContent = `失败: ${error}`;
+    }
+
+    clearSingle() {
+      this.urlInput.value = '';
+      this.urlOutput.value = '';
+      this.updateInputStatus();
+      this.updateOutputStatus('', true);
+    }
+
+    clearBatch() {
+      this.batchInput.value = '';
+      this.batchOutput.value = '';
+      this.updateBatchStatus();
+      this.updateBatchResults(0, 0, 0);
+    }
+
+    async copyResult() {
+      const result = this.urlOutput.value;
+      if (!result) return;
+
+      try {
+        await navigator.clipboard.writeText(result);
+        this.showCopyFeedback(this.copyResultBtn);
+      } catch (error) {
+        this.fallbackCopy(result, this.copyResultBtn);
+      }
+    }
+
+    async copyBatchResults() {
+      const results = this.batchOutput.value;
+      if (!results) return;
+
+      try {
+        await navigator.clipboard.writeText(results);
+        this.showCopyFeedback(this.copyBatchBtn);
+      } catch (error) {
+        this.fallbackCopy(results, this.copyBatchBtn);
+      }
+    }
+
+    fallbackCopy(text, button) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        this.showCopyFeedback(button);
+      } catch (error) {
+        console.error('复制失败:', error);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+
+    showCopyFeedback(button) {
+      const originalHTML = button.innerHTML;
+      
+      button.classList.add('copied');
+      button.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+      `;
+      
+      setTimeout(() => {
+        button.classList.remove('copied');
+        button.innerHTML = originalHTML;
+      }, 2000);
+    }
+
+    loadExample(input) {
+      this.switchMode('single');
+      this.urlInput.value = input;
+      this.updateInputStatus();
+      this.encodeURL();
+    }
+
+    isValidURL(string) {
+      try {
+        // 检查是否是完整的URL
+        new URL(string);
+        return true;
+      } catch (_) {
+        // 检查是否是相对URL或查询字符串
+        if (string.startsWith('/') || string.startsWith('?') || string.startsWith('#')) {
+          return true;
+        }
+        // 检查是否包含URL的基本特征
+        if (string.includes('://') || string.includes('www.') || /\.[a-z]{2,}/.test(string)) {
+          return true;
+        }
+        return false;
+      }
+    }
+  }
+
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', () => {
+    new URLEncoderDecoder();
+  });
+</script>
