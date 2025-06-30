@@ -174,10 +174,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
   body {
     background-color: var(--color-bg);
-    /* 添加噪点纹理背景 - 直接使用路径 */
+    /* 添加致密的噪点纹理背景 */
     background-image: url('/src/assets/noise.webp');
     background-repeat: repeat;
-    background-size: 200px 200px; /* 调整纹理大小 */
+    background-size: 80px 80px; /* 大幅缩小纹理尺寸，实现致密效果 */
     background-attachment: fixed; /* 固定背景，滚动时不移动 */
     color: var(--color-text);
     line-height: 1.6;
@@ -191,10 +191,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     position: relative;
   }
 
-  /* 为深色模式调整噪点纹理的混合模式 */
+  /* 为深色模式调整噪点纹理的混合模式和透明度 */
   .dark body {
-    background-blend-mode: multiply;
+    background-blend-mode: overlay; /* 使用overlay混合模式增强纹理效果 */
     background-color: var(--color-bg);
+    /* 在深色模式下添加额外的纹理层 */
+    background-image: 
+      url('/src/assets/noise.webp'),
+      linear-gradient(45deg, transparent 49%, rgba(0,0,0,0.02) 50%, transparent 51%);
+    background-size: 
+      80px 80px,
+      4px 4px; /* 添加细微的对角线纹理 */
   }
 
   /* 为了确保内容在纹理上清晰可见，给主要内容区域添加轻微的背景 */
@@ -203,7 +210,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     z-index: 1;
   }
 
-  /* 为卡片和重要内容区域添加轻微的背景增强 */
+  /* 为卡片和重要内容区域添加背景增强，确保在致密纹理上的可读性 */
   .industrial-border,
   .post-card,
   .project-card,
@@ -211,23 +218,45 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   .hero-stats,
   .code-snippet {
     position: relative;
-    backdrop-filter: blur(0.5px); /* 轻微模糊背景纹理 */
+    backdrop-filter: blur(0.3px); /* 轻微模糊背景纹理 */
   }
 
-  /* 确保卡片背景在纹理上更突出 */
+  /* 确保卡片背景在致密纹理上更突出 */
   .post-card,
   .project-card {
     background-color: var(--color-card);
     box-shadow: 
       var(--shadow-md),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* 内阴影增强边界 */
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15), /* 增强内阴影 */
+      0 0 0 1px rgba(0, 0, 0, 0.05); /* 外边框增强对比 */
   }
 
   .article-content {
     background-color: var(--color-card);
     box-shadow: 
       var(--shadow-sm),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(0, 0, 0, 0.03);
+  }
+
+  /* 为头部和重要区域添加轻微的背景增强 */
+  .header {
+    backdrop-filter: blur(1px) saturate(1.1); /* 增强头部背景 */
+    background-color: rgba(232, 220, 192, 0.95); /* 半透明背景 */
+  }
+
+  .dark .header {
+    background-color: rgba(58, 48, 32, 0.95);
+  }
+
+  /* 为搜索框等交互元素增强背景 */
+  .search-box,
+  .tag-filter,
+  .btn {
+    backdrop-filter: blur(0.5px);
+    box-shadow: 
+      var(--shadow-sm),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
   h1,
@@ -767,9 +796,28 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       font-size: 0.875rem;
     }
 
-    /* 移动端背景纹理调整 */
+    /* 移动端背景纹理调整 - 更致密 */
     body {
-      background-size: 150px 150px; /* 移动端使用更小的纹理 */
+      background-size: 60px 60px; /* 移动端使用更小更致密的纹理 */
+    }
+
+    .dark body {
+      background-size: 
+        60px 60px,
+        3px 3px; /* 移动端的对角线纹理也更小 */
+    }
+  }
+
+  /* 超小屏幕的纹理优化 */
+  @media (max-width: 480px) {
+    body {
+      background-size: 50px 50px; /* 超小屏幕使用最致密的纹理 */
+    }
+
+    .dark body {
+      background-size: 
+        50px 50px,
+        2px 2px;
     }
   }
 </style>
