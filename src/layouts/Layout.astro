@@ -176,7 +176,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     background-color: var(--color-bg);
     /* 添加致密的噪点纹理背景 - 增强白色噪点效果 */
     background-image: 
-      url('/src/assets/noise.webp'),
+      url('/noise.webp'),
       /* 添加白色点状纹理增强白色噪点 */
       radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
       radial-gradient(circle at 60% 80%, rgba(255, 255, 255, 0.3) 0.5px, transparent 0.5px),
@@ -205,7 +205,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   /* 为深色模式调整噪点纹理 - 保持白色噪点突出 */
   .dark body {
     background-image: 
-      url('/src/assets/noise.webp'),
+      url('/noise.webp'),
       /* 深色模式下的白色点状纹理 */
       radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25) 0.5px, transparent 0.5px),
       radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.2) 0.5px, transparent 0.5px),
@@ -262,7 +262,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     position: relative;
     /* 为 header 添加独特的纹理背景，突出白色噪点 */
     background-image: 
-      url('/src/assets/noise.webp'),
+      url('/noise.webp'),
       /* Header专用的白色点状纹理 - 更密集 */
       radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.5) 0.5px, transparent 0.5px),
       radial-gradient(circle at 45% 85%, rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
@@ -295,7 +295,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   /* 深色模式下的 Header 纹理 - 保持白色噪点突出 */
   .dark .header {
     background-image: 
-      url('/src/assets/noise.webp'),
+      url('/noise.webp'),
       /* 深色模式下的白色点状纹理 */
       radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3) 0.5px, transparent 0.5px),
       radial-gradient(circle at 55% 75%, rgba(255, 255, 255, 0.25) 0.5px, transparent 0.5px),
