@@ -127,6 +127,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 <style is:global>
   :root {
+    /* 纸质纹理背景变量 */
+    --img-paper-noise: url(/src/assets/noise.webp);
+    --background-paper-base: var(--img-paper-noise), linear-gradient(to bottom, rgba(0, 0, 0, .15) 0%, rgba(0, 0, 0, .15) 100%);
+    --background-paper-header: var(--img-paper-noise), linear-gradient(to bottom, rgba(0, 0, 0, .25) 0%, rgba(0, 0, 0, .25) 100%);
+    --background-paper-content: var(--img-paper-noise), linear-gradient(to left, rgba(0, 0, 0, .1) 0%, transparent 40vw);
+    --background-paper-card: var(--img-paper-noise), linear-gradient(to bottom, rgba(255, 255, 255, .8) 0%, rgba(255, 255, 255, .6) 100%);
+    --mix-blend-mode-paper: overlay;
+
     /* 复古工业风格配色 */
     --color-bg: #d4c4a0;
     --color-text: #2c2416;
@@ -150,6 +158,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   }
 
   .dark {
+    /* 深色模式的纸质纹理背景 */
+    --background-paper-base: var(--img-paper-noise), linear-gradient(to bottom, rgba(255, 255, 255, .05) 0%, rgba(255, 255, 255, .05) 100%);
+    --background-paper-header: var(--img-paper-noise), linear-gradient(to bottom, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, .08) 100%);
+    --background-paper-content: var(--img-paper-noise), linear-gradient(to left, rgba(255, 255, 255, .03) 0%, transparent 40vw);
+    --background-paper-card: var(--img-paper-noise), linear-gradient(to bottom, rgba(0, 0, 0, .3) 0%, rgba(0, 0, 0, .2) 100%);
+
     --color-bg: #2c2416;
     --color-text: #d4c4a0;
     --color-accent: #cd853f;
@@ -173,12 +187,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   }
 
   body {
-    background-color: var(--color-bg);
-    /* 添加噪点纹理背景 - 直接使用路径 */
-    background-image: url('/src/assets/noise.webp');
-    background-repeat: repeat;
-    background-size: 200px 200px; /* 调整纹理大小 */
-    background-attachment: fixed; /* 固定背景，滚动时不移动 */
+    /* 应用纸质纹理背景 */
+    background: var(--background-paper-base);
+    background-size: 200px 200px, cover;
+    background-repeat: repeat, no-repeat;
+    background-attachment: fixed, fixed;
+    mix-blend-mode: var(--mix-blend-mode-paper);
+    
     color: var(--color-text);
     line-height: 1.6;
     font-size: 16px;
@@ -187,47 +202,32 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       background-color 0.3s ease,
       color 0.3s ease;
     font-weight: 400;
-    overflow-x: hidden; /* 防止整个页面横向滚动 */
+    overflow-x: hidden;
     position: relative;
   }
 
-  /* 为深色模式调整噪点纹理的混合模式 */
-  .dark body {
-    background-blend-mode: multiply;
-    background-color: var(--color-bg);
-  }
-
-  /* 为了确保内容在纹理上清晰可见，给主要内容区域添加轻微的背景 */
-  .container {
+  /* 为主要内容区域添加纸质纹理效果 */
+  .header {
+    background: var(--background-paper-header);
+    background-size: 150px 150px, cover;
+    background-repeat: repeat, no-repeat;
+    mix-blend-mode: normal;
     position: relative;
-    z-index: 1;
   }
 
-  /* 为卡片和重要内容区域添加轻微的背景增强 */
-  .industrial-border,
-  .post-card,
-  .project-card,
-  .article-content,
-  .hero-stats,
-  .code-snippet {
-    position: relative;
-    backdrop-filter: blur(0.5px); /* 轻微模糊背景纹理 */
-  }
-
-  /* 确保卡片背景在纹理上更突出 */
-  .post-card,
-  .project-card {
-    background-color: var(--color-card);
-    box-shadow: 
-      var(--shadow-md),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* 内阴影增强边界 */
-  }
-
-  .article-content {
-    background-color: var(--color-card);
-    box-shadow: 
-      var(--shadow-sm),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--img-paper-noise);
+    background-size: 150px 150px;
+    background-repeat: repeat;
+    mix-blend-mode: var(--mix-blend-mode-paper);
+    opacity: 0.3;
+    pointer-events: none;
   }
 
   h1,
@@ -667,6 +667,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     padding: 0 1rem;
     width: 100%; /* 确保容器不超出视口 */
     overflow-x: hidden; /* 防止容器内容溢出 */
+    position: relative;
+    z-index: 1;
   }
 
   .sr-only {
@@ -685,6 +687,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   .industrial-border {
     border: var(--border-width) var(--border-style) var(--color-border);
     position: relative;
+    /* 添加纸质纹理背景 */
+    background: var(--background-paper-card);
+    background-size: 120px 120px, cover;
+    background-repeat: repeat, no-repeat;
   }
 
   .industrial-border::before {
@@ -697,6 +703,56 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     border: 1px solid var(--color-muted);
     pointer-events: none;
     opacity: 0.5;
+  }
+
+  /* 为卡片添加纸质纹理效果 */
+  .post-card,
+  .project-card {
+    background: var(--background-paper-card);
+    background-size: 120px 120px, cover;
+    background-repeat: repeat, no-repeat;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .post-card::after,
+  .project-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--img-paper-noise);
+    background-size: 120px 120px;
+    background-repeat: repeat;
+    mix-blend-mode: var(--mix-blend-mode-paper);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  /* 文章内容区域的纸质纹理 */
+  .article-content {
+    background: var(--background-paper-content);
+    background-size: 150px 150px, cover;
+    background-repeat: repeat, no-repeat;
+    position: relative;
+  }
+
+  .article-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--img-paper-noise);
+    background-size: 150px 150px;
+    background-repeat: repeat;
+    mix-blend-mode: var(--mix-blend-mode-paper);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: -1;
   }
 
   /* 按钮样式 */
@@ -746,6 +802,25 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       padding: 0 0.75rem;
     }
 
+    /* 移动端背景纹理调整 */
+    body {
+      background-size: 150px 150px, cover;
+    }
+
+    .header {
+      background-size: 120px 120px, cover;
+    }
+
+    .industrial-border,
+    .post-card,
+    .project-card {
+      background-size: 100px 100px, cover;
+    }
+
+    .article-content {
+      background-size: 120px 120px, cover;
+    }
+
     /* 移动端代码块优化 */
     pre {
       max-height: 300px; /* 移动端降低最大高度 */
@@ -765,11 +840,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     .code-container pre {
       padding: 1rem 0.75rem;
       font-size: 0.875rem;
-    }
-
-    /* 移动端背景纹理调整 */
-    body {
-      background-size: 150px 150px; /* 移动端使用更小的纹理 */
     }
   }
 </style>
