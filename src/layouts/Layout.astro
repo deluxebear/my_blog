@@ -174,11 +174,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
   body {
     background-color: var(--color-bg);
-    /* 添加致密的噪点纹理背景 */
-    background-image: url('/src/assets/noise.webp');
+    /* 添加致密的噪点纹理背景 - 增强白色噪点效果 */
+    background-image: 
+      url('/src/assets/noise.webp'),
+      /* 添加白色点状纹理增强白色噪点 */
+      radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 60% 80%, rgba(255, 255, 255, 0.3) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.35) 0.5px, transparent 0.5px);
     background-repeat: repeat;
-    background-size: 80px 80px; /* 大幅缩小纹理尺寸，实现致密效果 */
-    background-attachment: fixed; /* 固定背景，滚动时不移动 */
+    background-size: 
+      80px 80px,     /* 主噪点纹理 */
+      16px 16px,     /* 白色点状纹理1 */
+      24px 24px,     /* 白色点状纹理2 */
+      20px 20px;     /* 白色点状纹理3 */
+    background-attachment: fixed;
+    /* 使用screen混合模式增强白色效果 */
+    background-blend-mode: screen, normal, normal, normal;
     color: var(--color-text);
     line-height: 1.6;
     font-size: 16px;
@@ -187,30 +198,37 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       background-color 0.3s ease,
       color 0.3s ease;
     font-weight: 400;
-    overflow-x: hidden; /* 防止整个页面横向滚动 */
+    overflow-x: hidden;
     position: relative;
   }
 
-  /* 为深色模式调整噪点纹理的混合模式和透明度 */
+  /* 为深色模式调整噪点纹理 - 保持白色噪点突出 */
   .dark body {
-    background-blend-mode: overlay; /* 使用overlay混合模式增强纹理效果 */
-    background-color: var(--color-bg);
-    /* 在深色模式下添加额外的纹理层 */
     background-image: 
       url('/src/assets/noise.webp'),
-      linear-gradient(45deg, transparent 49%, rgba(0,0,0,0.02) 50%, transparent 51%);
+      /* 深色模式下的白色点状纹理 */
+      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.2) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.22) 0.5px, transparent 0.5px),
+      /* 添加细微的对角线纹理 */
+      linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.02) 50%, transparent 51%);
     background-size: 
-      80px 80px,
-      4px 4px; /* 添加细微的对角线纹理 */
+      80px 80px,     /* 主噪点纹理 */
+      18px 18px,     /* 白色点状纹理1 */
+      26px 26px,     /* 白色点状纹理2 */
+      22px 22px,     /* 白色点状纹理3 */
+      4px 4px;       /* 对角线纹理 */
+    /* 使用overlay和screen混合模式增强白色噪点 */
+    background-blend-mode: overlay, screen, screen, screen, normal;
   }
 
-  /* 为了确保内容在纹理上清晰可见，给主要内容区域添加轻微的背景 */
+  /* 为了确保内容在纹理上清晰可见 */
   .container {
     position: relative;
     z-index: 1;
   }
 
-  /* 为卡片和重要内容区域添加背景增强，确保在致密纹理上的可读性 */
+  /* 为卡片和重要内容区域添加背景增强 */
   .industrial-border,
   .post-card,
   .project-card,
@@ -218,7 +236,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   .hero-stats,
   .code-snippet {
     position: relative;
-    backdrop-filter: blur(0.3px); /* 轻微模糊背景纹理 */
+    backdrop-filter: blur(0.3px);
   }
 
   /* 确保卡片背景在致密纹理上更突出 */
@@ -227,8 +245,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     background-color: var(--color-card);
     box-shadow: 
       var(--shadow-md),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.15), /* 增强内阴影 */
-      0 0 0 1px rgba(0, 0, 0, 0.05); /* 外边框增强对比 */
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+      0 0 0 1px rgba(0, 0, 0, 0.05);
   }
 
   .article-content {
@@ -239,48 +257,69 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       0 0 0 1px rgba(0, 0, 0, 0.03);
   }
 
-  /* Header 专用的致密纹理背景 - 与主体内容保持差异性 */
+  /* Header 专用的致密纹理背景 - 增强白色噪点 */
   .header {
     position: relative;
-    /* 为 header 添加独特的纹理背景 */
+    /* 为 header 添加独特的纹理背景，突出白色噪点 */
     background-image: 
       url('/src/assets/noise.webp'),
-      linear-gradient(135deg, transparent 48%, rgba(139, 69, 19, 0.03) 50%, transparent 52%),
-      linear-gradient(45deg, transparent 48%, rgba(139, 69, 19, 0.02) 50%, transparent 52%);
+      /* Header专用的白色点状纹理 - 更密集 */
+      radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.5) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 45% 85%, rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.45) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 75% 65%, rgba(255, 255, 255, 0.35) 0.5px, transparent 0.5px),
+      /* 对角线纹理增强 */
+      linear-gradient(135deg, transparent 48%, rgba(255, 255, 255, 0.08) 50%, transparent 52%),
+      linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.06) 50%, transparent 52%);
     background-size: 
-      60px 60px,    /* 比主体更小更致密的噪点纹理 */
-      8px 8px,      /* 对角线纹理1 */
-      12px 12px;    /* 对角线纹理2 */
+      60px 60px,     /* 比主体更小更致密的噪点纹理 */
+      12px 12px,     /* 白色点状纹理1 */
+      16px 16px,     /* 白色点状纹理2 */
+      14px 14px,     /* 白色点状纹理3 */
+      18px 18px,     /* 白色点状纹理4 */
+      8px 8px,       /* 对角线纹理1 */
+      12px 12px;     /* 对角线纹理2 */
     background-repeat: repeat;
     background-attachment: fixed;
-    background-color: rgba(232, 220, 192, 0.98); /* 稍微增强不透明度 */
+    background-color: rgba(232, 220, 192, 0.98);
+    /* 使用screen混合模式突出白色噪点 */
+    background-blend-mode: screen, screen, screen, screen, screen, normal, normal;
     backdrop-filter: blur(1px) saturate(1.1);
-    /* 添加细微的内阴影增强纹理感 */
     box-shadow: 
       var(--shadow-md),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
       inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    /* 添加边框增强分离感 */
     border-bottom: 2px solid var(--color-border);
   }
 
-  /* 深色模式下的 Header 纹理 */
+  /* 深色模式下的 Header 纹理 - 保持白色噪点突出 */
   .dark .header {
     background-image: 
       url('/src/assets/noise.webp'),
-      linear-gradient(135deg, transparent 48%, rgba(205, 133, 63, 0.04) 50%, transparent 52%),
-      linear-gradient(45deg, transparent 48%, rgba(205, 133, 63, 0.03) 50%, transparent 52%),
-      linear-gradient(90deg, transparent 49%, rgba(0, 0, 0, 0.02) 50%, transparent 51%);
+      /* 深色模式下的白色点状纹理 */
+      radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 55% 75%, rgba(255, 255, 255, 0.25) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 75% 35%, rgba(255, 255, 255, 0.28) 0.5px, transparent 0.5px),
+      radial-gradient(circle at 85% 85%, rgba(255, 255, 255, 0.22) 0.5px, transparent 0.5px),
+      /* 对角线和水平线纹理 */
+      linear-gradient(135deg, transparent 48%, rgba(255, 255, 255, 0.04) 50%, transparent 52%),
+      linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.03) 50%, transparent 52%),
+      linear-gradient(90deg, transparent 49%, rgba(255, 255, 255, 0.02) 50%, transparent 51%);
     background-size: 
-      60px 60px,    /* 致密噪点 */
-      8px 8px,      /* 对角线纹理1 */
-      12px 12px,    /* 对角线纹理2 */
-      6px 6px;      /* 水平线纹理 */
+      60px 60px,     /* 致密噪点 */
+      14px 14px,     /* 白色点状纹理1 */
+      18px 18px,     /* 白色点状纹理2 */
+      16px 16px,     /* 白色点状纹理3 */
+      20px 20px,     /* 白色点状纹理4 */
+      8px 8px,       /* 对角线纹理1 */
+      12px 12px,     /* 对角线纹理2 */
+      6px 6px;       /* 水平线纹理 */
     background-color: rgba(58, 48, 32, 0.98);
-    background-blend-mode: multiply, overlay, soft-light, normal;
+    /* 使用多种混合模式增强白色噪点效果 */
+    background-blend-mode: overlay, screen, screen, screen, screen, soft-light, soft-light, normal;
     box-shadow: 
       var(--shadow-md),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
       inset 0 -1px 0 rgba(0, 0, 0, 0.2);
     border-bottom-color: var(--color-border);
   }
@@ -291,7 +330,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     z-index: 2;
   }
 
-  /* 为 Header 添加轻微的纹理动画效果 */
+  /* 为 Header 添加轻微的纹理动画效果 - 增强白色噪点 */
   .header::before {
     content: '';
     position: absolute;
@@ -300,19 +339,26 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     right: 0;
     bottom: 0;
     background-image: 
-      radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.02) 1px, transparent 1px),
-      radial-gradient(circle at 75% 75%, rgba(139, 69, 19, 0.02) 1px, transparent 1px);
-    background-size: 16px 16px, 20px 20px;
-    background-position: 0 0, 8px 8px;
-    opacity: 0.6;
+      /* 动态白色点状纹理 */
+      radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+      radial-gradient(circle at 65% 65%, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+      radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.13) 1px, transparent 1px);
+    background-size: 16px 16px, 20px 20px, 24px 24px;
+    background-position: 0 0, 8px 8px, 12px 12px;
+    opacity: 0.8;
     pointer-events: none;
     animation: headerTextureShift 60s linear infinite;
+    /* 使用screen混合模式增强白色效果 */
+    mix-blend-mode: screen;
   }
 
   .dark .header::before {
     background-image: 
-      radial-gradient(circle at 25% 25%, rgba(205, 133, 63, 0.03) 1px, transparent 1px),
-      radial-gradient(circle at 75% 75%, rgba(205, 133, 63, 0.03) 1px, transparent 1px);
+      radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 65% 65%, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    opacity: 0.9;
+    mix-blend-mode: screen;
   }
 
   /* 轻微的纹理动画 */
@@ -871,60 +917,90 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       font-size: 0.875rem;
     }
 
-    /* 移动端背景纹理调整 - 更致密 */
+    /* 移动端背景纹理调整 - 更致密，增强白色噪点 */
     body {
-      background-size: 60px 60px; /* 移动端使用更小更致密的纹理 */
+      background-size: 
+        60px 60px,     /* 移动端使用更小更致密的纹理 */
+        12px 12px,     /* 白色点状纹理1 */
+        18px 18px,     /* 白色点状纹理2 */
+        15px 15px;     /* 白色点状纹理3 */
     }
 
     .dark body {
       background-size: 
-        60px 60px,
-        3px 3px; /* 移动端的对角线纹理也更小 */
+        60px 60px,     /* 主噪点纹理 */
+        14px 14px,     /* 白色点状纹理1 */
+        20px 20px,     /* 白色点状纹理2 */
+        17px 17px,     /* 白色点状纹理3 */
+        3px 3px;       /* 对角线纹理 */
     }
 
-    /* 移动端 Header 纹理调整 */
+    /* 移动端 Header 纹理调整 - 增强白色噪点 */
     .header {
       background-size: 
-        45px 45px,    /* 移动端更致密的噪点 */
-        6px 6px,      
-        9px 9px;      
+        45px 45px,     /* 移动端更致密的噪点 */
+        9px 9px,       /* 白色点状纹理1 */
+        12px 12px,     /* 白色点状纹理2 */
+        10px 10px,     /* 白色点状纹理3 */
+        13px 13px,     /* 白色点状纹理4 */
+        6px 6px,       /* 对角线纹理1 */
+        9px 9px;       /* 对角线纹理2 */
     }
 
     .dark .header {
       background-size: 
-        45px 45px,    
-        6px 6px,      
-        9px 9px,      
-        4px 4px;      
+        45px 45px,     /* 致密噪点 */
+        10px 10px,     /* 白色点状纹理1 */
+        14px 14px,     /* 白色点状纹理2 */
+        12px 12px,     /* 白色点状纹理3 */
+        15px 15px,     /* 白色点状纹理4 */
+        6px 6px,       /* 对角线纹理1 */
+        9px 9px,       /* 对角线纹理2 */
+        4px 4px;       /* 水平线纹理 */
     }
   }
 
-  /* 超小屏幕的纹理优化 */
+  /* 超小屏幕的纹理优化 - 最大化白色噪点效果 */
   @media (max-width: 480px) {
     body {
-      background-size: 50px 50px; /* 超小屏幕使用最致密的纹理 */
+      background-size: 
+        50px 50px,     /* 超小屏幕使用最致密的纹理 */
+        10px 10px,     /* 白色点状纹理1 */
+        15px 15px,     /* 白色点状纹理2 */
+        12px 12px;     /* 白色点状纹理3 */
     }
 
     .dark body {
       background-size: 
-        50px 50px,
-        2px 2px;
+        50px 50px,     /* 主噪点纹理 */
+        12px 12px,     /* 白色点状纹理1 */
+        17px 17px,     /* 白色点状纹理2 */
+        14px 14px,     /* 白色点状纹理3 */
+        2px 2px;       /* 对角线纹理 */
     }
 
-    /* 超小屏幕 Header 纹理 */
+    /* 超小屏幕 Header 纹理 - 最大化白色噪点 */
     .header {
       background-size: 
-        35px 35px,    /* 超小屏幕最致密的噪点 */
-        4px 4px,      
-        6px 6px;      
+        35px 35px,     /* 超小屏幕最致密的噪点 */
+        7px 7px,       /* 白色点状纹理1 */
+        9px 9px,       /* 白色点状纹理2 */
+        8px 8px,       /* 白色点状纹理3 */
+        10px 10px,     /* 白色点状纹理4 */
+        4px 4px,       /* 对角线纹理1 */
+        6px 6px;       /* 对角线纹理2 */
     }
 
     .dark .header {
       background-size: 
-        35px 35px,    
-        4px 4px,      
-        6px 6px,      
-        3px 3px;      
+        35px 35px,     /* 致密噪点 */
+        8px 8px,       /* 白色点状纹理1 */
+        11px 11px,     /* 白色点状纹理2 */
+        9px 9px,       /* 白色点状纹理3 */
+        12px 12px,     /* 白色点状纹理4 */
+        4px 4px,       /* 对角线纹理1 */
+        6px 6px,       /* 对角线纹理2 */
+        3px 3px;       /* 水平线纹理 */
     }
   }
 </style>
