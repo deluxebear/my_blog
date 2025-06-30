@@ -27,6 +27,6 @@ export default defineConfig({
         },
       ],
     ],
-    syntaxHighlight: false // 禁用默认语法高亮，使用我们自己的
+    syntaxHighlight: false, // 禁用默认语法高亮，使用我们自己的
   },
 });
