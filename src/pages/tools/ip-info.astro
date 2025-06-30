@@ -90,23 +90,23 @@ import Header from '../../components/Header.astro';
           <div class="features-grid">
             <div class="feature-item">
               <div class="feature-icon">🌐</div>
-              <h3>地理位置</h3>
-              <p>显示IP地址对应的国家、城市、地区等地理位置信息</p>
+              <h3>多源对比</h3>
+              <p>同时查询多个IP地址API服务，对比不同数据源的信息差异</p>
             </div>
             <div class="feature-item">
-              <div class="feature-icon">📡</div>
-              <h3>ISP信息</h3>
-              <p>显示互联网服务提供商信息和网络组织信息</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">🕐</div>
-              <h3>时区信息</h3>
-              <p>显示IP地址所在地区的时区信息</p>
+              <div class="feature-icon">🔍</div>
+              <h3>翻墙检测</h3>
+              <p>帮助用户了解翻墙软件分配的IP地址，检测网络代理状态</p>
             </div>
             <div class="feature-item">
               <div class="feature-icon">📍</div>
-              <h3>精确坐标</h3>
-              <p>提供经纬度坐标，方便在地图上定位</p>
+              <h3>地理位置</h3>
+              <p>显示IP地址对应的国家、地区、城市等详细地理位置信息</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">⚡</div>
+              <h3>实时查询</h3>
+              <p>实时查询最新的IP地址信息，支持手动刷新重新检测</p>
             </div>
             <div class="feature-item">
               <div class="feature-icon">🔒</div>
@@ -116,7 +116,7 @@ import Header from '../../components/Header.astro';
             <div class="feature-item">
               <div class="feature-icon">📋</div>
               <h3>一键复制</h3>
-              <p>支持复制和导出查询结果，方便后续使用</p>
+              <p>支持复制IP地址，方便后续使用</p>
             </div>
           </div>
         </div>
@@ -131,13 +131,13 @@ import Header from '../../components/Header.astro';
               <strong>自动检测:</strong> 页面加载时自动检测你的当前外网IP地址及相关信息。
             </div>
             <div class="usage-item">
-              <strong>信息查询:</strong> 工具会查询地理位置信息，可能需要几秒钟时间。
+              <strong>多源对比:</strong> 同时查询国内外多个API服务，对比不同数据源的结果。
+            </div>
+            <div class="usage-item">
+              <strong>翻墙检测:</strong> 当使用翻墙软件时，不同API可能返回不同的IP地址。
             </div>
             <div class="usage-item">
               <strong>隐私说明:</strong> 本工具仅显示公开的IP信息，不会收集或存储你的个人信息。
-            </div>
-            <div class="usage-item">
-              <strong>网络来源:</strong> 高速生活时间内可能会显示你的真实网络位置信息。
             </div>
           </div>
         </div>
@@ -599,25 +599,36 @@ import Header from '../../components/Header.astro';
     constructor() {
       this.apis = [
         {
+          id: 'ip138',
+          name: 'IP138.com',
+          category: '国内',
+          url: 'https://2025.ip138.com/',
+          timeout: 8000,
+          type: 'html' // 标记为HTML类型
+        },
+        {
           id: 'ipapi-co',
           name: 'ipapi.co',
           category: '国外',
           url: 'https://ipapi.co/json/',
-          timeout: 5000
+          timeout: 5000,
+          type: 'json'
         },
         {
           id: 'ip-api',
           name: 'ip-api.com',
           category: '国外',
           url: 'https://ip-api.com/json/',
-          timeout: 5000
+          timeout: 5000,
+          type: 'json'
         },
         {
           id: 'ipinfo',
           name: 'ipinfo.io',
           category: '国外',
           url: 'https://ipinfo.io/json',
-          timeout: 5000
+          timeout: 5000,
+          type: 'json'
         }
       ];
 
@@ -711,7 +722,16 @@ import Header from '../../components/Header.astro';
           throw new Error(`HTTP ${response.status}`);
         }
         
-        const data = await response.json();
+        let data;
+        if (api.type === 'html') {
+          // 处理HTML响应
+          const htmlText = await response.text();
+          data = this.parseIP138HTML(htmlText);
+        } else {
+          // 处理JSON响应
+          data = await response.json();
+        }
+        
         const standardizedData = this.standardizeData(api.id, data);
         
         this.results[api.id] = {
@@ -732,6 +752,53 @@ import Header from '../../components/Header.astro';
         };
         
         this.updateTableRow(api.id, 'error', null, error.message);
+      }
+    }
+
+    // 解析IP138的HTML响应
+    parseIP138HTML(htmlText) {
+      try {
+        // 创建一个临时的DOM解析器
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        
+        // 从title中提取IP地址
+        const title = doc.querySelector('title')?.textContent || '';
+        const ipMatch = title.match(/您的IP地址是：(\d+\.\d+\.\d+\.\d+)/);
+        const ip = ipMatch ? ipMatch[1] : '';
+        
+        // 从页面内容中提取地理位置信息
+        const viewDiv = doc.querySelector('.view');
+        let location = '';
+        
+        if (viewDiv) {
+          const spans = viewDiv.querySelectorAll('span');
+          for (let span of spans) {
+            const text = span.textContent || '';
+            if (text.includes('来自：')) {
+              location = text.replace('来自：', '').trim();
+              break;
+            }
+          }
+        }
+        
+        // 如果没有找到"来自："，尝试其他方式
+        if (!location) {
+          const bodyText = doc.body.textContent || '';
+          const locationMatch = bodyText.match(/来自：([^<\n]+)/);
+          if (locationMatch) {
+            location = locationMatch[1].trim();
+          }
+        }
+        
+        return {
+          ip: ip,
+          location: location
+        };
+        
+      } catch (error) {
+        console.error('解析IP138 HTML失败:', error);
+        throw new Error('HTML解析失败');
       }
     }
 
@@ -769,6 +836,50 @@ import Header from '../../components/Header.astro';
       };
 
       switch (apiId) {
+        case 'ip138':
+          standardized.ip = rawData.ip || '';
+          // 解析位置信息，格式通常是：中国广东深圳龙岗 电信
+          if (rawData.location) {
+            const locationParts = rawData.location.split(' ');
+            if (locationParts.length >= 2) {
+              // 最后一部分通常是ISP
+              standardized.isp = locationParts[locationParts.length - 1];
+              // 前面的部分是地理位置
+              const geoLocation = locationParts.slice(0, -1).join(' ');
+              
+              // 尝试解析地理位置
+              if (geoLocation.includes('中国')) {
+                standardized.country = '中国';
+                const remaining = geoLocation.replace('中国', '');
+                
+                // 尝试提取省市信息
+                if (remaining.length > 0) {
+                  // 简单的省市解析
+                  if (remaining.includes('广东')) {
+                    standardized.region = '广东';
+                    standardized.city = remaining.replace('广东', '');
+                  } else if (remaining.includes('北京')) {
+                    standardized.region = '北京';
+                    standardized.city = '北京';
+                  } else if (remaining.includes('上海')) {
+                    standardized.region = '上海';
+                    standardized.city = '上海';
+                  } else {
+                    // 其他情况，简单处理
+                    standardized.city = remaining;
+                  }
+                }
+              } else {
+                // 非中国地址
+                standardized.country = geoLocation;
+              }
+            } else {
+              // 如果格式不符合预期，直接使用原始位置信息
+              standardized.country = rawData.location;
+            }
+          }
+          break;
+          
         case 'ipapi-co':
           standardized.ip = rawData.ip || '';
           standardized.country = rawData.country_name || '';
