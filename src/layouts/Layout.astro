@@ -127,36 +127,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 <style is:global>
   :root {
-    /* 细颗粒纸质纹理背景变量 */
-    --img-paper-noise: url(/src/assets/noise.webp);
-    
-    /* 基础纸质背景 - 细颗粒效果 */
-    --background-paper-base: 
-      var(--img-paper-noise),
-      var(--img-paper-noise),
-      linear-gradient(to bottom, rgba(0, 0, 0, .08) 0%, rgba(0, 0, 0, .12) 100%);
-    
-    /* 头部纸质背景 */
-    --background-paper-header: 
-      var(--img-paper-noise),
-      linear-gradient(to bottom, rgba(0, 0, 0, .15) 0%, rgba(0, 0, 0, .18) 100%);
-    
-    /* 内容区域纸质背景 */
-    --background-paper-content: 
-      var(--img-paper-noise),
-      linear-gradient(to left, rgba(0, 0, 0, .06) 0%, transparent 40vw);
-    
-    /* 卡片纸质背景 */
-    --background-paper-card: 
-      var(--img-paper-noise),
-      var(--img-paper-noise),
-      linear-gradient(to bottom, rgba(255, 255, 255, .85) 0%, rgba(255, 255, 255, .75) 100%);
-    
-    /* 混合模式 */
-    --mix-blend-mode-paper: multiply;
-    --mix-blend-mode-overlay: overlay;
-    --mix-blend-mode-soft-light: soft-light;
-
     /* 复古工业风格配色 */
     --color-bg: #d4c4a0;
     --color-text: #2c2416;
@@ -180,25 +150,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   }
 
   .dark {
-    /* 深色模式的细颗粒纸质纹理背景 */
-    --background-paper-base: 
-      var(--img-paper-noise),
-      var(--img-paper-noise),
-      linear-gradient(to bottom, rgba(255, 255, 255, .03) 0%, rgba(255, 255, 255, .05) 100%);
-    
-    --background-paper-header: 
-      var(--img-paper-noise),
-      linear-gradient(to bottom, rgba(255, 255, 255, .06) 0%, rgba(255, 255, 255, .08) 100%);
-    
-    --background-paper-content: 
-      var(--img-paper-noise),
-      linear-gradient(to left, rgba(255, 255, 255, .02) 0%, transparent 40vw);
-    
-    --background-paper-card: 
-      var(--img-paper-noise),
-      var(--img-paper-noise),
-      linear-gradient(to bottom, rgba(0, 0, 0, .25) 0%, rgba(0, 0, 0, .15) 100%);
-
     --color-bg: #2c2416;
     --color-text: #d4c4a0;
     --color-accent: #cd853f;
@@ -222,16 +173,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   }
 
   body {
-    /* 应用细颗粒纸质纹理背景 */
-    background: var(--background-paper-base);
-    background-size: 
-      64px 64px,    /* 第一层纹理 - 更小的颗粒 */
-      32px 32px,    /* 第二层纹理 - 极细的颗粒 */
-      cover;        /* 渐变层 */
-    background-repeat: repeat, repeat, no-repeat;
-    background-attachment: fixed, fixed, fixed;
-    background-position: 0 0, 16px 16px, center;
-    
+    background-color: var(--color-bg);
+    /* 添加噪点纹理背景 - 直接使用路径 */
+    background-image: url('/src/assets/noise.webp');
+    background-repeat: repeat;
+    background-size: 200px 200px; /* 调整纹理大小 */
+    background-attachment: fixed; /* 固定背景，滚动时不移动 */
     color: var(--color-text);
     line-height: 1.6;
     font-size: 16px;
@@ -240,32 +187,47 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       background-color 0.3s ease,
       color 0.3s ease;
     font-weight: 400;
-    overflow-x: hidden;
+    overflow-x: hidden; /* 防止整个页面横向滚动 */
     position: relative;
   }
 
-  /* 为主要内容区域添加细颗粒纸质纹理效果 */
-  .header {
-    background: var(--background-paper-header);
-    background-size: 48px 48px, cover;
-    background-repeat: repeat, no-repeat;
-    background-attachment: local, fixed;
-    position: relative;
+  /* 为深色模式调整噪点纹理的混合模式 */
+  .dark body {
+    background-blend-mode: multiply;
+    background-color: var(--color-bg);
   }
 
-  .header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--img-paper-noise);
-    background-size: 24px 24px;
-    background-repeat: repeat;
-    mix-blend-mode: var(--mix-blend-mode-overlay);
-    opacity: 0.4;
-    pointer-events: none;
+  /* 为了确保内容在纹理上清晰可见，给主要内容区域添加轻微的背景 */
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 为卡片和重要内容区域添加轻微的背景增强 */
+  .industrial-border,
+  .post-card,
+  .project-card,
+  .article-content,
+  .hero-stats,
+  .code-snippet {
+    position: relative;
+    backdrop-filter: blur(0.5px); /* 轻微模糊背景纹理 */
+  }
+
+  /* 确保卡片背景在纹理上更突出 */
+  .post-card,
+  .project-card {
+    background-color: var(--color-card);
+    box-shadow: 
+      var(--shadow-md),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1); /* 内阴影增强边界 */
+  }
+
+  .article-content {
+    background-color: var(--color-card);
+    box-shadow: 
+      var(--shadow-sm),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
   h1,
@@ -705,8 +667,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     padding: 0 1rem;
     width: 100%; /* 确保容器不超出视口 */
     overflow-x: hidden; /* 防止容器内容溢出 */
-    position: relative;
-    z-index: 1;
   }
 
   .sr-only {
@@ -725,14 +685,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   .industrial-border {
     border: var(--border-width) var(--border-style) var(--color-border);
     position: relative;
-    /* 添加细颗粒纸质纹理背景 */
-    background: var(--background-paper-card);
-    background-size: 
-      48px 48px,    /* 第一层纹理 */
-      24px 24px,    /* 第二层纹理 - 更细的颗粒 */
-      cover;        /* 渐变层 */
-    background-repeat: repeat, repeat, no-repeat;
-    background-position: 0 0, 12px 12px, center;
   }
 
   .industrial-border::before {
@@ -745,64 +697,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     border: 1px solid var(--color-muted);
     pointer-events: none;
     opacity: 0.5;
-  }
-
-  /* 为卡片添加细颗粒纸质纹理效果 */
-  .post-card,
-  .project-card {
-    background: var(--background-paper-card);
-    background-size: 
-      40px 40px,    /* 第一层纹理 */
-      20px 20px,    /* 第二层纹理 - 极细的颗粒 */
-      cover;        /* 渐变层 */
-    background-repeat: repeat, repeat, no-repeat;
-    background-position: 0 0, 10px 10px, center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .post-card::after,
-  .project-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--img-paper-noise);
-    background-size: 16px 16px;
-    background-repeat: repeat;
-    mix-blend-mode: var(--mix-blend-mode-soft-light);
-    opacity: 0.3;
-    pointer-events: none;
-  }
-
-  /* 文章内容区域的细颗粒纸质纹理 */
-  .article-content {
-    background: var(--background-paper-content);
-    background-size: 
-      56px 56px,    /* 第一层纹理 */
-      28px 28px,    /* 第二层纹理 */
-      cover;        /* 渐变层 */
-    background-repeat: repeat, repeat, no-repeat;
-    background-position: 0 0, 14px 14px, center;
-    position: relative;
-  }
-
-  .article-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--img-paper-noise);
-    background-size: 20px 20px;
-    background-repeat: repeat;
-    mix-blend-mode: var(--mix-blend-mode-multiply);
-    opacity: 0.2;
-    pointer-events: none;
-    z-index: -1;
   }
 
   /* 按钮样式 */
@@ -852,47 +746,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       padding: 0 0.75rem;
     }
 
-    /* 移动端细颗粒背景纹理调整 */
-    body {
-      background-size: 
-        48px 48px,    /* 第一层纹理 - 移动端稍大 */
-        24px 24px,    /* 第二层纹理 */
-        cover;        /* 渐变层 */
-    }
-
-    .header {
-      background-size: 32px 32px, cover;
-    }
-
-    .header::before {
-      background-size: 16px 16px;
-    }
-
-    .industrial-border,
-    .post-card,
-    .project-card {
-      background-size: 
-        32px 32px,    /* 第一层纹理 */
-        16px 16px,    /* 第二层纹理 */
-        cover;        /* 渐变层 */
-    }
-
-    .post-card::after,
-    .project-card::after {
-      background-size: 12px 12px;
-    }
-
-    .article-content {
-      background-size: 
-        40px 40px,    /* 第一层纹理 */
-        20px 20px,    /* 第二层纹理 */
-        cover;        /* 渐变层 */
-    }
-
-    .article-content::before {
-      background-size: 16px 16px;
-    }
-
     /* 移动端代码块优化 */
     pre {
       max-height: 300px; /* 移动端降低最大高度 */
@@ -912,6 +765,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     .code-container pre {
       padding: 1rem 0.75rem;
       font-size: 0.875rem;
+    }
+
+    /* 移动端背景纹理调整 */
+    body {
+      background-size: 150px 150px; /* 移动端使用更小的纹理 */
     }
   }
 </style>
