@@ -594,10 +594,19 @@ import Header from '../../components/Header.astro';
 </style>
 
 <script>
-  // 改进的IP信息查看器 - 移除ip-api.com
+  // 改进的IP信息查看器 - 添加ipip.net作为主要接口
   class SimpleIPViewer {
     constructor() {
       this.apis = [
+        {
+          id: 'ipip-net',
+          name: 'IPIP.net',
+          category: '国内',
+          url: 'https://myip.ipip.net/',
+          timeout: 8000,
+          type: 'text',
+          priority: 1 // 最高优先级
+        },
         {
           id: 'ip138',
           name: 'IP138.com',
@@ -605,7 +614,7 @@ import Header from '../../components/Header.astro';
           url: 'https://2025.ip138.com/',
           timeout: 8000,
           type: 'html',
-          priority: 1
+          priority: 2
         },
         {
           id: 'ipapi-co',
@@ -614,7 +623,7 @@ import Header from '../../components/Header.astro';
           url: 'https://ipapi.co/json/',
           timeout: 8000,
           type: 'json',
-          priority: 2
+          priority: 3
         },
         {
           id: 'ipinfo',
@@ -623,7 +632,7 @@ import Header from '../../components/Header.astro';
           url: 'https://ipinfo.io/json',
           timeout: 8000,
           type: 'json',
-          priority: 3
+          priority: 4
         },
         {
           id: 'httpbin',
@@ -632,7 +641,7 @@ import Header from '../../components/Header.astro';
           url: 'https://httpbin.org/ip',
           timeout: 8000,
           type: 'json',
-          priority: 4
+          priority: 5
         }
       ];
 
@@ -796,6 +805,9 @@ import Header from '../../components/Header.astro';
         if (api.type === 'html') {
           const htmlText = await response.text();
           data = this.parseIP138HTML(htmlText);
+        } else if (api.type === 'text') {
+          const textContent = await response.text();
+          data = this.parseIPIPNetText(textContent);
         } else {
           data = await response.json();
         }
@@ -812,6 +824,41 @@ import Header from '../../components/Header.astro';
         
       } catch (error) {
         throw error; // 重新抛出错误，让重试机制处理
+      }
+    }
+
+    // 解析IPIP.net的文本响应
+    parseIPIPNetText(textContent) {
+      try {
+        // 解析格式：当前 IP：14.153.129.147  来自于：中国 广东 深圳  电信
+        const ipMatch = textContent.match(/当前\s*IP[：:]\s*(\d+\.\d+\.\d+\.\d+)/);
+        const ip = ipMatch ? ipMatch[1] : '';
+        
+        const locationMatch = textContent.match(/来自于[：:]\s*([^\n\r]+)/);
+        let location = '';
+        let isp = '';
+        
+        if (locationMatch) {
+          const locationText = locationMatch[1].trim();
+          // 分离地理位置和ISP信息
+          const parts = locationText.split(/\s+/);
+          if (parts.length > 0) {
+            // 最后一个通常是ISP
+            isp = parts[parts.length - 1];
+            // 其余的是地理位置
+            location = parts.slice(0, -1).join(' ');
+          }
+        }
+        
+        return {
+          ip: ip,
+          location: location,
+          isp: isp
+        };
+        
+      } catch (error) {
+        console.error('解析IPIP.net文本失败:', error);
+        throw new Error('文本解析失败');
       }
     }
 
@@ -895,6 +942,24 @@ import Header from '../../components/Header.astro';
       };
 
       switch (apiId) {
+        case 'ipip-net':
+          standardized.ip = rawData.ip || '';
+          standardized.isp = rawData.isp || '';
+          if (rawData.location) {
+            // 解析地理位置信息，例如：中国 广东 深圳
+            const locationParts = rawData.location.split(/\s+/);
+            if (locationParts.length >= 1) {
+              standardized.country = locationParts[0] || '';
+            }
+            if (locationParts.length >= 2) {
+              standardized.region = locationParts[1] || '';
+            }
+            if (locationParts.length >= 3) {
+              standardized.city = locationParts[2] || '';
+            }
+          }
+          break;
+          
         case 'ip138':
           standardized.ip = rawData.ip || '';
           if (rawData.location) {
@@ -1009,38 +1074,50 @@ import Header from '../../components/Header.astro';
         return;
       }
 
-      // 获取最常见的值作为主显示
-      const getConsensusValue = (field) => {
-        const values = successfulResults.map(r => r.data[field]).filter(v => v && v !== '未知');
-        if (values.length === 0) return '未知';
+      // 优先使用IPIP.net的结果，如果失败则使用其他成功的结果
+      let primaryResult = this.results['ipip-net'];
+      if (!primaryResult || !primaryResult.success) {
+        // 按优先级选择第一个成功的结果
+        const sortedResults = Object.entries(this.results)
+          .filter(([_, result]) => result.success)
+          .sort(([aId], [bId]) => {
+            const aApi = this.apis.find(api => api.id === aId);
+            const bApi = this.apis.find(api => api.id === bId);
+            return (aApi?.priority || 999) - (bApi?.priority || 999);
+          });
         
-        const counts = {};
-        values.forEach(value => {
-          counts[value] = (counts[value] || 0) + 1;
-        });
-        
-        return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-      };
+        if (sortedResults.length > 0) {
+          primaryResult = sortedResults[0][1];
+        }
+      }
 
-      // 更新主显示
-      const ip = getConsensusValue('ip');
-      this.mainIpValue.textContent = ip;
-      
-      const country = getConsensusValue('country');
-      const region = getConsensusValue('region');
-      const city = getConsensusValue('city');
-      const location = [city, region, country].filter(v => v && v !== '未知').join(', ') || '未知';
-      this.mainLocation.textContent = location;
-      
-      this.mainIsp.textContent = getConsensusValue('isp');
-      this.mainTimezone.textContent = getConsensusValue('timezone');
-      
-      const lat = getConsensusValue('latitude');
-      const lon = getConsensusValue('longitude');
-      const coordinates = (lat && lon && lat !== '未知' && lon !== '未知') 
-        ? `${lat}, ${lon}` 
-        : '未知';
-      this.mainCoordinates.textContent = coordinates;
+      if (primaryResult && primaryResult.success) {
+        const data = primaryResult.data;
+        
+        // 更新主显示
+        this.mainIpValue.textContent = data.ip || '未知';
+        
+        const location = [data.city, data.region, data.country]
+          .filter(v => v && v !== '未知')
+          .join(', ') || '未知';
+        this.mainLocation.textContent = location;
+        
+        this.mainIsp.textContent = data.isp || '未知';
+        this.mainTimezone.textContent = data.timezone || '未知';
+        
+        const coordinates = (data.latitude && data.longitude && 
+                           data.latitude !== '未知' && data.longitude !== '未知') 
+          ? `${data.latitude}, ${data.longitude}` 
+          : '未知';
+        this.mainCoordinates.textContent = coordinates;
+      } else {
+        // 如果没有成功的结果，显示失败信息
+        this.mainIpValue.textContent = '检测失败';
+        this.mainLocation.textContent = '无法获取';
+        this.mainIsp.textContent = '无法获取';
+        this.mainTimezone.textContent = '无法获取';
+        this.mainCoordinates.textContent = '无法获取';
+      }
     }
 
     async copyMainIP() {
