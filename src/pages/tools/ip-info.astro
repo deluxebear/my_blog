@@ -40,14 +40,6 @@ import Header from '../../components/Header.astro';
               <span class="detail-label">ISP提供商:</span>
               <span class="detail-value" id="main-isp">获取中...</span>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">时区:</span>
-              <span class="detail-value" id="main-timezone">获取中...</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">经纬度:</span>
-              <span class="detail-value" id="main-coordinates">获取中...</span>
-            </div>
           </div>
         </div>
       </section>
@@ -608,7 +600,7 @@ import Header from '../../components/Header.astro';
 </style>
 
 <script>
-  // 改进的IP信息查看器 - 添加ipip.net作为主要接口
+  // 改进的IP信息查看器 - 移除时区和经纬度功能
   class SimpleIPViewer {
     constructor() {
       this.apis = [
@@ -670,8 +662,6 @@ import Header from '../../components/Header.astro';
       this.mainIpValue = document.getElementById('main-ip-value');
       this.mainLocation = document.getElementById('main-location');
       this.mainIsp = document.getElementById('main-isp');
-      this.mainTimezone = document.getElementById('main-timezone');
-      this.mainCoordinates = document.getElementById('main-coordinates');
       this.copyMainIpBtn = document.getElementById('copy-main-ip');
       this.refreshAllBtn = document.getElementById('refresh-all-btn');
       this.comparisonTbody = document.getElementById('comparison-tbody');
@@ -696,8 +686,6 @@ import Header from '../../components/Header.astro';
       this.mainIpValue.textContent = '检测中...';
       this.mainLocation.textContent = '获取中...';
       this.mainIsp.textContent = '获取中...';
-      this.mainTimezone.textContent = '获取中...';
-      this.mainCoordinates.textContent = '获取中...';
 
       // 创建表格行
       this.createTableRows();
@@ -948,9 +936,6 @@ import Header from '../../components/Header.astro';
         country: '',
         region: '',
         city: '',
-        latitude: '',
-        longitude: '',
-        timezone: '',
         isp: '',
         org: ''
       };
@@ -1012,9 +997,6 @@ import Header from '../../components/Header.astro';
           standardized.country = rawData.country_name || '';
           standardized.region = rawData.region || '';
           standardized.city = rawData.city || '';
-          standardized.latitude = rawData.latitude || '';
-          standardized.longitude = rawData.longitude || '';
-          standardized.timezone = rawData.timezone || '';
           standardized.isp = rawData.org || '';
           standardized.org = rawData.org || '';
           break;
@@ -1024,12 +1006,6 @@ import Header from '../../components/Header.astro';
           standardized.country = rawData.country || '';
           standardized.region = rawData.region || '';
           standardized.city = rawData.city || '';
-          if (rawData.loc) {
-            const [lat, lon] = rawData.loc.split(',');
-            standardized.latitude = lat || '';
-            standardized.longitude = lon || '';
-          }
-          standardized.timezone = rawData.timezone || '';
           standardized.isp = rawData.org || '';
           standardized.org = rawData.org || '';
           break;
@@ -1083,8 +1059,6 @@ import Header from '../../components/Header.astro';
         this.mainIpValue.textContent = '检测失败';
         this.mainLocation.textContent = '无法获取';
         this.mainIsp.textContent = '无法获取';
-        this.mainTimezone.textContent = '无法获取';
-        this.mainCoordinates.textContent = '无法获取';
         return;
       }
 
@@ -1117,20 +1091,11 @@ import Header from '../../components/Header.astro';
         this.mainLocation.textContent = location;
         
         this.mainIsp.textContent = data.isp || '未知';
-        this.mainTimezone.textContent = data.timezone || '未知';
-        
-        const coordinates = (data.latitude && data.longitude && 
-                           data.latitude !== '未知' && data.longitude !== '未知') 
-          ? `${data.latitude}, ${data.longitude}` 
-          : '未知';
-        this.mainCoordinates.textContent = coordinates;
       } else {
         // 如果没有成功的结果，显示失败信息
         this.mainIpValue.textContent = '检测失败';
         this.mainLocation.textContent = '无法获取';
         this.mainIsp.textContent = '无法获取';
-        this.mainTimezone.textContent = '无法获取';
-        this.mainCoordinates.textContent = '无法获取';
       }
     }
 
