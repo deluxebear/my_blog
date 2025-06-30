@@ -594,7 +594,7 @@ import Header from '../../components/Header.astro';
 </style>
 
 <script>
-  // 简化的IP信息查看器 - 专注于翻墙IP检测
+  // 改进的IP信息查看器 - 增强错误处理和API管理
   class SimpleIPViewer {
     constructor() {
       this.apis = [
@@ -604,35 +604,50 @@ import Header from '../../components/Header.astro';
           category: '国内',
           url: 'https://2025.ip138.com/',
           timeout: 8000,
-          type: 'html' // 标记为HTML类型
+          type: 'html',
+          priority: 1
         },
         {
           id: 'ipapi-co',
           name: 'ipapi.co',
           category: '国外',
           url: 'https://ipapi.co/json/',
-          timeout: 5000,
-          type: 'json'
-        },
-        {
-          id: 'ip-api',
-          name: 'ip-api.com',
-          category: '国外',
-          url: 'https://ip-api.com/json/',
-          timeout: 5000,
-          type: 'json'
+          timeout: 8000,
+          type: 'json',
+          priority: 2
         },
         {
           id: 'ipinfo',
           name: 'ipinfo.io',
           category: '国外',
           url: 'https://ipinfo.io/json',
-          timeout: 5000,
-          type: 'json'
+          timeout: 8000,
+          type: 'json',
+          priority: 3
+        },
+        {
+          id: 'httpbin',
+          name: 'httpbin.org',
+          category: '国外',
+          url: 'https://httpbin.org/ip',
+          timeout: 8000,
+          type: 'json',
+          priority: 4
+        },
+        {
+          id: 'ip-api',
+          name: 'ip-api.com',
+          category: '国外',
+          url: 'https://ip-api.com/json/',
+          timeout: 10000,
+          type: 'json',
+          priority: 5, // 降低优先级，因为容易出现403错误
+          retryDelay: 2000 // 添加重试延迟
         }
       ];
 
       this.results = {};
+      this.retryAttempts = new Map(); // 记录重试次数
       this.initElements();
       this.bindEvents();
       this.startDetection();
@@ -662,6 +677,7 @@ import Header from '../../components/Header.astro';
     async startDetection() {
       this.refreshAllBtn.disabled = true;
       this.results = {};
+      this.retryAttempts.clear();
       
       // 重置显示
       this.mainIpValue.textContent = '检测中...';
@@ -673,23 +689,87 @@ import Header from '../../components/Header.astro';
       // 创建表格行
       this.createTableRows();
 
-      // 并发查询所有API
-      const promises = this.apis.map(api => this.queryAPI(api));
+      // 按优先级排序API，优先查询可靠的API
+      const sortedApis = [...this.apis].sort((a, b) => a.priority - b.priority);
+      
+      // 分批查询API以避免同时发送太多请求
+      const batchSize = 2;
+      for (let i = 0; i < sortedApis.length; i += batchSize) {
+        const batch = sortedApis.slice(i, i + batchSize);
+        const promises = batch.map(api => this.queryAPIWithRetry(api));
+        
+        try {
+          await Promise.allSettled(promises);
+          // 每批之间稍作延迟
+          if (i + batchSize < sortedApis.length) {
+            await this.delay(500);
+          }
+        } catch (error) {
+          console.error('批量查询过程中发生错误:', error);
+        }
+      }
+
+      this.updateMainDisplay();
+      this.refreshAllBtn.disabled = false;
+    }
+
+    async queryAPIWithRetry(api, maxRetries = 2) {
+      const retryKey = api.id;
+      let currentAttempt = this.retryAttempts.get(retryKey) || 0;
       
       try {
-        await Promise.allSettled(promises);
-        this.updateMainDisplay();
+        await this.queryAPI(api);
       } catch (error) {
-        console.error('检测过程中发生错误:', error);
-      } finally {
-        this.refreshAllBtn.disabled = false;
+        console.error(`API ${api.id} 第${currentAttempt + 1}次查询失败:`, error);
+        
+        // 对于403错误，增加重试延迟
+        if (error.message.includes('403') && currentAttempt < maxRetries) {
+          this.retryAttempts.set(retryKey, currentAttempt + 1);
+          
+          // 更新状态显示为重试中
+          this.updateTableRow(api.id, 'loading', null, `重试中 (${currentAttempt + 1}/${maxRetries})`);
+          
+          // 等待一段时间后重试
+          const retryDelay = api.retryDelay || 1000;
+          await this.delay(retryDelay * (currentAttempt + 1)); // 递增延迟
+          
+          return this.queryAPIWithRetry(api, maxRetries);
+        }
+        
+        // 如果是其他错误或重试次数已达上限，记录最终失败
+        this.results[api.id] = {
+          success: false,
+          error: error.message,
+          attempts: currentAttempt + 1
+        };
+        
+        this.updateTableRow(api.id, 'error', null, this.getErrorMessage(error.message, currentAttempt + 1));
       }
+    }
+
+    getErrorMessage(originalError, attempts) {
+      if (originalError.includes('403')) {
+        return attempts > 1 ? `访问受限 (已重试${attempts}次)` : '访问受限';
+      } else if (originalError.includes('timeout') || originalError.includes('超时')) {
+        return '请求超时';
+      } else if (originalError.includes('CORS')) {
+        return '跨域限制';
+      } else {
+        return '查询失败';
+      }
+    }
+
+    delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     createTableRows() {
       this.comparisonTbody.innerHTML = '';
       
-      this.apis.forEach(api => {
+      // 按优先级排序显示
+      const sortedApis = [...this.apis].sort((a, b) => a.priority - b.priority);
+      
+      sortedApis.forEach(api => {
         const row = document.createElement('tr');
         row.id = `api-row-${api.id}`;
         
@@ -724,11 +804,9 @@ import Header from '../../components/Header.astro';
         
         let data;
         if (api.type === 'html') {
-          // 处理HTML响应
           const htmlText = await response.text();
           data = this.parseIP138HTML(htmlText);
         } else {
-          // 处理JSON响应
           data = await response.json();
         }
         
@@ -743,31 +821,20 @@ import Header from '../../components/Header.astro';
         this.updateTableRow(api.id, 'success', standardizedData);
         
       } catch (error) {
-        console.error(`API ${api.id} 查询失败:`, error);
-        
-        this.results[api.id] = {
-          success: false,
-          error: error.message,
-          responseTime: Date.now() - startTime
-        };
-        
-        this.updateTableRow(api.id, 'error', null, error.message);
+        throw error; // 重新抛出错误，让重试机制处理
       }
     }
 
     // 解析IP138的HTML响应
     parseIP138HTML(htmlText) {
       try {
-        // 创建一个临时的DOM解析器
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
         
-        // 从title中提取IP地址
         const title = doc.querySelector('title')?.textContent || '';
         const ipMatch = title.match(/您的IP地址是：(\d+\.\d+\.\d+\.\d+)/);
         const ip = ipMatch ? ipMatch[1] : '';
         
-        // 从页面内容中提取地理位置信息
         const viewDiv = doc.querySelector('.view');
         let location = '';
         
@@ -782,7 +849,6 @@ import Header from '../../components/Header.astro';
           }
         }
         
-        // 如果没有找到"来自："，尝试其他方式
         if (!location) {
           const bodyText = doc.body.textContent || '';
           const locationMatch = bodyText.match(/来自：([^<\n]+)/);
@@ -809,7 +875,10 @@ import Header from '../../components/Header.astro';
       try {
         const response = await fetch(url, {
           signal: controller.signal,
-          mode: 'cors'
+          mode: 'cors',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
         });
         clearTimeout(timeoutId);
         return response;
@@ -838,43 +907,32 @@ import Header from '../../components/Header.astro';
       switch (apiId) {
         case 'ip138':
           standardized.ip = rawData.ip || '';
-          // 解析位置信息，格式通常是：中国广东深圳龙岗 电信
           if (rawData.location) {
             const locationParts = rawData.location.split(' ');
             if (locationParts.length >= 2) {
-              // 最后一部分通常是ISP
               standardized.isp = locationParts[locationParts.length - 1];
-              // 前面的部分是地理位置
               const geoLocation = locationParts.slice(0, -1).join(' ');
               
-              // 尝试解析地理位置
               if (geoLocation.includes('中国')) {
                 standardized.country = '中国';
                 const remaining = geoLocation.replace('中国', '');
                 
-                // 尝试提取省市信息
-                if (remaining.length > 0) {
-                  // 简单的省市解析
-                  if (remaining.includes('广东')) {
-                    standardized.region = '广东';
-                    standardized.city = remaining.replace('广东', '');
-                  } else if (remaining.includes('北京')) {
-                    standardized.region = '北京';
-                    standardized.city = '北京';
-                  } else if (remaining.includes('上海')) {
-                    standardized.region = '上海';
-                    standardized.city = '上海';
-                  } else {
-                    // 其他情况，简单处理
-                    standardized.city = remaining;
-                  }
+                if (remaining.includes('广东')) {
+                  standardized.region = '广东';
+                  standardized.city = remaining.replace('广东', '');
+                } else if (remaining.includes('北京')) {
+                  standardized.region = '北京';
+                  standardized.city = '北京';
+                } else if (remaining.includes('上海')) {
+                  standardized.region = '上海';
+                  standardized.city = '上海';
+                } else {
+                  standardized.city = remaining;
                 }
               } else {
-                // 非中国地址
                 standardized.country = geoLocation;
               }
             } else {
-              // 如果格式不符合预期，直接使用原始位置信息
               standardized.country = rawData.location;
             }
           }
@@ -918,6 +976,11 @@ import Header from '../../components/Header.astro';
           standardized.isp = rawData.org || '';
           standardized.org = rawData.org || '';
           break;
+          
+        case 'httpbin':
+          standardized.ip = rawData.origin || '';
+          // httpbin只返回IP地址，其他信息为空
+          break;
       }
 
       return standardized;
@@ -928,6 +991,10 @@ import Header from '../../components/Header.astro';
       const locationElement = document.getElementById(`location-${apiId}`);
       const statusIndicator = document.getElementById(`status-${apiId}`);
       const statusText = document.getElementById(`status-text-${apiId}`);
+      
+      if (!ipElement || !locationElement || !statusIndicator || !statusText) {
+        return;
+      }
       
       statusIndicator.className = `status-indicator ${status}`;
       statusText.className = `status-text ${status}`;
@@ -945,6 +1012,10 @@ import Header from '../../components/Header.astro';
         ipElement.textContent = '获取失败';
         locationElement.textContent = errorMessage || '查询失败';
         statusText.textContent = '失败';
+      } else if (status === 'loading') {
+        ipElement.textContent = '检测中...';
+        locationElement.textContent = errorMessage || '获取中...';
+        statusText.textContent = errorMessage || '查询中';
       }
     }
 
@@ -965,13 +1036,11 @@ import Header from '../../components/Header.astro';
         const values = successfulResults.map(r => r.data[field]).filter(v => v && v !== '未知');
         if (values.length === 0) return '未知';
         
-        // 计算每个值的出现次数
         const counts = {};
         values.forEach(value => {
           counts[value] = (counts[value] || 0) + 1;
         });
         
-        // 返回出现次数最多的值
         return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
       };
 
