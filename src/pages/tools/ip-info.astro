@@ -56,10 +56,6 @@ import Header from '../../components/Header.astro';
                   <input type="checkbox" id="api-ipinfo" checked />
                   <span>ipinfo.io (国外)</span>
                 </label>
-                <label class="api-checkbox">
-                  <input type="checkbox" id="api-ipgeolocation" checked />
-                  <span>ipgeolocation.io (国外)</span>
-                </label>
               </div>
             </div>
           </div>
@@ -907,7 +903,7 @@ import Header from '../../components/Header.astro';
         'ip-api': {
           name: 'ip-api.com',
           category: '国外',
-          url: (ip) => ip ? `http://ip-api.com/json/${ip}` : 'http://ip-api.com/json/',
+          url: (ip) => ip ? `https://ip-api.com/json/${ip}` : 'https://ip-api.com/json/',
           timeout: 5000,
           retries: 2
         },
@@ -915,13 +911,6 @@ import Header from '../../components/Header.astro';
           name: 'ipinfo.io',
           category: '国外',
           url: (ip) => ip ? `https://ipinfo.io/${ip}/json` : 'https://ipinfo.io/json',
-          timeout: 5000,
-          retries: 2
-        },
-        'ipgeolocation': {
-          name: 'ipgeolocation.io',
-          category: '国外',
-          url: (ip) => `https://api.ipgeolocation.io/ipgeo?apiKey=free${ip ? `&ip=${ip}` : ''}`,
           timeout: 5000,
           retries: 2
         }
@@ -1169,18 +1158,6 @@ import Header from '../../components/Header.astro';
           standardized.timezone = rawData.timezone || '';
           standardized.isp = rawData.org || '';
           standardized.org = rawData.org || '';
-          break;
-          
-        case 'ipgeolocation':
-          standardized.ip = rawData.ip || '';
-          standardized.country = rawData.country_name || '';
-          standardized.region = rawData.state_prov || '';
-          standardized.city = rawData.city || '';
-          standardized.latitude = rawData.latitude || '';
-          standardized.longitude = rawData.longitude || '';
-          standardized.timezone = rawData.time_zone?.name || '';
-          standardized.isp = rawData.isp || '';
-          standardized.org = rawData.organization || '';
           break;
       }
 
