@@ -11,9 +11,6 @@ const {
   image = "/og-image.jpg",
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-// Import noise texture
-import noiseTexture from '../assets/noise.webp';
 ---
 
 <!doctype html>
@@ -128,7 +125,7 @@ import noiseTexture from '../assets/noise.webp';
   </body>
 </html>
 
-<style is:global define:vars={{ noiseTexture }}>
+<style is:global>
   :root {
     /* 复古工业风格配色 */
     --color-bg: #d4c4a0;
@@ -150,9 +147,6 @@ import noiseTexture from '../assets/noise.webp';
 
     --border-width: 1px;
     --border-style: solid;
-
-    /* 噪点纹理变量 */
-    --noise-texture: var(--noiseTexture);
   }
 
   .dark {
@@ -180,8 +174,8 @@ import noiseTexture from '../assets/noise.webp';
 
   body {
     background-color: var(--color-bg);
-    /* 添加噪点纹理背景 */
-    background-image: url(var(--noise-texture));
+    /* 添加噪点纹理背景 - 直接使用路径 */
+    background-image: url('/src/assets/noise.webp');
     background-repeat: repeat;
     background-size: 200px 200px; /* 调整纹理大小 */
     background-attachment: fixed; /* 固定背景，滚动时不移动 */
