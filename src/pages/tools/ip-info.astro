@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 ---
 
-<Layout title="IP信息查看器 - 数字花园" description="查看你的外网IP地址、地理位置、ISP信息等详细网络信息">
+<Layout title="IP信息查看器 - 数字花园" description="同时查询多个IP地址API服务，对比不同数据源的IP信息，包括地理位置、ISP信息等">
   <Header />
   
   <main class="main">
@@ -11,67 +11,133 @@ import Header from '../../components/Header.astro';
       <header class="page-header">
         <h1 class="page-title">IP信息查看器</h1>
         <p class="page-description">
-          获取你的外网IP地址及相关网络信息，包括地理位置、ISP提供商等详细数据
+          同时查询多个免费IP地址API服务，对比不同数据源的信息差异，获取最全面的IP地址详情
         </p>
       </header>
 
-      <!-- IP信息显示区域 -->
-      <section class="ip-info-section">
-        <div class="ip-card industrial-border" id="ip-card">
-          <div class="loading-state" id="loading-state">
-            <div class="loading-spinner"></div>
-            <p>正在获取IP信息...</p>
+      <!-- 查询控制区域 -->
+      <section class="query-section">
+        <div class="query-card industrial-border">
+          <div class="query-header">
+            <h2 class="query-title">IP地址查询</h2>
+            <div class="query-status" id="query-status">
+              <span class="status-text">准备就绪</span>
+              <div class="status-indicator ready" id="status-indicator"></div>
+            </div>
           </div>
           
-          <div class="ip-content hidden" id="ip-content">
-            <div class="ip-main">
-              <div class="ip-address-section">
-                <h2 class="ip-label">你的IP地址</h2>
-                <div class="ip-address" id="ip-address">---.---.---.---</div>
-                <button class="copy-btn" id="copy-ip-btn" title="复制IP地址">
+          <div class="query-controls">
+            <div class="ip-input-section">
+              <label for="ip-input" class="input-label">IP地址 (留空自动检测当前IP)</label>
+              <div class="input-group">
+                <input type="text" id="ip-input" placeholder="例如: 8.8.8.8 或留空自动检测" />
+                <button class="query-btn" id="query-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
                   </svg>
+                  开始查询
                 </button>
               </div>
             </div>
             
-            <div class="ip-details">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">地理位置</div>
-                  <div class="detail-value" id="location">获取中...</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">ISP提供商</div>
-                  <div class="detail-value" id="isp">获取中...</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">组织机构</div>
-                  <div class="detail-value" id="org">获取中...</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">时区</div>
-                  <div class="detail-value" id="timezone">获取中...</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">经纬度</div>
-                  <div class="detail-value" id="coordinates">获取中...</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">IP类型</div>
-                  <div class="detail-value" id="ip-type">获取中...</div>
-                </div>
+            <div class="api-selection">
+              <div class="selection-label">选择API服务</div>
+              <div class="api-checkboxes">
+                <label class="api-checkbox">
+                  <input type="checkbox" id="api-ipapi-co" checked />
+                  <span>ipapi.co (国外)</span>
+                </label>
+                <label class="api-checkbox">
+                  <input type="checkbox" id="api-ip-api" checked />
+                  <span>ip-api.com (国外)</span>
+                </label>
+                <label class="api-checkbox">
+                  <input type="checkbox" id="api-ipinfo" checked />
+                  <span>ipinfo.io (国外)</span>
+                </label>
+                <label class="api-checkbox">
+                  <input type="checkbox" id="api-ipgeolocation" checked />
+                  <span>ipgeolocation.io (国外)</span>
+                </label>
               </div>
             </div>
           </div>
-          
-          <div class="error-state hidden" id="error-state">
-            <div class="error-icon">⚠️</div>
-            <h3>获取IP信息失败</h3>
-            <p>无法获取IP信息，请检查网络连接或稍后重试。</p>
-            <button class="retry-btn" id="retry-btn">重新获取</button>
+        </div>
+      </section>
+
+      <!-- 查询结果区域 -->
+      <section class="results-section" id="results-section">
+        <div class="results-header">
+          <h2 class="results-title">查询结果</h2>
+          <div class="results-summary" id="results-summary">
+            <span class="summary-item">总计: <span id="total-apis">0</span> 个API</span>
+            <span class="summary-item">成功: <span id="success-count">0</span></span>
+            <span class="summary-item">失败: <span id="failed-count">0</span></span>
+            <span class="summary-item">平均响应: <span id="avg-response-time">0ms</span></span>
+          </div>
+        </div>
+
+        <!-- API结果网格 -->
+        <div class="api-results-grid" id="api-results-grid">
+          <!-- 动态生成API结果卡片 -->
+        </div>
+
+        <!-- 数据对比表格 -->
+        <div class="comparison-section" id="comparison-section">
+          <h3 class="comparison-title">数据对比分析</h3>
+          <div class="comparison-table-wrapper">
+            <table class="comparison-table" id="comparison-table">
+              <thead>
+                <tr>
+                  <th>数据项</th>
+                  <!-- 动态生成API列标题 -->
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 动态生成对比数据 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 统一结果展示 -->
+        <div class="unified-result" id="unified-result">
+          <h3 class="unified-title">综合信息</h3>
+          <div class="unified-content">
+            <div class="unified-ip">
+              <div class="unified-label">IP地址</div>
+              <div class="unified-value" id="unified-ip-value">---.---.---.---</div>
+              <button class="copy-btn" id="copy-unified-ip" title="复制IP地址">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+            
+            <div class="unified-details">
+              <div class="detail-row">
+                <span class="detail-label">地理位置:</span>
+                <span class="detail-value" id="unified-location">获取中...</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">ISP提供商:</span>
+                <span class="detail-value" id="unified-isp">获取中...</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">组织机构:</span>
+                <span class="detail-value" id="unified-org">获取中...</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">时区:</span>
+                <span class="detail-value" id="unified-timezone">获取中...</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">经纬度:</span>
+                <span class="detail-value" id="unified-coordinates">获取中...</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -82,48 +148,35 @@ import Header from '../../components/Header.astro';
           <h2 class="features-title">功能特点</h2>
           <div class="features-grid">
             <div class="feature-item">
-              <div class="feature-icon">🌍</div>
-              <h3>地理位置</h3>
-              <p>显示IP地址对应的国家、省份、城市等地理位置信息</p>
+              <div class="feature-icon">🌐</div>
+              <h3>多API并发</h3>
+              <p>同时查询多个免费IP地址API服务，获取最全面的信息</p>
             </div>
             <div class="feature-item">
-              <div class="feature-icon">🏢</div>
-              <h3>ISP信息</h3>
-              <p>显示互联网服务提供商和组织机构信息</p>
+              <div class="feature-icon">⚡</div>
+              <h3>响应时间</h3>
+              <p>实时显示每个API的响应时间，帮助评估服务质量</p>
             </div>
             <div class="feature-item">
-              <div class="feature-icon">🕒</div>
-              <h3>时区信息</h3>
-              <p>显示IP地址所在地区的时区信息</p>
+              <div class="feature-icon">📊</div>
+              <h3>数据对比</h3>
+              <p>对比不同API返回的信息差异，识别最准确的数据</p>
             </div>
             <div class="feature-item">
-              <div class="feature-icon">📍</div>
-              <h3>精确坐标</h3>
-              <p>提供经纬度坐标信息（精度取决于IP类型）</p>
+              <div class="feature-icon">🔄</div>
+              <h3>失败重试</h3>
+              <p>自动重试失败的API请求，提高查询成功率</p>
             </div>
             <div class="feature-item">
-              <div class="feature-icon">🔒</div>
-              <h3>隐私保护</h3>
-              <p>所有查询都在客户端进行，不记录任何个人信息</p>
+              <div class="feature-icon">🎯</div>
+              <h3>自定义查询</h3>
+              <p>支持查询指定IP地址或自动检测当前IP</p>
             </div>
             <div class="feature-item">
               <div class="feature-icon">📋</div>
-              <h3>一键复制</h3>
-              <p>支持一键复制IP地址，方便在其他地方使用</p>
+              <h3>结果导出</h3>
+              <p>支持复制和导出查询结果，方便后续使用</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 使用说明 -->
-      <section class="usage-section">
-        <div class="usage-content industrial-border">
-          <h2 class="usage-title">使用说明</h2>
-          <div class="usage-text">
-            <p><strong>自动检测：</strong>页面加载时会自动获取你的外网IP地址和相关信息。</p>
-            <p><strong>信息准确性：</strong>IP地理位置信息基于IP地址数据库，可能与实际位置有一定偏差。</p>
-            <p><strong>隐私说明：</strong>本工具仅显示公开的IP信息，不会收集或存储任何个人数据。</p>
-            <p><strong>网络要求：</strong>需要连接到互联网才能获取IP信息。</p>
           </div>
         </div>
       </section>
@@ -154,40 +207,379 @@ import Header from '../../components/Header.astro';
   .page-description {
     font-size: 1.125rem;
     color: var(--color-secondary);
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
     line-height: 1.6;
     font-family: var(--font-sans);
   }
 
-  .ip-info-section {
+  /* 查询控制区域 */
+  .query-section {
     margin-bottom: 3rem;
   }
 
-  .ip-card {
+  .query-card {
     background-color: var(--color-card);
     padding: 2rem;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    position: relative;
-    min-height: 300px;
   }
 
-  /* 加载状态 */
-  .loading-state {
+  .query-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .query-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    margin: 0;
+  }
+
+  .query-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-text {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-secondary);
+  }
+
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+  }
+
+  .status-indicator.ready { background-color: #6c757d; }
+  .status-indicator.querying { background-color: #ffc107; animation: pulse 1s infinite; }
+  .status-indicator.success { background-color: #28a745; }
+  .status-indicator.error { background-color: #dc3545; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .query-controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .ip-input-section {
     display: flex;
     flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .input-label {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-text);
+  }
+
+  .input-group {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  #ip-input {
+    flex: 1;
+    padding: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    background-color: var(--color-code-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    outline: none;
+  }
+
+  #ip-input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .query-btn {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 200px;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .query-btn:hover {
+    background-color: var(--color-text);
+    border-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  .query-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .api-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .selection-label {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-text);
+  }
+
+  .api-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .api-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .api-checkbox:hover {
+    background-color: var(--color-hover);
+  }
+
+  .api-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent);
+  }
+
+  .api-checkbox span {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  /* 结果区域 */
+  .results-section {
+    margin-bottom: 3rem;
+    display: none;
+  }
+
+  .results-section.visible {
+    display: block;
+  }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .results-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    margin: 0;
+  }
+
+  .results-summary {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .summary-item {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .summary-item span {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  /* API结果网格 */
+  .api-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .api-result-card {
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .api-result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .api-result-card.success {
+    border-color: #28a745;
+  }
+
+  .api-result-card.error {
+    border-color: #dc3545;
+    opacity: 0.7;
+  }
+
+  .api-result-card.loading {
+    border-color: #ffc107;
+  }
+
+  .api-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .api-name {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-text);
+  }
+
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .api-status-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .api-status-icon.success { background-color: #28a745; }
+  .api-status-icon.error { background-color: #dc3545; }
+  .api-status-icon.loading { background-color: #ffc107; animation: pulse 1s infinite; }
+
+  .api-response-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-secondary);
+  }
+
+  .api-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .api-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 1rem;
   }
 
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--color-border);
-    border-top: 3px solid var(--color-accent);
+  .api-data-label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-secondary);
+    white-space: nowrap;
+  }
+
+  .api-data-value {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--color-text);
+    text-align: right;
+    word-break: break-word;
+  }
+
+  .api-error-message {
+    color: #dc3545;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 4px;
+  }
+
+  .api-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .api-loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--color-border);
+    border-top: 2px solid var(--color-accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -197,31 +589,100 @@ import Header from '../../components/Header.astro';
     100% { transform: rotate(360deg); }
   }
 
-  .loading-state p {
-    color: var(--color-secondary);
+  .api-loading-text {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--color-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
   }
 
-  /* IP内容 */
-  .ip-content {
+  /* 对比表格 */
+  .comparison-section {
+    margin-bottom: 3rem;
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    padding: 2rem;
+  }
+
+  .comparison-title {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .comparison-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+
+  .comparison-table th {
+    background-color: var(--color-code-bg);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text);
+  }
+
+  .comparison-table td {
+    color: var(--color-secondary);
+    word-break: break-word;
+  }
+
+  .comparison-table tr:nth-child(even) {
+    background-color: var(--color-hover);
+  }
+
+  /* 统一结果 */
+  .unified-result {
+    background-color: var(--color-card);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .unified-title {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .unified-content {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
 
-  .ip-main {
+  .unified-ip {
     text-align: center;
-  }
-
-  .ip-address-section {
     position: relative;
-    display: inline-block;
   }
 
-  .ip-label {
+  .unified-label {
     font-family: var(--font-mono);
     font-size: 1rem;
     font-weight: 700;
@@ -231,9 +692,9 @@ import Header from '../../components/Header.astro';
     color: var(--color-secondary);
   }
 
-  .ip-address {
+  .unified-value {
     font-family: var(--font-mono);
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--color-accent);
     letter-spacing: 2px;
@@ -243,13 +704,12 @@ import Header from '../../components/Header.astro';
     border: 2px solid var(--color-border);
     border-radius: 8px;
     display: inline-block;
-    position: relative;
   }
 
   .copy-btn {
     position: absolute;
     top: 50%;
-    right: -50px;
+    right: calc(50% - 150px);
     transform: translateY(-50%);
     background: var(--color-card);
     border: 2px solid var(--color-border);
@@ -271,20 +731,18 @@ import Header from '../../components/Header.astro';
     border-color: #28a745;
   }
 
-  .ip-details {
-    border-top: 2px solid var(--color-border);
-    padding-top: 2rem;
-  }
-
-  .detail-grid {
+  .unified-details {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
-  .detail-item {
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
     background-color: var(--color-code-bg);
-    padding: 1rem;
     border: 1px solid var(--color-border);
     border-radius: 4px;
   }
@@ -294,9 +752,8 @@ import Header from '../../components/Header.astro';
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     color: var(--color-secondary);
-    margin-bottom: 0.5rem;
   }
 
   .detail-value {
@@ -304,66 +761,13 @@ import Header from '../../components/Header.astro';
     font-size: 0.9rem;
     color: var(--color-text);
     font-weight: 500;
+    text-align: right;
     word-break: break-word;
-  }
-
-  /* 错误状态 */
-  .error-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    gap: 1rem;
-    text-align: center;
-  }
-
-  .error-icon {
-    font-size: 3rem;
-  }
-
-  .error-state h3 {
-    font-family: var(--font-mono);
-    font-size: 1.2rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-text);
-    margin: 0;
-  }
-
-  .error-state p {
-    color: var(--color-secondary);
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .retry-btn {
-    background-color: var(--color-accent);
-    color: var(--color-bg);
-    border: 2px solid var(--color-accent);
-    padding: 0.75rem 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 4px;
-  }
-
-  .retry-btn:hover {
-    background-color: var(--color-text);
-    border-color: var(--color-text);
-    transform: translateY(-1px);
   }
 
   /* 功能特点 */
   .features-section {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
   }
 
   .features-content {
@@ -418,44 +822,6 @@ import Header from '../../components/Header.astro';
     font-family: var(--font-sans);
   }
 
-  /* 使用说明 */
-  .usage-section {
-    margin-bottom: 2rem;
-  }
-
-  .usage-content {
-    background-color: var(--color-card);
-    padding: 2rem;
-  }
-
-  .usage-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-accent);
-  }
-
-  .usage-text p {
-    color: var(--color-secondary);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-    font-family: var(--font-sans);
-  }
-
-  .usage-text strong {
-    color: var(--color-text);
-    font-weight: 600;
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
   /* 响应式设计 */
   @media (max-width: 768px) {
     .page-title {
@@ -466,13 +832,44 @@ import Header from '../../components/Header.astro';
       font-size: 1rem;
     }
 
-    .ip-card {
+    .query-card {
       padding: 1.5rem;
     }
 
-    .ip-address {
-      font-size: 1.8rem;
-      padding: 0.75rem 1rem;
+    .query-controls {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .query-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .input-group {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .results-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .results-summary {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .api-results-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .unified-details {
+      grid-template-columns: 1fr;
     }
 
     .copy-btn {
@@ -484,216 +881,575 @@ import Header from '../../components/Header.astro';
       margin-right: auto;
     }
 
-    .detail-grid {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
     .features-grid {
       grid-template-columns: 1fr;
       gap: 1rem;
     }
 
-    .features-content,
-    .usage-content {
+    .features-content {
       padding: 1.5rem;
     }
   }
 </style>
 
 <script>
-  // IP信息获取和显示
-  class IPInfoViewer {
+  // 增强版IP信息查看器
+  class EnhancedIPInfoViewer {
     constructor() {
-      this.loadingState = document.getElementById('loading-state');
-      this.ipContent = document.getElementById('ip-content');
-      this.errorState = document.getElementById('error-state');
-      this.retryBtn = document.getElementById('retry-btn');
-      this.copyBtn = document.getElementById('copy-ip-btn');
-      
-      this.init();
-    }
+      this.apis = {
+        'ipapi-co': {
+          name: 'ipapi.co',
+          category: '国外',
+          url: (ip) => ip ? `https://ipapi.co/${ip}/json/` : 'https://ipapi.co/json/',
+          timeout: 5000,
+          retries: 2
+        },
+        'ip-api': {
+          name: 'ip-api.com',
+          category: '国外',
+          url: (ip) => ip ? `http://ip-api.com/json/${ip}` : 'http://ip-api.com/json/',
+          timeout: 5000,
+          retries: 2
+        },
+        'ipinfo': {
+          name: 'ipinfo.io',
+          category: '国外',
+          url: (ip) => ip ? `https://ipinfo.io/${ip}/json` : 'https://ipinfo.io/json',
+          timeout: 5000,
+          retries: 2
+        },
+        'ipgeolocation': {
+          name: 'ipgeolocation.io',
+          category: '国外',
+          url: (ip) => `https://api.ipgeolocation.io/ipgeo?apiKey=free${ip ? `&ip=${ip}` : ''}`,
+          timeout: 5000,
+          retries: 2
+        }
+      };
 
-    init() {
-      this.fetchIPInfo();
+      this.results = {};
+      this.queryStartTime = 0;
+      
+      this.initElements();
       this.bindEvents();
     }
 
+    initElements() {
+      this.ipInput = document.getElementById('ip-input');
+      this.queryBtn = document.getElementById('query-btn');
+      this.statusIndicator = document.getElementById('status-indicator');
+      this.statusText = document.querySelector('.status-text');
+      this.resultsSection = document.getElementById('results-section');
+      this.apiResultsGrid = document.getElementById('api-results-grid');
+      this.comparisonSection = document.getElementById('comparison-section');
+      this.comparisonTable = document.getElementById('comparison-table');
+      this.unifiedResult = document.getElementById('unified-result');
+      this.copyUnifiedBtn = document.getElementById('copy-unified-ip');
+      
+      // 统计元素
+      this.totalApis = document.getElementById('total-apis');
+      this.successCount = document.getElementById('success-count');
+      this.failedCount = document.getElementById('failed-count');
+      this.avgResponseTime = document.getElementById('avg-response-time');
+      
+      // 统一结果元素
+      this.unifiedIpValue = document.getElementById('unified-ip-value');
+      this.unifiedLocation = document.getElementById('unified-location');
+      this.unifiedIsp = document.getElementById('unified-isp');
+      this.unifiedOrg = document.getElementById('unified-org');
+      this.unifiedTimezone = document.getElementById('unified-timezone');
+      this.unifiedCoordinates = document.getElementById('unified-coordinates');
+    }
+
     bindEvents() {
-      this.retryBtn?.addEventListener('click', () => {
-        this.fetchIPInfo();
+      this.queryBtn.addEventListener('click', () => {
+        this.startQuery();
       });
 
-      this.copyBtn?.addEventListener('click', () => {
-        this.copyIPAddress();
+      this.ipInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.startQuery();
+        }
+      });
+
+      this.copyUnifiedBtn.addEventListener('click', () => {
+        this.copyUnifiedIP();
       });
     }
 
-    async fetchIPInfo() {
-      this.showLoading();
+    async startQuery() {
+      const targetIP = this.ipInput.value.trim();
+      
+      // 验证IP格式（如果提供了IP）
+      if (targetIP && !this.isValidIP(targetIP)) {
+        this.showError('请输入有效的IP地址格式');
+        return;
+      }
+
+      // 获取选中的API
+      const selectedApis = this.getSelectedApis();
+      if (selectedApis.length === 0) {
+        this.showError('请至少选择一个API服务');
+        return;
+      }
+
+      this.updateStatus('querying', '查询中...');
+      this.queryBtn.disabled = true;
+      this.results = {};
+      this.queryStartTime = Date.now();
+
+      // 显示结果区域
+      this.resultsSection.classList.add('visible');
+      this.updateStatistics(selectedApis.length, 0, 0, 0);
+
+      // 创建API结果卡片
+      this.createApiResultCards(selectedApis);
+
+      // 并发查询所有选中的API
+      const promises = selectedApis.map(apiId => this.queryAPI(apiId, targetIP));
       
       try {
-        // 使用多个IP信息API作为备选
-        const apis = [
-          'https://ipapi.co/json/',
-          'https://api.ipify.org?format=json',
-          'https://httpbin.org/ip'
-        ];
-
-        let ipData = null;
-        
-        // 首先尝试获取详细信息
-        try {
-          const response = await fetch('https://ipapi.co/json/');
-          if (response.ok) {
-            ipData = await response.json();
-          }
-        } catch (error) {
-          console.warn('Primary API failed:', error);
-        }
-
-        // 如果主要API失败，尝试备用API
-        if (!ipData || !ipData.ip) {
-          try {
-            const response = await fetch('https://api.ipify.org?format=json');
-            if (response.ok) {
-              const basicData = await response.json();
-              ipData = { ip: basicData.ip };
-            }
-          } catch (error) {
-            console.warn('Backup API failed:', error);
-          }
-        }
-
-        if (ipData && ipData.ip) {
-          this.displayIPInfo(ipData);
-        } else {
-          throw new Error('无法获取IP信息');
-        }
+        await Promise.allSettled(promises);
+        this.completeQuery();
       } catch (error) {
-        console.error('获取IP信息失败:', error);
-        this.showError();
+        console.error('查询过程中发生错误:', error);
+        this.updateStatus('error', '查询失败');
+      } finally {
+        this.queryBtn.disabled = false;
       }
     }
 
-    displayIPInfo(data) {
-      // 显示IP地址
-      const ipElement = document.getElementById('ip-address');
-      if (ipElement) {
-        ipElement.textContent = data.ip || '未知';
-      }
-
-      // 显示详细信息
-      this.updateDetailValue('location', this.formatLocation(data));
-      this.updateDetailValue('isp', data.org || data.isp || '未知');
-      this.updateDetailValue('org', data.org || '未知');
-      this.updateDetailValue('timezone', data.timezone || '未知');
-      this.updateDetailValue('coordinates', this.formatCoordinates(data));
-      this.updateDetailValue('ip-type', this.getIPType(data.ip));
-
-      this.showContent();
+    getSelectedApis() {
+      const checkboxes = document.querySelectorAll('.api-checkbox input[type="checkbox"]:checked');
+      return Array.from(checkboxes).map(cb => cb.id.replace('api-', ''));
     }
 
-    updateDetailValue(id, value) {
-      const element = document.getElementById(id);
-      if (element) {
-        element.textContent = value;
-      }
-    }
-
-    formatLocation(data) {
-      const parts = [];
-      if (data.city) parts.push(data.city);
-      if (data.region) parts.push(data.region);
-      if (data.country_name) parts.push(data.country_name);
-      return parts.length > 0 ? parts.join(', ') : '未知';
-    }
-
-    formatCoordinates(data) {
-      if (data.latitude && data.longitude) {
-        return `${data.latitude}, ${data.longitude}`;
-      }
-      return '未知';
-    }
-
-    getIPType(ip) {
-      if (!ip) return '未知';
+    createApiResultCards(selectedApis) {
+      this.apiResultsGrid.innerHTML = '';
       
-      // 简单的IPv4/IPv6检测
-      if (ip.includes(':')) {
-        return 'IPv6';
-      } else if (ip.includes('.')) {
-        return 'IPv4';
-      }
-      return '未知';
+      selectedApis.forEach(apiId => {
+        const api = this.apis[apiId];
+        const card = document.createElement('div');
+        card.className = 'api-result-card loading';
+        card.id = `api-card-${apiId}`;
+        
+        card.innerHTML = `
+          <div class="api-card-header">
+            <div class="api-name">${api.name}</div>
+            <div class="api-status">
+              <div class="api-status-icon loading"></div>
+              <div class="api-response-time" id="response-time-${apiId}">查询中...</div>
+            </div>
+          </div>
+          <div class="api-card-content" id="api-content-${apiId}">
+            <div class="api-loading">
+              <div class="api-loading-spinner"></div>
+              <div class="api-loading-text">正在查询 ${api.name}</div>
+            </div>
+          </div>
+        `;
+        
+        this.apiResultsGrid.appendChild(card);
+      });
     }
 
-    async copyIPAddress() {
-      const ipElement = document.getElementById('ip-address');
-      const ip = ipElement?.textContent;
+    async queryAPI(apiId, targetIP) {
+      const api = this.apis[apiId];
+      const startTime = Date.now();
       
-      if (!ip || ip === '未知') return;
+      try {
+        const response = await this.fetchWithTimeout(api.url(targetIP), api.timeout);
+        const endTime = Date.now();
+        const responseTime = endTime - startTime;
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // 标准化数据格式
+        const standardizedData = this.standardizeData(apiId, data);
+        
+        this.results[apiId] = {
+          success: true,
+          data: standardizedData,
+          responseTime: responseTime,
+          timestamp: new Date().toISOString()
+        };
+        
+        this.updateApiCard(apiId, 'success', responseTime, standardizedData);
+        
+      } catch (error) {
+        console.error(`API ${apiId} 查询失败:`, error);
+        
+        this.results[apiId] = {
+          success: false,
+          error: error.message,
+          responseTime: Date.now() - startTime,
+          timestamp: new Date().toISOString()
+        };
+        
+        this.updateApiCard(apiId, 'error', Date.now() - startTime, null, error.message);
+      }
+    }
+
+    async fetchWithTimeout(url, timeout) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          mode: 'cors'
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          throw new Error('请求超时');
+        }
+        throw error;
+      }
+    }
+
+    standardizeData(apiId, rawData) {
+      const standardized = {
+        ip: '',
+        country: '',
+        region: '',
+        city: '',
+        latitude: '',
+        longitude: '',
+        timezone: '',
+        isp: '',
+        org: '',
+        as: '',
+        raw: rawData
+      };
+
+      switch (apiId) {
+        case 'ipapi-co':
+          standardized.ip = rawData.ip || '';
+          standardized.country = rawData.country_name || '';
+          standardized.region = rawData.region || '';
+          standardized.city = rawData.city || '';
+          standardized.latitude = rawData.latitude || '';
+          standardized.longitude = rawData.longitude || '';
+          standardized.timezone = rawData.timezone || '';
+          standardized.isp = rawData.org || '';
+          standardized.org = rawData.org || '';
+          standardized.as = rawData.asn || '';
+          break;
+          
+        case 'ip-api':
+          standardized.ip = rawData.query || '';
+          standardized.country = rawData.country || '';
+          standardized.region = rawData.regionName || '';
+          standardized.city = rawData.city || '';
+          standardized.latitude = rawData.lat || '';
+          standardized.longitude = rawData.lon || '';
+          standardized.timezone = rawData.timezone || '';
+          standardized.isp = rawData.isp || '';
+          standardized.org = rawData.org || '';
+          standardized.as = rawData.as || '';
+          break;
+          
+        case 'ipinfo':
+          standardized.ip = rawData.ip || '';
+          standardized.country = rawData.country || '';
+          standardized.region = rawData.region || '';
+          standardized.city = rawData.city || '';
+          if (rawData.loc) {
+            const [lat, lon] = rawData.loc.split(',');
+            standardized.latitude = lat || '';
+            standardized.longitude = lon || '';
+          }
+          standardized.timezone = rawData.timezone || '';
+          standardized.isp = rawData.org || '';
+          standardized.org = rawData.org || '';
+          break;
+          
+        case 'ipgeolocation':
+          standardized.ip = rawData.ip || '';
+          standardized.country = rawData.country_name || '';
+          standardized.region = rawData.state_prov || '';
+          standardized.city = rawData.city || '';
+          standardized.latitude = rawData.latitude || '';
+          standardized.longitude = rawData.longitude || '';
+          standardized.timezone = rawData.time_zone?.name || '';
+          standardized.isp = rawData.isp || '';
+          standardized.org = rawData.organization || '';
+          break;
+      }
+
+      return standardized;
+    }
+
+    updateApiCard(apiId, status, responseTime, data, errorMessage) {
+      const card = document.getElementById(`api-card-${apiId}`);
+      const content = document.getElementById(`api-content-${apiId}`);
+      const responseTimeElement = document.getElementById(`response-time-${apiId}`);
+      const statusIcon = card.querySelector('.api-status-icon');
+      
+      // 更新卡片状态
+      card.className = `api-result-card ${status}`;
+      statusIcon.className = `api-status-icon ${status}`;
+      responseTimeElement.textContent = `${responseTime}ms`;
+      
+      if (status === 'success' && data) {
+        content.innerHTML = `
+          <div class="api-data-item">
+            <span class="api-data-label">IP地址:</span>
+            <span class="api-data-value">${data.ip || '未知'}</span>
+          </div>
+          <div class="api-data-item">
+            <span class="api-data-label">国家:</span>
+            <span class="api-data-value">${data.country || '未知'}</span>
+          </div>
+          <div class="api-data-item">
+            <span class="api-data-label">地区:</span>
+            <span class="api-data-value">${data.region || '未知'}</span>
+          </div>
+          <div class="api-data-item">
+            <span class="api-data-label">城市:</span>
+            <span class="api-data-value">${data.city || '未知'}</span>
+          </div>
+          <div class="api-data-item">
+            <span class="api-data-label">ISP:</span>
+            <span class="api-data-value">${data.isp || '未知'}</span>
+          </div>
+          <div class="api-data-item">
+            <span class="api-data-label">时区:</span>
+            <span class="api-data-value">${data.timezone || '未知'}</span>
+          </div>
+          <div class="api-data-item">
+            <span class="api-data-label">坐标:</span>
+            <span class="api-data-value">${data.latitude && data.longitude ? `${data.latitude}, ${data.longitude}` : '未知'}</span>
+          </div>
+        `;
+      } else if (status === 'error') {
+        content.innerHTML = `
+          <div class="api-error-message">
+            查询失败: ${errorMessage || '未知错误'}
+          </div>
+        `;
+      }
+    }
+
+    completeQuery() {
+      const successfulResults = Object.values(this.results).filter(r => r.success);
+      const failedResults = Object.values(this.results).filter(r => !r.success);
+      const totalTime = Date.now() - this.queryStartTime;
+      const avgResponseTime = successfulResults.length > 0 
+        ? Math.round(successfulResults.reduce((sum, r) => sum + r.responseTime, 0) / successfulResults.length)
+        : 0;
+
+      // 更新统计信息
+      this.updateStatistics(
+        Object.keys(this.results).length,
+        successfulResults.length,
+        failedResults.length,
+        avgResponseTime
+      );
+
+      // 更新状态
+      if (successfulResults.length > 0) {
+        this.updateStatus('success', `查询完成 (${successfulResults.length}/${Object.keys(this.results).length})`);
+      } else {
+        this.updateStatus('error', '所有API查询失败');
+      }
+
+      // 生成对比表格
+      this.generateComparisonTable();
+      
+      // 生成统一结果
+      this.generateUnifiedResult();
+    }
+
+    updateStatistics(total, success, failed, avgTime) {
+      this.totalApis.textContent = total;
+      this.successCount.textContent = success;
+      this.failedCount.textContent = failed;
+      this.avgResponseTime.textContent = `${avgTime}ms`;
+    }
+
+    generateComparisonTable() {
+      const successfulResults = Object.entries(this.results).filter(([_, result]) => result.success);
+      
+      if (successfulResults.length === 0) {
+        this.comparisonSection.style.display = 'none';
+        return;
+      }
+
+      this.comparisonSection.style.display = 'block';
+
+      // 生成表头
+      const thead = this.comparisonTable.querySelector('thead tr');
+      thead.innerHTML = '<th>数据项</th>';
+      successfulResults.forEach(([apiId, _]) => {
+        const api = this.apis[apiId];
+        thead.innerHTML += `<th>${api.name}<br><small>(${api.category})</small></th>`;
+      });
+
+      // 生成表体
+      const tbody = this.comparisonTable.querySelector('tbody');
+      tbody.innerHTML = '';
+
+      const dataFields = [
+        { key: 'ip', label: 'IP地址' },
+        { key: 'country', label: '国家' },
+        { key: 'region', label: '地区' },
+        { key: 'city', label: '城市' },
+        { key: 'isp', label: 'ISP' },
+        { key: 'org', label: '组织' },
+        { key: 'timezone', label: '时区' },
+        { key: 'latitude', label: '纬度' },
+        { key: 'longitude', label: '经度' }
+      ];
+
+      dataFields.forEach(field => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td><strong>${field.label}</strong></td>`;
+        
+        successfulResults.forEach(([apiId, result]) => {
+          const value = result.data[field.key] || '未知';
+          row.innerHTML += `<td>${value}</td>`;
+        });
+        
+        tbody.appendChild(row);
+      });
+
+      // 添加响应时间行
+      const responseRow = document.createElement('tr');
+      responseRow.innerHTML = '<td><strong>响应时间</strong></td>';
+      successfulResults.forEach(([apiId, result]) => {
+        responseRow.innerHTML += `<td>${result.responseTime}ms</td>`;
+      });
+      tbody.appendChild(responseRow);
+    }
+
+    generateUnifiedResult() {
+      const successfulResults = Object.values(this.results).filter(r => r.success);
+      
+      if (successfulResults.length === 0) {
+        this.unifiedResult.style.display = 'none';
+        return;
+      }
+
+      this.unifiedResult.style.display = 'block';
+
+      // 获取最常见的值作为统一结果
+      const getConsensusValue = (field) => {
+        const values = successfulResults.map(r => r.data[field]).filter(v => v && v !== '未知');
+        if (values.length === 0) return '未知';
+        
+        // 计算每个值的出现次数
+        const counts = {};
+        values.forEach(value => {
+          counts[value] = (counts[value] || 0) + 1;
+        });
+        
+        // 返回出现次数最多的值
+        return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+      };
+
+      // 更新统一结果
+      const ip = getConsensusValue('ip');
+      this.unifiedIpValue.textContent = ip;
+      
+      const country = getConsensusValue('country');
+      const region = getConsensusValue('region');
+      const city = getConsensusValue('city');
+      const location = [city, region, country].filter(v => v && v !== '未知').join(', ') || '未知';
+      this.unifiedLocation.textContent = location;
+      
+      this.unifiedIsp.textContent = getConsensusValue('isp');
+      this.unifiedOrg.textContent = getConsensusValue('org');
+      this.unifiedTimezone.textContent = getConsensusValue('timezone');
+      
+      const lat = getConsensusValue('latitude');
+      const lon = getConsensusValue('longitude');
+      const coordinates = (lat && lon && lat !== '未知' && lon !== '未知') 
+        ? `${lat}, ${lon}` 
+        : '未知';
+      this.unifiedCoordinates.textContent = coordinates;
+    }
+
+    async copyUnifiedIP() {
+      const ip = this.unifiedIpValue.textContent;
+      
+      if (!ip || ip === '未知' || ip === '---.---.---.---') return;
 
       try {
         await navigator.clipboard.writeText(ip);
-        
-        // 显示复制成功反馈
-        this.copyBtn.classList.add('copied');
-        const originalHTML = this.copyBtn.innerHTML;
-        this.copyBtn.innerHTML = `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <polyline points="20,6 9,17 4,12"></polyline>
-          </svg>
-        `;
-        
-        setTimeout(() => {
-          this.copyBtn.classList.remove('copied');
-          this.copyBtn.innerHTML = originalHTML;
-        }, 2000);
+        this.showCopyFeedback(this.copyUnifiedBtn);
       } catch (error) {
-        console.error('复制失败:', error);
-        
-        // 降级方案
-        const textArea = document.createElement('textarea');
-        textArea.value = ip;
-        document.body.appendChild(textArea);
-        textArea.select();
-        
-        try {
-          document.execCommand('copy');
-          this.copyBtn.classList.add('copied');
-          setTimeout(() => {
-            this.copyBtn.classList.remove('copied');
-          }, 2000);
-        } catch (fallbackError) {
-          console.error('降级复制也失败了:', fallbackError);
-        }
-        
-        document.body.removeChild(textArea);
+        this.fallbackCopy(ip, this.copyUnifiedBtn);
       }
     }
 
-    showLoading() {
-      this.loadingState?.classList.remove('hidden');
-      this.ipContent?.classList.add('hidden');
-      this.errorState?.classList.add('hidden');
+    fallbackCopy(text, button) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        this.showCopyFeedback(button);
+      } catch (error) {
+        console.error('复制失败:', error);
+      }
+      
+      document.body.removeChild(textArea);
     }
 
-    showContent() {
-      this.loadingState?.classList.add('hidden');
-      this.ipContent?.classList.remove('hidden');
-      this.errorState?.classList.add('hidden');
+    showCopyFeedback(button) {
+      const originalHTML = button.innerHTML;
+      
+      button.classList.add('copied');
+      button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+      `;
+      
+      setTimeout(() => {
+        button.classList.remove('copied');
+        button.innerHTML = originalHTML;
+      }, 2000);
     }
 
-    showError() {
-      this.loadingState?.classList.add('hidden');
-      this.ipContent?.classList.add('hidden');
-      this.errorState?.classList.remove('hidden');
+    updateStatus(status, text) {
+      this.statusIndicator.className = `status-indicator ${status}`;
+      this.statusText.textContent = text;
+    }
+
+    showError(message) {
+      this.updateStatus('error', message);
+      setTimeout(() => {
+        this.updateStatus('ready', '准备就绪');
+      }, 3000);
+    }
+
+    isValidIP(ip) {
+      // 简单的IP格式验证
+      const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+      const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+      
+      if (ipv4Regex.test(ip)) {
+        const parts = ip.split('.');
+        return parts.every(part => parseInt(part) >= 0 && parseInt(part) <= 255);
+      }
+      
+      return ipv6Regex.test(ip);
     }
   }
 
   // 页面加载完成后初始化
   document.addEventListener('DOMContentLoaded', () => {
-    new IPInfoViewer();
+    new EnhancedIPInfoViewer();
   });
 </script>
