@@ -20,13 +20,15 @@ import Header from '../../components/Header.astro';
         <div class="current-ip-card industrial-border">
           <h2 class="current-ip-title">你的IP地址</h2>
           <div class="current-ip-display" id="current-ip-display">
-            <div class="ip-value" id="main-ip-value">检测中...</div>
-            <button class="copy-ip-btn" id="copy-main-ip" title="复制IP地址">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            </button>
+            <div class="ip-value-container">
+              <div class="ip-value" id="main-ip-value">检测中...</div>
+              <button class="copy-ip-btn" id="copy-main-ip" title="复制IP地址">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
           </div>
           
           <div class="current-ip-details" id="current-ip-details">
@@ -199,8 +201,16 @@ import Header from '../../components/Header.astro';
   }
 
   .current-ip-display {
-    position: relative;
     margin-bottom: 2rem;
+  }
+
+  /* 修改IP值容器布局 - 关键修复 */
+  .ip-value-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .ip-value {
@@ -213,28 +223,30 @@ import Header from '../../components/Header.astro';
     background-color: var(--color-code-bg);
     border: 2px solid var(--color-border);
     border-radius: 8px;
-    display: inline-block;
     min-width: 200px;
+    flex-shrink: 0;
   }
 
+  /* 复制按钮现在在IP地址右侧 */
   .copy-ip-btn {
-    position: absolute;
-    top: 50%;
-    right: calc(50% - 120px);
-    transform: translateY(-50%);
     background: var(--color-card);
     border: 2px solid var(--color-border);
     color: var(--color-secondary);
-    padding: 0.5rem;
+    padding: 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: fit-content;
   }
 
   .copy-ip-btn:hover {
     color: var(--color-accent);
     background-color: var(--color-hover);
-    transform: translateY(-50%) translateY(-1px);
+    transform: translateY(-1px);
   }
 
   .copy-ip-btn.copied {
@@ -547,19 +559,21 @@ import Header from '../../components/Header.astro';
       padding: 1.5rem;
     }
 
+    /* 移动端调整IP值容器布局 */
+    .ip-value-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
     .ip-value {
       font-size: 1.5rem;
       padding: 0.75rem 1rem;
       min-width: 150px;
+      width: 100%;
     }
 
     .copy-ip-btn {
-      position: static;
-      transform: none;
-      margin-top: 1rem;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
+      align-self: center;
     }
 
     .current-ip-details {
