@@ -10,7 +10,7 @@ export default defineConfig({
   site: 'https://www.jetems.com',
   integrations: [
     mdx(),
-    sitemap()
+    sitemap(),
   ],
   markdown: {
     remarkPlugins: [remarkGfm, remarkSmartypants],
@@ -22,11 +22,11 @@ export default defineConfig({
           behavior: 'append',
           properties: {
             className: ['heading-link'],
-            title: '链接到此标题'
-          }
-        }
-      ]
+            title: '链接到此标题',
+          },
+        },
+      ],
     ],
     syntaxHighlight: false // 禁用默认语法高亮，使用我们自己的
-  }
+  },
 });
