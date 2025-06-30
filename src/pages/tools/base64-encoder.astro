@@ -1802,9 +1802,11 @@ import Header from "../../components/Header.astro";
       );
 
       // 文件处理模式事件
-      this.fileUploadArea.addEventListener("click", () =>
-        this.fileInput.click()
-      );
+      this.fileUploadArea.addEventListener("click", (e) => {
+        // 防止重复触发
+        if (e.target === this.fileInput) return;
+        this.fileInput.click();
+      });
       this.fileUploadArea.addEventListener("dragover", (e) =>
         this.handleDragOver(e)
       );
@@ -1817,6 +1819,10 @@ import Header from "../../components/Header.astro";
       this.fileInput.addEventListener("change", (e) =>
         this.handleFileSelect(e)
       );
+      // 阻止文件输入的点击事件冒泡
+      this.fileInput.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
       this.removeFileBtn.addEventListener("click", () => this.removeFile());
       this.fileEncodeBtn.addEventListener("click", () => this.encodeFile());
       this.fileDecodeBtn.addEventListener("click", () => this.decodeFile());
