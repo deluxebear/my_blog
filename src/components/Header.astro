@@ -22,7 +22,9 @@ import logo from "../assets/logo.png";
           <li><a href="/" class="nav-link" data-page="home">首页</a></li>
           <li><a href="/posts" class="nav-link" data-page="posts">文章</a></li>
           <li><a href="/tools" class="nav-link" data-page="tools">工具</a></li>
-          <li><a href="/projects" class="nav-link" data-page="projects">项目</a></li>
+          <li>
+            <a href="/projects" class="nav-link" data-page="projects">项目</a>
+          </li>
           <li><a href="/about" class="nav-link" data-page="about">关于</a></li>
           <li>
             <a href="/rss.xml" class="nav-link rss-link" data-page="rss">RSS</a>
@@ -77,15 +79,22 @@ import logo from "../assets/logo.png";
 
   .logo {
     color: var(--color-accent);
-    transition: transform 0.3s ease;
     flex-shrink: 0;
   }
 
-  .logo:hover {
-    transform: rotate(45deg);
+  .logo svg {
+    display: block;
   }
 
-  .logo svg {
+  /* Logo 图片样式 - 覆盖全局 img 样式 */
+  .logo img {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: none !important;
+    max-width: none !important;
+    width: 60px;
+    height: 60px;
     display: block;
   }
 
@@ -271,6 +280,11 @@ import logo from "../assets/logo.png";
       height: 50px;
     }
 
+    .logo img {
+      width: 50px !important;
+      height: 50px !important;
+    }
+
     .site-title {
       font-size: 1.25rem;
       letter-spacing: 1px;
@@ -335,8 +349,8 @@ import logo from "../assets/logo.png";
     }
 
     .logo img {
-      width: 45px;
-      height: 45px;
+      width: 45px !important;
+      height: 45px !important;
     }
 
     .site-title {
@@ -412,12 +426,12 @@ import logo from "../assets/logo.png";
         link.classList.add("active");
       }
       // 匹配文章页面（包括文章列表和具体文章）
-      else if (currentPath.startsWith('/posts') && page === 'posts') {
-        link.classList.add('active');
+      else if (currentPath.startsWith("/posts") && page === "posts") {
+        link.classList.add("active");
       }
       // 匹配工具页面
-      else if (currentPath.startsWith('/tools') && page === 'tools') {
-        link.classList.add('active');
+      else if (currentPath.startsWith("/tools") && page === "tools") {
+        link.classList.add("active");
       }
       // 匹配项目页面
       else if (currentPath.startsWith("/projects") && page === "projects") {

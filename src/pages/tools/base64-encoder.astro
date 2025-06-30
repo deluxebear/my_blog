@@ -1,11 +1,14 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
 ---
 
-<Layout title="BASE64编解码工具 - 数字花园" description="BASE64编码和解码工具，支持文本编解码、文件支持、批量处理和格式验证">
+<Layout
+  title="BASE64编解码工具 - 数得其道"
+  description="BASE64编码和解码工具，支持文本编解码、文件支持、批量处理和格式验证"
+>
   <Header />
-  
+
   <main class="main">
     <div class="container">
       <header class="page-header">
@@ -21,9 +24,22 @@ import Header from '../../components/Header.astro';
           <!-- 操作模式选择 -->
           <div class="mode-selector">
             <div class="mode-tabs">
-              <button class="mode-tab active" data-mode="text" id="text-mode-tab">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <button
+                class="mode-tab active"
+                data-mode="text"
+                id="text-mode-tab"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                  ></path>
                   <polyline points="14,2 14,8 20,8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
                   <line x1="16" y1="17" x2="8" y2="17"></line>
@@ -32,15 +48,33 @@ import Header from '../../components/Header.astro';
                 文本编解码
               </button>
               <button class="mode-tab" data-mode="file" id="file-mode-tab">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
+                  ></path>
                   <polyline points="13,2 13,9 20,9"></polyline>
                 </svg>
                 文件编解码
               </button>
               <button class="mode-tab" data-mode="batch" id="batch-mode-tab">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  ></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                   <path d="M9 14l2 2 4-4"></path>
                 </svg>
@@ -54,37 +88,61 @@ import Header from '../../components/Header.astro';
             <div class="input-section">
               <div class="input-group">
                 <label for="text-input" class="input-label">输入文本:</label>
-                <textarea 
-                  id="text-input" 
-                  class="text-textarea" 
+                <textarea
+                  id="text-input"
+                  class="text-textarea"
                   placeholder="请输入需要编码或解码的文本..."
-                  rows="6"
-                ></textarea>
+                  rows="6"></textarea>
                 <div class="input-info">
                   <span class="char-count" id="text-char-count">0 字符</span>
-                  <span class="encoding-info" id="text-encoding-info">UTF-8</span>
+                  <span class="encoding-info" id="text-encoding-info"
+                    >UTF-8</span
+                  >
                 </div>
               </div>
 
               <div class="action-buttons">
                 <button class="action-btn encode-btn" id="text-encode-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="16,18 22,12 16,6"></polyline>
                     <polyline points="8,6 2,12 8,18"></polyline>
                   </svg>
                   BASE64编码
                 </button>
                 <button class="action-btn decode-btn" id="text-decode-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="8,18 2,12 8,6"></polyline>
                     <polyline points="16,6 22,12 16,18"></polyline>
                   </svg>
                   BASE64解码
                 </button>
                 <button class="action-btn clear-btn" id="text-clear-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="3,6 5,6 21,6"></polyline>
-                    <path d="M19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+                    <path
+                      d="M19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"
+                    ></path>
                   </svg>
                   清空
                 </button>
@@ -95,23 +153,39 @@ import Header from '../../components/Header.astro';
               <div class="output-group">
                 <label for="text-output" class="output-label">
                   处理结果:
-                  <button class="copy-result-btn" id="copy-text-result-btn" title="复制结果">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  <button
+                    class="copy-result-btn"
+                    id="copy-text-result-btn"
+                    title="复制结果"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"
+                      ></rect>
+                      <path
+                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                      ></path>
                     </svg>
                   </button>
                 </label>
-                <textarea 
-                  id="text-output" 
-                  class="text-textarea output-textarea" 
+                <textarea
+                  id="text-output"
+                  class="text-textarea output-textarea"
                   placeholder="处理结果将显示在这里..."
                   rows="6"
-                  readonly
-                ></textarea>
+                  readonly></textarea>
                 <div class="output-info">
-                  <span class="char-count" id="text-output-char-count">0 字符</span>
-                  <span class="validation-status" id="text-validation-status"></span>
+                  <span class="char-count" id="text-output-char-count"
+                    >0 字符</span
+                  >
+                  <span class="validation-status" id="text-validation-status"
+                  ></span>
                 </div>
               </div>
             </div>
@@ -122,7 +196,14 @@ import Header from '../../components/Header.astro';
             <div class="file-input-section">
               <div class="file-upload-area" id="file-upload-area">
                 <div class="upload-icon">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7,10 12,15 17,10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -137,31 +218,105 @@ import Header from '../../components/Header.astro';
 
               <div class="file-info hidden" id="file-info">
                 <div class="file-details">
-                  <div class="file-icon">📄</div>
+                  <div class="file-icon" id="file-icon">📄</div>
                   <div class="file-meta">
                     <div class="file-name" id="file-name"></div>
                     <div class="file-size" id="file-size"></div>
                     <div class="file-type" id="file-type"></div>
+                    <div class="file-mime" id="file-mime"></div>
                   </div>
-                  <button class="remove-file-btn" id="remove-file-btn" title="移除文件">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <button
+                    class="remove-file-btn"
+                    id="remove-file-btn"
+                    title="移除文件"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
                       <line x1="18" y1="6" x2="6" y2="18"></line>
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                   </button>
                 </div>
+
+                <!-- 图片预览区域 -->
+                <div class="image-preview hidden" id="image-preview">
+                  <div class="preview-header">
+                    <h4>图片预览</h4>
+                    <div class="image-controls">
+                      <label class="compress-option">
+                        <input type="checkbox" id="enable-compression" />
+                        <span>启用压缩</span>
+                      </label>
+                      <div
+                        class="compression-settings hidden"
+                        id="compression-settings"
+                      >
+                        <label class="quality-label">
+                          压缩质量: <span id="quality-value">80</span>%
+                          <input
+                            type="range"
+                            id="compression-quality"
+                            min="10"
+                            max="100"
+                            value="80"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="preview-container">
+                    <img
+                      id="preview-image"
+                      class="preview-img"
+                      alt="图片预览"
+                    />
+                    <div class="preview-info">
+                      <span class="preview-dimensions" id="preview-dimensions"
+                      ></span>
+                      <span class="preview-size" id="preview-size"></span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="file-actions">
-                <button class="action-btn encode-btn" id="file-encode-btn" disabled>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <button
+                  class="action-btn encode-btn"
+                  id="file-encode-btn"
+                  disabled
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="16,18 22,12 16,6"></polyline>
                     <polyline points="8,6 2,12 8,18"></polyline>
                   </svg>
                   编码文件
                 </button>
-                <button class="action-btn decode-btn" id="file-decode-btn" disabled>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <button
+                  class="action-btn decode-btn"
+                  id="file-decode-btn"
+                  disabled
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="8,18 2,12 8,6"></polyline>
                     <polyline points="16,6 22,12 16,18"></polyline>
                   </svg>
@@ -171,35 +326,128 @@ import Header from '../../components/Header.astro';
             </div>
 
             <div class="file-output-section">
+              <!-- 输出格式选择 -->
+              <div class="output-format-selector">
+                <div class="format-tabs">
+                  <button
+                    class="format-tab active"
+                    data-format="base64"
+                    id="base64-format-tab"
+                  >
+                    BASE64编码
+                  </button>
+                  <button
+                    class="format-tab"
+                    data-format="dataurl"
+                    id="dataurl-format-tab"
+                  >
+                    Data URL格式
+                  </button>
+                </div>
+              </div>
+
               <div class="output-group">
                 <label for="file-output" class="output-label">
                   文件处理结果:
                   <div class="file-output-actions">
-                    <button class="copy-result-btn" id="copy-file-result-btn" title="复制结果">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    <button
+                      class="copy-result-btn"
+                      id="copy-file-result-btn"
+                      title="复制结果"
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"
+                        ></rect>
+                        <path
+                          d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                        ></path>
                       </svg>
                     </button>
-                    <button class="download-result-btn" id="download-result-btn" title="下载结果">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <button
+                      class="download-result-btn"
+                      id="download-result-btn"
+                      title="下载结果"
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                        ></path>
                         <polyline points="7,10 12,15 17,10"></polyline>
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                       </svg>
                     </button>
+                    <button
+                      class="preview-result-btn hidden"
+                      id="preview-result-btn"
+                      title="预览结果"
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                        ></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
                   </div>
                 </label>
-                <textarea 
-                  id="file-output" 
-                  class="text-textarea output-textarea file-output-textarea" 
+                <textarea
+                  id="file-output"
+                  class="text-textarea output-textarea file-output-textarea"
                   placeholder="文件处理结果将显示在这里..."
                   rows="10"
-                  readonly
-                ></textarea>
+                  readonly></textarea>
                 <div class="output-info">
-                  <span class="char-count" id="file-output-char-count">0 字符</span>
-                  <span class="validation-status" id="file-validation-status"></span>
+                  <span class="char-count" id="file-output-char-count"
+                    >0 字符</span
+                  >
+                  <span class="validation-status" id="file-validation-status"
+                  ></span>
+                </div>
+              </div>
+
+              <!-- 结果预览区域（用于图片） -->
+              <div class="result-preview hidden" id="result-preview">
+                <div class="preview-header">
+                  <h4>结果预览</h4>
+                  <button class="close-preview-btn" id="close-preview-btn">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+                <div class="result-preview-container">
+                  <img
+                    id="result-preview-image"
+                    class="result-preview-img"
+                    alt="结果预览"
+                  />
                 </div>
               </div>
             </div>
@@ -209,38 +457,70 @@ import Header from '../../components/Header.astro';
           <div class="processing-mode hidden" id="batch-mode">
             <div class="batch-input-section">
               <div class="input-group">
-                <label for="batch-input" class="input-label">批量输入 (每行一个文本):</label>
-                <textarea 
-                  id="batch-input" 
-                  class="text-textarea batch-textarea" 
+                <label for="batch-input" class="input-label"
+                  >批量输入 (每行一个文本):</label
+                >
+                <textarea
+                  id="batch-input"
+                  class="text-textarea batch-textarea"
                   placeholder="请输入多个文本，每行一个..."
-                  rows="8"
-                ></textarea>
+                  rows="8"></textarea>
                 <div class="batch-info">
                   <span class="line-count" id="batch-line-count">0 行</span>
-                  <span class="valid-count" id="batch-valid-count">0 个有效项</span>
+                  <span class="valid-count" id="batch-valid-count"
+                    >0 个有效项</span
+                  >
                 </div>
               </div>
 
               <div class="batch-actions">
-                <button class="action-btn batch-encode-btn" id="batch-encode-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <button
+                  class="action-btn batch-encode-btn"
+                  id="batch-encode-btn"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="16,18 22,12 16,6"></polyline>
                     <polyline points="8,6 2,12 8,18"></polyline>
                   </svg>
                   批量编码
                 </button>
-                <button class="action-btn batch-decode-btn" id="batch-decode-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <button
+                  class="action-btn batch-decode-btn"
+                  id="batch-decode-btn"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="8,18 2,12 8,6"></polyline>
                     <polyline points="16,6 22,12 16,18"></polyline>
                   </svg>
                   批量解码
                 </button>
                 <button class="action-btn clear-batch-btn" id="clear-batch-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
                     <polyline points="3,6 5,6 21,6"></polyline>
-                    <path d="M19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+                    <path
+                      d="M19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"
+                    ></path>
                   </svg>
                   清空
                 </button>
@@ -251,22 +531,37 @@ import Header from '../../components/Header.astro';
               <div class="output-group">
                 <label for="batch-output" class="output-label">
                   批量处理结果:
-                  <button class="copy-batch-btn" id="copy-batch-btn" title="复制所有结果">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  <button
+                    class="copy-batch-btn"
+                    id="copy-batch-btn"
+                    title="复制所有结果"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"
+                      ></rect>
+                      <path
+                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                      ></path>
                     </svg>
                   </button>
                 </label>
-                <textarea 
-                  id="batch-output" 
-                  class="text-textarea batch-textarea output-textarea" 
+                <textarea
+                  id="batch-output"
+                  class="text-textarea batch-textarea output-textarea"
                   placeholder="批量处理结果将显示在这里..."
                   rows="8"
-                  readonly
-                ></textarea>
+                  readonly></textarea>
                 <div class="batch-result-info">
-                  <span class="processed-count" id="processed-count">已处理: 0</span>
+                  <span class="processed-count" id="processed-count"
+                    >已处理: 0</span
+                  >
                   <span class="success-count" id="success-count">成功: 0</span>
                   <span class="error-count" id="error-count">失败: 0</span>
                 </div>
@@ -313,20 +608,26 @@ import Header from '../../components/Header.astro';
                   <strong>编码:</strong> 5L2g5aW977yM5LiW55WM77yB
                 </div>
               </div>
-              <button class="try-example-btn" data-input="你好，世界！">试试这个</button>
+              <button class="try-example-btn" data-input="你好，世界！"
+                >试试这个</button
+              >
             </div>
 
             <div class="example-item">
               <h3 class="example-title">JSON数据编码</h3>
               <div class="example-demo">
                 <div class="example-input">
-                  <strong>原始:</strong> {"name":"张三","age":25}
+                  <strong>原始:</strong>
+                  {`{"name":"张三","age":25}`}
                 </div>
                 <div class="example-output">
                   <strong>编码:</strong> eyJuYW1lIjoi5byg5LiJIiwiYWdlIjoyNX0=
                 </div>
               </div>
-              <button class="try-example-btn" data-input='{"name":"张三","age":25}'>试试这个</button>
+              <button
+                class="try-example-btn"
+                data-input='{"name":"张三","age":25}'>试试这个</button
+              >
             </div>
 
             <div class="example-item">
@@ -339,7 +640,10 @@ import Header from '../../components/Header.astro';
                   <strong>编码:</strong> aHR0cHM6Ly9leGFtcGxlLmNvbS9hcGk_cT3mtYvor5U=
                 </div>
               </div>
-              <button class="try-example-btn" data-input="https://example.com/api?q=测试">试试这个</button>
+              <button
+                class="try-example-btn"
+                data-input="https://example.com/api?q=测试">试试这个</button
+              >
             </div>
           </div>
         </div>
@@ -680,10 +984,214 @@ import Header from '../../components/Header.astro';
   }
 
   .file-size,
-  .file-type {
+  .file-type,
+  .file-mime {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     color: var(--color-secondary);
+  }
+
+  /* 图片预览样式 */
+  .image-preview {
+    margin-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .preview-header h4 {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .image-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .compress-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .compress-option input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--color-accent);
+  }
+
+  .compression-settings {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .quality-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text);
+  }
+
+  .quality-label input[type="range"] {
+    width: 80px;
+    accent-color: var(--color-accent);
+  }
+
+  .preview-container {
+    position: relative;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+  }
+
+  /* 输出格式选择器 */
+  .output-format-selector {
+    margin-bottom: 1rem;
+  }
+
+  .format-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background-color: var(--color-code-bg);
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+  }
+
+  .format-tab {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .format-tab:hover {
+    color: var(--color-text);
+    background-color: var(--color-hover);
+  }
+
+  .format-tab.active {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  /* 结果预览样式 */
+  .result-preview {
+    margin-top: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+
+  .result-preview .preview-header {
+    margin-bottom: 1rem;
+  }
+
+  .close-preview-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-secondary);
+    padding: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close-preview-btn:hover {
+    color: #dc3545;
+    border-color: #dc3545;
+    background-color: var(--color-hover);
+  }
+
+  .result-preview-container {
+    text-align: center;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+
+  .result-preview-img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-result-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-secondary);
+    padding: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .preview-result-btn:hover {
+    color: var(--color-accent);
+    background-color: var(--color-hover);
   }
 
   .remove-file-btn {
@@ -1141,116 +1649,222 @@ import Header from '../../components/Header.astro';
       flex-direction: column;
       gap: 0.25rem;
     }
+
+    .format-tabs {
+      flex-direction: column;
+    }
+
+    .image-controls {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .compression-settings {
+      width: 100%;
+    }
+
+    .quality-label {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .quality-label input[type="range"] {
+      width: 100%;
+    }
+
+    .preview-info {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
   }
 </style>
 
-<script>
+<script is:inline>
   // BASE64编解码工具类
   class Base64EncoderDecoder {
     constructor() {
       this.initElements();
       this.bindEvents();
-      this.currentMode = 'text';
+      this.currentMode = "text";
       this.currentFile = null;
+      this.outputFormat = "base64";
+      this.processedImageData = null;
     }
 
     initElements() {
       // 模式切换
-      this.textModeTab = document.getElementById('text-mode-tab');
-      this.fileModeTab = document.getElementById('file-mode-tab');
-      this.batchModeTab = document.getElementById('batch-mode-tab');
-      this.textMode = document.getElementById('text-mode');
-      this.fileMode = document.getElementById('file-mode');
-      this.batchMode = document.getElementById('batch-mode');
+      this.textModeTab = document.getElementById("text-mode-tab");
+      this.fileModeTab = document.getElementById("file-mode-tab");
+      this.batchModeTab = document.getElementById("batch-mode-tab");
+      this.textMode = document.getElementById("text-mode");
+      this.fileMode = document.getElementById("file-mode");
+      this.batchMode = document.getElementById("batch-mode");
 
       // 文本处理模式元素
-      this.textInput = document.getElementById('text-input');
-      this.textOutput = document.getElementById('text-output');
-      this.textEncodeBtn = document.getElementById('text-encode-btn');
-      this.textDecodeBtn = document.getElementById('text-decode-btn');
-      this.textClearBtn = document.getElementById('text-clear-btn');
-      this.copyTextResultBtn = document.getElementById('copy-text-result-btn');
+      this.textInput = document.getElementById("text-input");
+      this.textOutput = document.getElementById("text-output");
+      this.textEncodeBtn = document.getElementById("text-encode-btn");
+      this.textDecodeBtn = document.getElementById("text-decode-btn");
+      this.textClearBtn = document.getElementById("text-clear-btn");
+      this.copyTextResultBtn = document.getElementById("copy-text-result-btn");
 
       // 文件处理模式元素
-      this.fileUploadArea = document.getElementById('file-upload-area');
-      this.fileInput = document.getElementById('file-input');
-      this.fileInfo = document.getElementById('file-info');
-      this.fileName = document.getElementById('file-name');
-      this.fileSize = document.getElementById('file-size');
-      this.fileType = document.getElementById('file-type');
-      this.removeFileBtn = document.getElementById('remove-file-btn');
-      this.fileEncodeBtn = document.getElementById('file-encode-btn');
-      this.fileDecodeBtn = document.getElementById('file-decode-btn');
-      this.fileOutput = document.getElementById('file-output');
-      this.copyFileResultBtn = document.getElementById('copy-file-result-btn');
-      this.downloadResultBtn = document.getElementById('download-result-btn');
+      this.fileUploadArea = document.getElementById("file-upload-area");
+      this.fileInput = document.getElementById("file-input");
+      this.fileInfo = document.getElementById("file-info");
+      this.fileIcon = document.getElementById("file-icon");
+      this.fileName = document.getElementById("file-name");
+      this.fileSize = document.getElementById("file-size");
+      this.fileType = document.getElementById("file-type");
+      this.fileMime = document.getElementById("file-mime");
+      this.removeFileBtn = document.getElementById("remove-file-btn");
+      this.fileEncodeBtn = document.getElementById("file-encode-btn");
+      this.fileDecodeBtn = document.getElementById("file-decode-btn");
+      this.fileOutput = document.getElementById("file-output");
+      this.copyFileResultBtn = document.getElementById("copy-file-result-btn");
+      this.downloadResultBtn = document.getElementById("download-result-btn");
+      this.previewResultBtn = document.getElementById("preview-result-btn");
+
+      // 图片预览相关元素
+      this.imagePreview = document.getElementById("image-preview");
+      this.previewImage = document.getElementById("preview-image");
+      this.previewDimensions = document.getElementById("preview-dimensions");
+      this.previewSize = document.getElementById("preview-size");
+      this.enableCompression = document.getElementById("enable-compression");
+      this.compressionSettings = document.getElementById(
+        "compression-settings"
+      );
+      this.compressionQuality = document.getElementById("compression-quality");
+      this.qualityValue = document.getElementById("quality-value");
+
+      // 输出格式相关元素
+      this.base64FormatTab = document.getElementById("base64-format-tab");
+      this.dataurlFormatTab = document.getElementById("dataurl-format-tab");
+      this.resultPreview = document.getElementById("result-preview");
+      this.resultPreviewImage = document.getElementById("result-preview-image");
+      this.closePreviewBtn = document.getElementById("close-preview-btn");
 
       // 批量处理模式元素
-      this.batchInput = document.getElementById('batch-input');
-      this.batchOutput = document.getElementById('batch-output');
-      this.batchEncodeBtn = document.getElementById('batch-encode-btn');
-      this.batchDecodeBtn = document.getElementById('batch-decode-btn');
-      this.clearBatchBtn = document.getElementById('clear-batch-btn');
-      this.copyBatchBtn = document.getElementById('copy-batch-btn');
+      this.batchInput = document.getElementById("batch-input");
+      this.batchOutput = document.getElementById("batch-output");
+      this.batchEncodeBtn = document.getElementById("batch-encode-btn");
+      this.batchDecodeBtn = document.getElementById("batch-decode-btn");
+      this.clearBatchBtn = document.getElementById("clear-batch-btn");
+      this.copyBatchBtn = document.getElementById("copy-batch-btn");
 
       // 状态显示元素
-      this.textCharCount = document.getElementById('text-char-count');
-      this.textOutputCharCount = document.getElementById('text-output-char-count');
-      this.textEncodingInfo = document.getElementById('text-encoding-info');
-      this.textValidationStatus = document.getElementById('text-validation-status');
-      this.fileOutputCharCount = document.getElementById('file-output-char-count');
-      this.fileValidationStatus = document.getElementById('file-validation-status');
-      this.batchLineCount = document.getElementById('batch-line-count');
-      this.batchValidCount = document.getElementById('batch-valid-count');
-      this.processedCount = document.getElementById('processed-count');
-      this.successCount = document.getElementById('success-count');
-      this.errorCount = document.getElementById('error-count');
+      this.textCharCount = document.getElementById("text-char-count");
+      this.textOutputCharCount = document.getElementById(
+        "text-output-char-count"
+      );
+      this.textEncodingInfo = document.getElementById("text-encoding-info");
+      this.textValidationStatus = document.getElementById(
+        "text-validation-status"
+      );
+      this.fileOutputCharCount = document.getElementById(
+        "file-output-char-count"
+      );
+      this.fileValidationStatus = document.getElementById(
+        "file-validation-status"
+      );
+      this.batchLineCount = document.getElementById("batch-line-count");
+      this.batchValidCount = document.getElementById("batch-valid-count");
+      this.processedCount = document.getElementById("processed-count");
+      this.successCount = document.getElementById("success-count");
+      this.errorCount = document.getElementById("error-count");
 
       // 编码选项
-      this.urlSafeBase64 = document.getElementById('url-safe-base64');
-      this.removePadding = document.getElementById('remove-padding');
-      this.lineBreaks = document.getElementById('line-breaks');
+      this.urlSafeBase64 = document.getElementById("url-safe-base64");
+      this.removePadding = document.getElementById("remove-padding");
+      this.lineBreaks = document.getElementById("line-breaks");
 
       // 示例按钮
-      this.tryExampleBtns = document.querySelectorAll('.try-example-btn');
+      this.tryExampleBtns = document.querySelectorAll(".try-example-btn");
     }
 
     bindEvents() {
       // 模式切换
-      this.textModeTab.addEventListener('click', () => this.switchMode('text'));
-      this.fileModeTab.addEventListener('click', () => this.switchMode('file'));
-      this.batchModeTab.addEventListener('click', () => this.switchMode('batch'));
+      this.textModeTab.addEventListener("click", () => this.switchMode("text"));
+      this.fileModeTab.addEventListener("click", () => this.switchMode("file"));
+      this.batchModeTab.addEventListener("click", () =>
+        this.switchMode("batch")
+      );
 
       // 文本处理模式事件
-      this.textInput.addEventListener('input', () => this.updateTextStatus());
-      this.textEncodeBtn.addEventListener('click', () => this.encodeText());
-      this.textDecodeBtn.addEventListener('click', () => this.decodeText());
-      this.textClearBtn.addEventListener('click', () => this.clearText());
-      this.copyTextResultBtn.addEventListener('click', () => this.copyTextResult());
+      this.textInput.addEventListener("input", () => this.updateTextStatus());
+      this.textEncodeBtn.addEventListener("click", () => this.encodeText());
+      this.textDecodeBtn.addEventListener("click", () => this.decodeText());
+      this.textClearBtn.addEventListener("click", () => this.clearText());
+      this.copyTextResultBtn.addEventListener("click", () =>
+        this.copyTextResult()
+      );
 
       // 文件处理模式事件
-      this.fileUploadArea.addEventListener('click', () => this.fileInput.click());
-      this.fileUploadArea.addEventListener('dragover', (e) => this.handleDragOver(e));
-      this.fileUploadArea.addEventListener('dragleave', (e) => this.handleDragLeave(e));
-      this.fileUploadArea.addEventListener('drop', (e) => this.handleFileDrop(e));
-      this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
-      this.removeFileBtn.addEventListener('click', () => this.removeFile());
-      this.fileEncodeBtn.addEventListener('click', () => this.encodeFile());
-      this.fileDecodeBtn.addEventListener('click', () => this.decodeFile());
-      this.copyFileResultBtn.addEventListener('click', () => this.copyFileResult());
-      this.downloadResultBtn.addEventListener('click', () => this.downloadResult());
+      this.fileUploadArea.addEventListener("click", () =>
+        this.fileInput.click()
+      );
+      this.fileUploadArea.addEventListener("dragover", (e) =>
+        this.handleDragOver(e)
+      );
+      this.fileUploadArea.addEventListener("dragleave", (e) =>
+        this.handleDragLeave(e)
+      );
+      this.fileUploadArea.addEventListener("drop", (e) =>
+        this.handleFileDrop(e)
+      );
+      this.fileInput.addEventListener("change", (e) =>
+        this.handleFileSelect(e)
+      );
+      this.removeFileBtn.addEventListener("click", () => this.removeFile());
+      this.fileEncodeBtn.addEventListener("click", () => this.encodeFile());
+      this.fileDecodeBtn.addEventListener("click", () => this.decodeFile());
+      this.copyFileResultBtn.addEventListener("click", () =>
+        this.copyFileResult()
+      );
+      this.downloadResultBtn.addEventListener("click", () =>
+        this.downloadResult()
+      );
+      this.previewResultBtn.addEventListener("click", () =>
+        this.previewResult()
+      );
+
+      // 图片预览相关事件
+      this.enableCompression.addEventListener("change", () =>
+        this.toggleCompression()
+      );
+      this.compressionQuality.addEventListener("input", () =>
+        this.updateQualityValue()
+      );
+      this.compressionQuality.addEventListener("change", () =>
+        this.reprocessFile()
+      );
+
+      // 输出格式切换事件
+      this.base64FormatTab.addEventListener("click", () =>
+        this.switchOutputFormat("base64")
+      );
+      this.dataurlFormatTab.addEventListener("click", () =>
+        this.switchOutputFormat("dataurl")
+      );
+      this.closePreviewBtn.addEventListener("click", () =>
+        this.closeResultPreview()
+      );
 
       // 批量处理模式事件
-      this.batchInput.addEventListener('input', () => this.updateBatchStatus());
-      this.batchEncodeBtn.addEventListener('click', () => this.batchEncode());
-      this.batchDecodeBtn.addEventListener('click', () => this.batchDecode());
-      this.clearBatchBtn.addEventListener('click', () => this.clearBatch());
-      this.copyBatchBtn.addEventListener('click', () => this.copyBatchResults());
+      this.batchInput.addEventListener("input", () => this.updateBatchStatus());
+      this.batchEncodeBtn.addEventListener("click", () => this.batchEncode());
+      this.batchDecodeBtn.addEventListener("click", () => this.batchDecode());
+      this.clearBatchBtn.addEventListener("click", () => this.clearBatch());
+      this.copyBatchBtn.addEventListener("click", () =>
+        this.copyBatchResults()
+      );
 
       // 示例按钮
-      this.tryExampleBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const input = e.target.getAttribute('data-input');
+      this.tryExampleBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const input = e.target.getAttribute("data-input");
           this.loadExample(input);
         });
       });
@@ -1262,35 +1876,39 @@ import Header from '../../components/Header.astro';
 
     switchMode(mode) {
       this.currentMode = mode;
-      
+
       // 更新标签状态
-      document.querySelectorAll('.mode-tab').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.processing-mode').forEach(mode => mode.classList.add('hidden'));
-      
-      if (mode === 'text') {
-        this.textModeTab.classList.add('active');
-        this.textMode.classList.remove('hidden');
-      } else if (mode === 'file') {
-        this.fileModeTab.classList.add('active');
-        this.fileMode.classList.remove('hidden');
-      } else if (mode === 'batch') {
-        this.batchModeTab.classList.add('active');
-        this.batchMode.classList.remove('hidden');
+      document
+        .querySelectorAll(".mode-tab")
+        .forEach((tab) => tab.classList.remove("active"));
+      document
+        .querySelectorAll(".processing-mode")
+        .forEach((mode) => mode.classList.add("hidden"));
+
+      if (mode === "text") {
+        this.textModeTab.classList.add("active");
+        this.textMode.classList.remove("hidden");
+      } else if (mode === "file") {
+        this.fileModeTab.classList.add("active");
+        this.fileMode.classList.remove("hidden");
+      } else if (mode === "batch") {
+        this.batchModeTab.classList.add("active");
+        this.batchMode.classList.remove("hidden");
       }
     }
 
     updateTextStatus() {
       const input = this.textInput.value;
       const charCount = input.length;
-      
+
       this.textCharCount.textContent = `${charCount} 字符`;
     }
 
     updateBatchStatus() {
       const input = this.batchInput.value;
-      const lines = input.split('\n').filter(line => line.trim());
-      const validLines = lines.filter(line => line.trim().length > 0);
-      
+      const lines = input.split("\n").filter((line) => line.trim());
+      const validLines = lines.filter((line) => line.trim().length > 0);
+
       this.batchLineCount.textContent = `${lines.length} 行`;
       this.batchValidCount.textContent = `${validLines.length} 个有效项`;
     }
@@ -1305,7 +1923,7 @@ import Header from '../../components/Header.astro';
         this.updateTextOutputStatus(result, true);
       } catch (error) {
         this.textOutput.value = `编码失败: ${error.message}`;
-        this.updateTextOutputStatus('', false);
+        this.updateTextOutputStatus("", false);
       }
     }
 
@@ -1319,109 +1937,115 @@ import Header from '../../components/Header.astro';
         this.updateTextOutputStatus(result, true);
       } catch (error) {
         this.textOutput.value = `解码失败: ${error.message}`;
-        this.updateTextOutputStatus('', false);
+        this.updateTextOutputStatus("", false);
       }
     }
 
     performBase64Encode(input) {
       // 将字符串转换为UTF-8字节
       const utf8Bytes = new TextEncoder().encode(input);
-      
+
       // 转换为二进制字符串
-      let binaryString = '';
+      let binaryString = "";
       for (let i = 0; i < utf8Bytes.length; i++) {
         binaryString += String.fromCharCode(utf8Bytes[i]);
       }
-      
+
       // BASE64编码
       let result = btoa(binaryString);
-      
+
       // 应用编码选项
       if (this.urlSafeBase64.checked) {
-        result = result.replace(/\+/g, '-').replace(/\//g, '_');
+        result = result.replace(/\+/g, "-").replace(/\//g, "_");
       }
-      
+
       if (this.removePadding.checked) {
-        result = result.replace(/=/g, '');
+        result = result.replace(/=/g, "");
       }
-      
+
       if (this.lineBreaks.checked) {
-        result = result.replace(/(.{76})/g, '$1\n');
+        result = result.replace(/(.{76})/g, "$1\n");
       }
-      
+
       return result;
     }
 
     performBase64Decode(input) {
-      let processedInput = input.replace(/\s/g, ''); // 移除所有空白字符
-      
+      let processedInput = input.replace(/\s/g, ""); // 移除所有空白字符
+
       // 处理URL安全编码
-      if (this.urlSafeBase64.checked || processedInput.includes('-') || processedInput.includes('_')) {
-        processedInput = processedInput.replace(/-/g, '+').replace(/_/g, '/');
+      if (
+        this.urlSafeBase64.checked ||
+        processedInput.includes("-") ||
+        processedInput.includes("_")
+      ) {
+        processedInput = processedInput.replace(/-/g, "+").replace(/_/g, "/");
       }
-      
+
       // 添加填充字符
       while (processedInput.length % 4) {
-        processedInput += '=';
+        processedInput += "=";
       }
-      
+
       // 验证BASE64格式
       if (!this.isValidBase64(processedInput)) {
-        throw new Error('无效的BASE64格式');
+        throw new Error("无效的BASE64格式");
       }
-      
+
       try {
         // BASE64解码
         const binaryString = atob(processedInput);
-        
+
         // 转换为UTF-8字符串
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
           bytes[i] = binaryString.charCodeAt(i);
         }
-        
-        return new TextDecoder('utf-8').decode(bytes);
+
+        return new TextDecoder("utf-8").decode(bytes);
       } catch (error) {
-        throw new Error('解码失败，可能包含无效的BASE64序列');
+        throw new Error("解码失败，可能包含无效的BASE64序列");
       }
     }
 
     updateTextOutputStatus(result, success) {
       const charCount = result.length;
       this.textOutputCharCount.textContent = `${charCount} 字符`;
-      
+
       if (success && result) {
         const isValid = this.isValidBase64(result);
-        this.textValidationStatus.textContent = isValid ? '有效BASE64' : '文本内容';
-        this.textValidationStatus.className = `validation-status ${isValid ? 'valid' : 'partial'}`;
+        this.textValidationStatus.textContent = isValid
+          ? "有效BASE64"
+          : "文本内容";
+        this.textValidationStatus.className = `validation-status ${isValid ? "valid" : "partial"}`;
       } else {
-        this.textValidationStatus.textContent = success ? '' : '处理失败';
-        this.textValidationStatus.className = `validation-status ${success ? '' : 'invalid'}`;
+        this.textValidationStatus.textContent = success ? "" : "处理失败";
+        this.textValidationStatus.className = `validation-status ${success ? "" : "invalid"}`;
       }
     }
 
     clearText() {
-      this.textInput.value = '';
-      this.textOutput.value = '';
+      this.textInput.value = "";
+      this.textOutput.value = "";
       this.updateTextStatus();
-      this.updateTextOutputStatus('', true);
+      this.updateTextOutputStatus("", true);
     }
 
     // 文件处理方法
     handleDragOver(e) {
       e.preventDefault();
-      this.fileUploadArea.classList.add('dragover');
+      this.fileUploadArea.classList.add("dragover");
     }
 
     handleDragLeave(e) {
       e.preventDefault();
-      this.fileUploadArea.classList.remove('dragover');
+      this.fileUploadArea.classList.remove("dragover");
     }
 
     handleFileDrop(e) {
       e.preventDefault();
-      this.fileUploadArea.classList.remove('dragover');
-      
+      this.fileUploadArea.classList.remove("dragover");
+
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         this.processFile(files[0]);
@@ -1438,66 +2062,159 @@ import Header from '../../components/Header.astro';
     processFile(file) {
       // 检查文件大小 (10MB限制)
       if (file.size > 10 * 1024 * 1024) {
-        alert('文件大小不能超过 10MB');
+        alert("文件大小不能超过 10MB");
         return;
       }
 
       this.currentFile = file;
-      
+
       // 显示文件信息
       this.fileName.textContent = file.name;
       this.fileSize.textContent = this.formatFileSize(file.size);
-      this.fileType.textContent = file.type || '未知类型';
-      
-      this.fileInfo.classList.remove('hidden');
+      this.fileType.textContent = file.type || "未知类型";
+      this.fileMime.textContent = file.type ? `MIME: ${file.type}` : "";
+
+      // 检查是否为图片文件
+      const isImage = file.type.startsWith("image/");
+
+      if (isImage) {
+        this.fileIcon.textContent = "🖼️";
+        this.setupImagePreview(file);
+      } else {
+        this.fileIcon.textContent = "📄";
+        this.imagePreview.classList.add("hidden");
+      }
+
+      this.fileInfo.classList.remove("hidden");
       this.fileEncodeBtn.disabled = false;
       this.fileDecodeBtn.disabled = false;
     }
 
+    setupImagePreview(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImage.src = e.target.result;
+        this.previewImage.onload = () => {
+          const img = this.previewImage;
+          this.previewDimensions.textContent = `${img.naturalWidth} × ${img.naturalHeight}`;
+          this.previewSize.textContent = this.formatFileSize(file.size);
+        };
+        this.imagePreview.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
     removeFile() {
       this.currentFile = null;
-      this.fileInfo.classList.add('hidden');
+      this.processedImageData = null;
+      this.fileInfo.classList.add("hidden");
+      this.imagePreview.classList.add("hidden");
+      this.resultPreview.classList.add("hidden");
       this.fileEncodeBtn.disabled = true;
       this.fileDecodeBtn.disabled = true;
-      this.fileOutput.value = '';
-      this.fileInput.value = '';
-      this.updateFileOutputStatus('', true);
+      this.fileOutput.value = "";
+      this.fileInput.value = "";
+      this.updateFileOutputStatus("", true);
+      this.fileIcon.textContent = "📄";
     }
 
     async encodeFile() {
       if (!this.currentFile) return;
 
       try {
-        const arrayBuffer = await this.currentFile.arrayBuffer();
+        let processedFile = this.currentFile;
+
+        // 如果是图片且启用了压缩
+        if (
+          this.currentFile.type.startsWith("image/") &&
+          this.enableCompression.checked
+        ) {
+          processedFile = await this.compressImage(this.currentFile);
+        }
+
+        const arrayBuffer = await processedFile.arrayBuffer();
         const bytes = new Uint8Array(arrayBuffer);
-        
+
         // 转换为二进制字符串
-        let binaryString = '';
+        let binaryString = "";
         for (let i = 0; i < bytes.length; i++) {
           binaryString += String.fromCharCode(bytes[i]);
         }
-        
+
         // BASE64编码
-        let result = btoa(binaryString);
-        
+        let base64Result = btoa(binaryString);
+
         // 应用编码选项
         if (this.urlSafeBase64.checked) {
-          result = result.replace(/\+/g, '-').replace(/\//g, '_');
+          base64Result = base64Result.replace(/\+/g, "-").replace(/\//g, "_");
         }
-        
+
         if (this.removePadding.checked) {
-          result = result.replace(/=/g, '');
+          base64Result = base64Result.replace(/=/g, "");
         }
-        
+
         if (this.lineBreaks.checked) {
-          result = result.replace(/(.{76})/g, '$1\n');
+          base64Result = base64Result.replace(/(.{76})/g, "$1\n");
         }
-        
-        this.fileOutput.value = result;
-        this.updateFileOutputStatus(result, true);
+
+        // 存储处理后的数据用于格式切换
+        this.processedImageData = {
+          base64: base64Result,
+          mimeType: processedFile.type || this.currentFile.type,
+          isImage: this.currentFile.type.startsWith("image/"),
+        };
+
+        // 根据输出格式显示结果
+        this.displayResult();
+        this.updateFileOutputStatus(this.fileOutput.value, true);
+
+        // 如果是图片，显示预览按钮
+        if (this.processedImageData.isImage) {
+          this.previewResultBtn.classList.remove("hidden");
+        }
       } catch (error) {
         this.fileOutput.value = `文件编码失败: ${error.message}`;
-        this.updateFileOutputStatus('', false);
+        this.updateFileOutputStatus("", false);
+      }
+    }
+
+    async compressImage(file) {
+      return new Promise((resolve) => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+
+        img.onload = () => {
+          // 设置画布尺寸
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          // 绘制图片到画布
+          ctx.drawImage(img, 0, 0);
+
+          // 转换为压缩后的blob
+          const quality = this.compressionQuality.value / 100;
+          canvas.toBlob(
+            (blob) => {
+              resolve(blob);
+            },
+            file.type,
+            quality
+          );
+        };
+
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    displayResult() {
+      if (!this.processedImageData) return;
+
+      if (this.outputFormat === "dataurl") {
+        const dataUrl = `data:${this.processedImageData.mimeType};base64,${this.processedImageData.base64}`;
+        this.fileOutput.value = dataUrl;
+      } else {
+        this.fileOutput.value = this.processedImageData.base64;
       }
     }
 
@@ -1507,26 +2224,28 @@ import Header from '../../components/Header.astro';
       try {
         const text = await this.currentFile.text();
         const result = this.performBase64Decode(text.trim());
-        
+
         this.fileOutput.value = result;
         this.updateFileOutputStatus(result, true);
       } catch (error) {
         this.fileOutput.value = `文件解码失败: ${error.message}`;
-        this.updateFileOutputStatus('', false);
+        this.updateFileOutputStatus("", false);
       }
     }
 
     updateFileOutputStatus(result, success) {
       const charCount = result.length;
       this.fileOutputCharCount.textContent = `${charCount} 字符`;
-      
+
       if (success && result) {
         const isValid = this.isValidBase64(result);
-        this.fileValidationStatus.textContent = isValid ? '有效BASE64' : '文本内容';
-        this.fileValidationStatus.className = `validation-status ${isValid ? 'valid' : 'partial'}`;
+        this.fileValidationStatus.textContent = isValid
+          ? "有效BASE64"
+          : "文本内容";
+        this.fileValidationStatus.className = `validation-status ${isValid ? "valid" : "partial"}`;
       } else {
-        this.fileValidationStatus.textContent = success ? '' : '处理失败';
-        this.fileValidationStatus.className = `validation-status ${success ? '' : 'invalid'}`;
+        this.fileValidationStatus.textContent = success ? "" : "处理失败";
+        this.fileValidationStatus.className = `validation-status ${success ? "" : "invalid"}`;
       }
     }
 
@@ -1535,7 +2254,7 @@ import Header from '../../components/Header.astro';
       const input = this.batchInput.value.trim();
       if (!input) return;
 
-      const lines = input.split('\n').filter(line => line.trim());
+      const lines = input.split("\n").filter((line) => line.trim());
       const results = [];
       let successCount = 0;
       let errorCount = 0;
@@ -1554,7 +2273,7 @@ import Header from '../../components/Header.astro';
         }
       });
 
-      this.batchOutput.value = results.join('\n');
+      this.batchOutput.value = results.join("\n");
       this.updateBatchResults(lines.length, successCount, errorCount);
     }
 
@@ -1562,7 +2281,7 @@ import Header from '../../components/Header.astro';
       const input = this.batchInput.value.trim();
       if (!input) return;
 
-      const lines = input.split('\n').filter(line => line.trim());
+      const lines = input.split("\n").filter((line) => line.trim());
       const results = [];
       let successCount = 0;
       let errorCount = 0;
@@ -1581,7 +2300,7 @@ import Header from '../../components/Header.astro';
         }
       });
 
-      this.batchOutput.value = results.join('\n');
+      this.batchOutput.value = results.join("\n");
       this.updateBatchResults(lines.length, successCount, errorCount);
     }
 
@@ -1592,8 +2311,8 @@ import Header from '../../components/Header.astro';
     }
 
     clearBatch() {
-      this.batchInput.value = '';
-      this.batchOutput.value = '';
+      this.batchInput.value = "";
+      this.batchOutput.value = "";
       this.updateBatchStatus();
       this.updateBatchResults(0, 0, 0);
     }
@@ -1639,9 +2358,9 @@ import Header from '../../components/Header.astro';
       const result = this.fileOutput.value;
       if (!result) return;
 
-      const blob = new Blob([result], { type: 'text/plain' });
+      const blob = new Blob([result], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `base64_result_${Date.now()}.txt`;
       document.body.appendChild(a);
@@ -1651,39 +2370,39 @@ import Header from '../../components/Header.astro';
     }
 
     fallbackCopy(text, button) {
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = text;
       document.body.appendChild(textArea);
       textArea.select();
-      
+
       try {
-        document.execCommand('copy');
+        document.execCommand("copy");
         this.showCopyFeedback(button);
       } catch (error) {
-        console.error('复制失败:', error);
+        console.error("复制失败:", error);
       }
-      
+
       document.body.removeChild(textArea);
     }
 
     showCopyFeedback(button) {
       const originalHTML = button.innerHTML;
-      
-      button.classList.add('copied');
+
+      button.classList.add("copied");
       button.innerHTML = `
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <polyline points="20,6 9,17 4,12"></polyline>
         </svg>
       `;
-      
+
       setTimeout(() => {
-        button.classList.remove('copied');
+        button.classList.remove("copied");
         button.innerHTML = originalHTML;
       }, 2000);
     }
 
     loadExample(input) {
-      this.switchMode('text');
+      this.switchMode("text");
       this.textInput.value = input;
       this.updateTextStatus();
       this.encodeText();
@@ -1692,19 +2411,19 @@ import Header from '../../components/Header.astro';
     isValidBase64(str) {
       try {
         // 移除空白字符
-        const cleaned = str.replace(/\s/g, '');
-        
+        const cleaned = str.replace(/\s/g, "");
+
         // 检查字符是否都是有效的BASE64字符
         const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
         if (!base64Regex.test(cleaned)) {
           return false;
         }
-        
+
         // 检查长度是否是4的倍数
         if (cleaned.length % 4 !== 0) {
           return false;
         }
-        
+
         // 尝试解码
         atob(cleaned);
         return true;
@@ -1714,18 +2433,70 @@ import Header from '../../components/Header.astro';
     }
 
     formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      
+      if (bytes === 0) return "0 Bytes";
+
       const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const sizes = ["Bytes", "KB", "MB", "GB"];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
-      
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    // 新增的图片处理方法
+    toggleCompression() {
+      if (this.enableCompression.checked) {
+        this.compressionSettings.classList.remove("hidden");
+      } else {
+        this.compressionSettings.classList.add("hidden");
+      }
+    }
+
+    updateQualityValue() {
+      this.qualityValue.textContent = this.compressionQuality.value;
+    }
+
+    async reprocessFile() {
+      if (this.currentFile && this.currentFile.type.startsWith("image/")) {
+        await this.encodeFile();
+      }
+    }
+
+    switchOutputFormat(format) {
+      this.outputFormat = format;
+
+      // 更新标签状态
+      document
+        .querySelectorAll(".format-tab")
+        .forEach((tab) => tab.classList.remove("active"));
+
+      if (format === "base64") {
+        this.base64FormatTab.classList.add("active");
+      } else if (format === "dataurl") {
+        this.dataurlFormatTab.classList.add("active");
+      }
+
+      // 重新显示结果
+      if (this.processedImageData) {
+        this.displayResult();
+        this.updateFileOutputStatus(this.fileOutput.value, true);
+      }
+    }
+
+    previewResult() {
+      if (!this.processedImageData || !this.processedImageData.isImage) return;
+
+      const dataUrl = `data:${this.processedImageData.mimeType};base64,${this.processedImageData.base64}`;
+      this.resultPreviewImage.src = dataUrl;
+      this.resultPreview.classList.remove("hidden");
+    }
+
+    closeResultPreview() {
+      this.resultPreview.classList.add("hidden");
     }
   }
 
   // 页面加载完成后初始化
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     new Base64EncoderDecoder();
   });
 </script>
