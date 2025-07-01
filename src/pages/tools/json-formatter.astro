@@ -1,0 +1,1262 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+---
+
+<Layout
+  title="JSON格式化工具 - 数得其道"
+  description="在线JSON格式化、验证、压缩工具，支持语法高亮、错误检测、文件导入导出"
+>
+  <Header />
+
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">JSON格式化工具</h1>
+        <p class="page-description">
+          专业的JSON处理工具，支持格式化、验证、压缩、语法高亮和错误检测
+        </p>
+        <div class="feature-badges">
+          <span class="badge">格式化</span>
+          <span class="badge">验证</span>
+          <span class="badge">压缩</span>
+          <span class="badge">语法高亮</span>
+          <span class="badge">错误检测</span>
+        </div>
+      </header>
+
+      <div class="json-formatter-container industrial-border">
+        <!-- 工具栏 -->
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <button class="tool-btn" id="format-btn" title="格式化JSON">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10,9 9,9 8,9"></polyline>
+              </svg>
+              格式化
+            </button>
+            <button class="tool-btn" id="minify-btn" title="压缩JSON">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <path d="M12 18v-6l-3 3"></path>
+                <path d="M9 15l3 3 3-3"></path>
+              </svg>
+              压缩
+            </button>
+            <button class="tool-btn" id="validate-btn" title="验证JSON">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="20,6 9,17 4,12"></polyline>
+              </svg>
+              验证
+            </button>
+          </div>
+          
+          <div class="toolbar-group">
+            <button class="tool-btn" id="clear-btn" title="清空内容">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="3,6 5,6 21,6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              清空
+            </button>
+            <button class="tool-btn" id="copy-btn" title="复制到剪贴板">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              复制
+            </button>
+          </div>
+
+          <div class="toolbar-group">
+            <input type="file" id="import-input" accept=".json,.txt" hidden>
+            <button class="tool-btn" id="import-btn" title="导入JSON文件">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7,10 12,15 17,10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              导入
+            </button>
+            <button class="tool-btn" id="export-btn" title="导出JSON文件">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17,8 12,3 7,8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              导出
+            </button>
+          </div>
+        </div>
+
+        <!-- 编辑器区域 -->
+        <div class="editor-container">
+          <!-- 输入区域 -->
+          <div class="editor-panel">
+            <div class="panel-header">
+              <h3>JSON 输入</h3>
+              <div class="panel-info">
+                <span class="char-count" id="input-char-count">0 字符</span>
+                <span class="line-count" id="input-line-count">1 行</span>
+              </div>
+            </div>
+            <div class="editor-wrapper">
+              <div class="line-numbers" id="input-line-numbers">1</div>
+              <textarea 
+                class="json-editor" 
+                id="json-input"
+                placeholder="在此输入或粘贴JSON数据..."
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- 输出区域 -->
+          <div class="editor-panel">
+            <div class="panel-header">
+              <h3>格式化输出</h3>
+              <div class="panel-info">
+                <span class="status-indicator" id="status-indicator">
+                  <span class="status-icon">⚪</span>
+                  <span class="status-text">就绪</span>
+                </span>
+              </div>
+            </div>
+            <div class="editor-wrapper">
+              <div class="line-numbers" id="output-line-numbers">1</div>
+              <div class="json-output" id="json-output" contenteditable="false">
+                <div class="placeholder">格式化的JSON将在这里显示...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 错误信息面板 -->
+        <div class="error-panel hidden" id="error-panel">
+          <div class="error-header">
+            <h4>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              JSON 解析错误
+            </h4>
+            <button class="close-error" id="close-error">×</button>
+          </div>
+          <div class="error-content">
+            <div class="error-message" id="error-message"></div>
+            <div class="error-location" id="error-location"></div>
+            <div class="error-suggestion" id="error-suggestion"></div>
+          </div>
+        </div>
+
+        <!-- 设置面板 -->
+        <div class="settings-panel">
+          <h4>格式化选项</h4>
+          <div class="settings-grid">
+            <label class="setting-item">
+              <span>缩进大小</span>
+              <select id="indent-size">
+                <option value="2" selected>2 空格</option>
+                <option value="4">4 空格</option>
+                <option value="tab">Tab</option>
+              </select>
+            </label>
+            <label class="setting-item">
+              <input type="checkbox" id="sort-keys" />
+              <span>排序键名</span>
+            </label>
+            <label class="setting-item">
+              <input type="checkbox" id="syntax-highlight" checked />
+              <span>语法高亮</span>
+            </label>
+            <label class="setting-item">
+              <input type="checkbox" id="auto-format" />
+              <span>自动格式化</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 消息通知 -->
+      <div class="toast-container" id="toast-container">
+        <!-- 动态生成的通知将插入这里 -->
+      </div>
+
+      <!-- 使用说明 -->
+      <section class="instructions-section">
+        <div class="instructions-content industrial-border">
+          <h2 class="instructions-title">功能特点</h2>
+          <div class="instructions-grid">
+            <div class="instruction-item">
+              <div class="instruction-icon">✨</div>
+              <h3>智能格式化</h3>
+              <p>自动检测并美化JSON结构，支持自定义缩进和键名排序</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🔍</div>
+              <h3>语法验证</h3>
+              <p>实时检测JSON语法错误，提供详细的错误定位和修复建议</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🎨</div>
+              <h3>语法高亮</h3>
+              <p>彩色显示不同的JSON元素，提高代码可读性</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">📁</div>
+              <h3>文件处理</h3>
+              <p>支持导入JSON文件进行编辑，处理完成后可导出保存</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline>
+  class JsonFormatter {
+    constructor() {
+      this.jsonInput = null;
+      this.jsonOutput = null;
+      this.currentJson = null;
+      this.settings = {
+        indentSize: 2,
+        sortKeys: false,
+        syntaxHighlight: true,
+        autoFormat: false
+      };
+
+      this.initElements();
+      this.bindEvents();
+      this.updateLineNumbers();
+    }
+
+    initElements() {
+      // 编辑器元素
+      this.jsonInput = document.getElementById('json-input');
+      this.jsonOutput = document.getElementById('json-output');
+      this.inputLineNumbers = document.getElementById('input-line-numbers');
+      this.outputLineNumbers = document.getElementById('output-line-numbers');
+      
+      // 计数器元素
+      this.inputCharCount = document.getElementById('input-char-count');
+      this.inputLineCount = document.getElementById('input-line-count');
+      this.statusIndicator = document.getElementById('status-indicator');
+      
+      // 错误面板元素
+      this.errorPanel = document.getElementById('error-panel');
+      this.errorMessage = document.getElementById('error-message');
+      this.errorLocation = document.getElementById('error-location');
+      this.errorSuggestion = document.getElementById('error-suggestion');
+      
+      // 工具按钮
+      this.formatBtn = document.getElementById('format-btn');
+      this.minifyBtn = document.getElementById('minify-btn');
+      this.validateBtn = document.getElementById('validate-btn');
+      this.clearBtn = document.getElementById('clear-btn');
+      this.copyBtn = document.getElementById('copy-btn');
+      this.importBtn = document.getElementById('import-btn');
+      this.exportBtn = document.getElementById('export-btn');
+      this.importInput = document.getElementById('import-input');
+      
+      // 设置元素
+      this.indentSizeSelect = document.getElementById('indent-size');
+      this.sortKeysCheckbox = document.getElementById('sort-keys');
+      this.syntaxHighlightCheckbox = document.getElementById('syntax-highlight');
+      this.autoFormatCheckbox = document.getElementById('auto-format');
+    }
+
+    bindEvents() {
+      // 输入框事件
+      this.jsonInput.addEventListener('input', () => {
+        this.updateCounts();
+        this.updateLineNumbers();
+        if (this.settings.autoFormat) {
+          this.debounce(() => this.formatJson(), 1000);
+        }
+      });
+      
+      this.jsonInput.addEventListener('scroll', () => {
+        this.inputLineNumbers.scrollTop = this.jsonInput.scrollTop;
+      });
+
+      // 工具按钮事件
+      this.formatBtn.addEventListener('click', () => this.formatJson());
+      this.minifyBtn.addEventListener('click', () => this.minifyJson());
+      this.validateBtn.addEventListener('click', () => this.validateJson());
+      this.clearBtn.addEventListener('click', () => this.clearEditor());
+      this.copyBtn.addEventListener('click', () => this.copyToClipboard());
+      this.importBtn.addEventListener('click', () => this.importInput.click());
+      this.exportBtn.addEventListener('click', () => this.exportJson());
+      
+      // 文件导入
+      this.importInput.addEventListener('change', (e) => this.handleFileImport(e));
+      
+      // 错误面板
+      document.getElementById('close-error').addEventListener('click', () => {
+        this.errorPanel.classList.add('hidden');
+      });
+      
+      // 设置选项
+      this.indentSizeSelect.addEventListener('change', (e) => {
+        this.settings.indentSize = e.target.value;
+      });
+      
+      this.sortKeysCheckbox.addEventListener('change', (e) => {
+        this.settings.sortKeys = e.target.checked;
+      });
+      
+      this.syntaxHighlightCheckbox.addEventListener('change', (e) => {
+        this.settings.syntaxHighlight = e.target.checked;
+        if (this.currentJson) {
+          this.displayFormattedJson(this.currentJson);
+        }
+      });
+      
+      this.autoFormatCheckbox.addEventListener('change', (e) => {
+        this.settings.autoFormat = e.target.checked;
+      });
+
+      // 键盘快捷键
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+          switch (e.key) {
+            case 'Enter':
+              e.preventDefault();
+              this.formatJson();
+              break;
+            case 'k':
+              e.preventDefault();
+              this.clearEditor();
+              break;
+            case 's':
+              e.preventDefault();
+              this.exportJson();
+              break;
+          }
+        }
+      });
+    }
+
+    updateCounts() {
+      const text = this.jsonInput.value;
+      const charCount = text.length;
+      const lineCount = text.split('\n').length;
+      
+      this.inputCharCount.textContent = `${charCount.toLocaleString()} 字符`;
+      this.inputLineCount.textContent = `${lineCount} 行`;
+    }
+
+    updateLineNumbers() {
+      const inputLines = this.jsonInput.value.split('\n').length;
+      const outputLines = this.jsonOutput.textContent ? this.jsonOutput.textContent.split('\n').length : 1;
+      
+      // 更新输入区行号
+      this.inputLineNumbers.innerHTML = Array.from(
+        { length: inputLines }, 
+        (_, i) => i + 1
+      ).join('\n');
+      
+      // 更新输出区行号
+      this.outputLineNumbers.innerHTML = Array.from(
+        { length: outputLines }, 
+        (_, i) => i + 1
+      ).join('\n');
+    }
+
+    setStatus(type, message) {
+      const statusIcon = this.statusIndicator.querySelector('.status-icon');
+      const statusText = this.statusIndicator.querySelector('.status-text');
+      
+      statusIcon.textContent = {
+        ready: '⚪',
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        processing: '🔄'
+      }[type] || '⚪';
+      
+      statusText.textContent = message;
+    }
+
+    validateJson() {
+      const input = this.jsonInput.value.trim();
+      
+      if (!input) {
+        this.showError('请输入JSON数据');
+        return false;
+      }
+
+      try {
+        const parsed = JSON.parse(input);
+        this.currentJson = parsed;
+        this.hideError();
+        this.setStatus('success', '有效的JSON');
+        this.showSuccess('JSON验证通过！');
+        return true;
+      } catch (error) {
+        this.showJsonError(error, input);
+        this.setStatus('error', 'JSON无效');
+        return false;
+      }
+    }
+
+    formatJson() {
+      if (!this.validateJson()) {
+        return;
+      }
+
+      try {
+        this.setStatus('processing', '格式化中...');
+        
+        let jsonToFormat = this.currentJson;
+        
+        // 排序键名
+        if (this.settings.sortKeys) {
+          jsonToFormat = this.sortObjectKeys(jsonToFormat);
+        }
+        
+        // 格式化
+        const indentSize = this.settings.indentSize === 'tab' ? '\t' : ' '.repeat(parseInt(this.settings.indentSize));
+        const formatted = JSON.stringify(jsonToFormat, null, indentSize);
+        
+        this.displayFormattedJson(formatted);
+        this.setStatus('success', '格式化完成');
+        this.showSuccess('JSON格式化成功！');
+        
+      } catch (error) {
+        this.setStatus('error', '格式化失败');
+        this.showError('格式化失败: ' + error.message);
+      }
+    }
+
+    minifyJson() {
+      if (!this.validateJson()) {
+        return;
+      }
+
+      try {
+        this.setStatus('processing', '压缩中...');
+        
+        const minified = JSON.stringify(this.currentJson);
+        this.displayFormattedJson(minified);
+        
+        this.setStatus('success', '压缩完成');
+        this.showSuccess('JSON压缩成功！');
+        
+      } catch (error) {
+        this.setStatus('error', '压缩失败');
+        this.showError('压缩失败: ' + error.message);
+      }
+    }
+
+    displayFormattedJson(jsonString) {
+      if (this.settings.syntaxHighlight) {
+        this.jsonOutput.innerHTML = this.highlightJson(jsonString);
+      } else {
+        this.jsonOutput.textContent = jsonString;
+      }
+      
+      this.updateLineNumbers();
+    }
+
+    highlightJson(json) {
+      return json
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+          let cls = 'json-number';
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = 'json-key';
+            } else {
+              cls = 'json-string';
+            }
+          } else if (/true|false/.test(match)) {
+            cls = 'json-boolean';
+          } else if (/null/.test(match)) {
+            cls = 'json-null';
+          }
+          return `<span class="${cls}">${match}</span>`;
+        })
+        .replace(/([{}[\],])/g, '<span class="json-punctuation">$1</span>');
+    }
+
+    sortObjectKeys(obj) {
+      if (obj === null || typeof obj !== 'object') {
+        return obj;
+      }
+      
+      if (Array.isArray(obj)) {
+        return obj.map(item => this.sortObjectKeys(item));
+      }
+      
+      const sorted = {};
+      Object.keys(obj).sort().forEach(key => {
+        sorted[key] = this.sortObjectKeys(obj[key]);
+      });
+      
+      return sorted;
+    }
+
+    showJsonError(error, input) {
+      const lines = input.split('\n');
+      let lineNumber = 1;
+      let columnNumber = 1;
+      
+      // 尝试从错误消息中提取位置信息
+      const positionMatch = error.message.match(/position (\d+)/);
+      if (positionMatch) {
+        const position = parseInt(positionMatch[1]);
+        let currentPos = 0;
+        
+        for (let i = 0; i < lines.length; i++) {
+          if (currentPos + lines[i].length >= position) {
+            lineNumber = i + 1;
+            columnNumber = position - currentPos + 1;
+            break;
+          }
+          currentPos += lines[i].length + 1; // +1 for newline
+        }
+      }
+      
+      this.errorMessage.textContent = error.message;
+      this.errorLocation.textContent = `第 ${lineNumber} 行，第 ${columnNumber} 列`;
+      
+      // 错误建议
+      const suggestion = this.getErrorSuggestion(error.message);
+      this.errorSuggestion.textContent = suggestion;
+      
+      this.errorPanel.classList.remove('hidden');
+    }
+
+    getErrorSuggestion(errorMessage) {
+      if (errorMessage.includes('Unexpected token')) {
+        return '检查是否有多余的逗号、括号不匹配或引号未正确闭合';
+      } else if (errorMessage.includes('Unexpected end of JSON input')) {
+        return 'JSON数据不完整，检查是否缺少右括号或右花括号';
+      } else if (errorMessage.includes('Expected property name')) {
+        return '对象属性名必须用双引号包围';
+      } else if (errorMessage.includes('Unexpected string')) {
+        return '字符串值必须用双引号包围，检查是否使用了单引号';
+      }
+      return '请检查JSON语法是否正确';
+    }
+
+    hideError() {
+      this.errorPanel.classList.add('hidden');
+    }
+
+    clearEditor() {
+      this.jsonInput.value = '';
+      this.jsonOutput.innerHTML = '<div class="placeholder">格式化的JSON将在这里显示...</div>';
+      this.currentJson = null;
+      this.updateCounts();
+      this.updateLineNumbers();
+      this.hideError();
+      this.setStatus('ready', '就绪');
+      this.showInfo('编辑器已清空');
+    }
+
+    async copyToClipboard() {
+      const textToCopy = this.jsonOutput.textContent || this.jsonOutput.innerText;
+      
+      if (!textToCopy || textToCopy.includes('格式化的JSON将在这里显示')) {
+        this.showWarning('没有内容可复制');
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        this.showSuccess('内容已复制到剪贴板！');
+      } catch (error) {
+        // 降级到传统方法
+        const textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        this.showSuccess('内容已复制到剪贴板！');
+      }
+    }
+
+    handleFileImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.jsonInput.value = e.target.result;
+        this.updateCounts();
+        this.updateLineNumbers();
+        this.showSuccess(`文件 "${file.name}" 导入成功！`);
+        
+        if (this.settings.autoFormat) {
+          setTimeout(() => this.formatJson(), 100);
+        }
+      };
+      
+      reader.onerror = () => {
+        this.showError('文件读取失败');
+      };
+      
+      reader.readAsText(file);
+    }
+
+    exportJson() {
+      const content = this.jsonOutput.textContent || this.jsonOutput.innerText;
+      
+      if (!content || content.includes('格式化的JSON将在这里显示')) {
+        this.showWarning('没有内容可导出');
+        return;
+      }
+
+      const blob = new Blob([content], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      a.href = url;
+      a.download = `formatted-json-${timestamp}.json`;
+      
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      this.showSuccess('JSON文件已导出！');
+    }
+
+    debounce(func, wait) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(func, wait);
+    }
+
+    // 通知方法
+    showToast(message, type = "info", duration = 4000) {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+
+      const icons = {
+        success: "✅",
+        error: "❌",
+        warning: "⚠️",
+        info: "ℹ️",
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || icons.info}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add("toast-show");
+      }, 10);
+
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.classList.remove("toast-show");
+          setTimeout(() => {
+            if (toast.parentElement) {
+              toast.remove();
+            }
+          }, 300);
+        }
+      }, duration);
+    }
+
+    showError(message, duration = 5000) {
+      this.showToast(message, "error", duration);
+    }
+
+    showSuccess(message, duration = 4000) {
+      this.showToast(message, "success", duration);
+    }
+
+    showWarning(message, duration = 4000) {
+      this.showToast(message, "warning", duration);
+    }
+
+    showInfo(message, duration = 3000) {
+      this.showToast(message, "info", duration);
+    }
+  }
+
+  // 初始化应用
+  document.addEventListener("DOMContentLoaded", () => {
+    new JsonFormatter();
+  });
+</script>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-secondary);
+    margin-bottom: 2rem;
+    font-family: var(--font-sans);
+  }
+
+  .feature-badges {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 0.25rem 0.75rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 12px;
+  }
+
+  .json-formatter-container {
+    background-color: var(--color-card);
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  /* 工具栏 */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text);
+  }
+
+  .tool-btn:hover {
+    background-color: var(--color-code-bg);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .tool-btn:active {
+    transform: translateY(0);
+  }
+
+  /* 编辑器容器 */
+  .editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .editor-panel {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--color-code-bg);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--color-card);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .panel-header h3 {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .panel-info {
+    display: flex;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .editor-wrapper {
+    display: flex;
+    height: 400px;
+    position: relative;
+  }
+
+  .line-numbers {
+    width: 3rem;
+    background-color: var(--color-bg);
+    border-right: 1px solid var(--color-border);
+    padding: 1rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+    text-align: right;
+    overflow: hidden;
+    white-space: pre;
+    user-select: none;
+  }
+
+  .json-editor {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: none;
+    color: var(--color-text);
+  }
+
+  .json-output {
+    flex: 1;
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow: auto;
+    white-space: pre;
+    color: var(--color-text);
+  }
+
+  .placeholder {
+    color: var(--color-muted);
+    font-style: italic;
+  }
+
+  /* JSON 语法高亮 */
+  .json-key {
+    color: #0074d9;
+    font-weight: 600;
+  }
+
+  .json-string {
+    color: #2ecc40;
+  }
+
+  .json-number {
+    color: #ff851b;
+  }
+
+  .json-boolean {
+    color: #b10dc9;
+    font-weight: 600;
+  }
+
+  .json-null {
+    color: #aaa;
+    font-style: italic;
+  }
+
+  .json-punctuation {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  /* 错误面板 */
+  .error-panel {
+    margin-bottom: 2rem;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    background-color: #fef2f2;
+    overflow: hidden;
+  }
+
+  .error-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #ef4444;
+    color: white;
+  }
+
+  .error-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .close-error {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+
+  .close-error:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .error-content {
+    padding: 1rem;
+    color: #991b1b;
+  }
+
+  .error-message {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-location {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: #dc2626;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-suggestion {
+    font-size: 0.875rem;
+    color: #7f1d1d;
+    font-style: italic;
+  }
+
+  /* 设置面板 */
+  .settings-panel {
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-code-bg);
+    margin-bottom: 2rem;
+  }
+
+  .settings-panel h4 {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    color: var(--color-accent);
+  }
+
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .setting-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .setting-item select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .setting-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent);
+  }
+
+  /* 使用说明 */
+  .instructions-section {
+    margin-bottom: 2rem;
+  }
+
+  .instructions-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .instructions-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .instruction-item {
+    text-align: center;
+  }
+
+  .instruction-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .instruction-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .instruction-item p {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* 消息通知样式 */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 500px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    backdrop-filter: blur(10px);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toast-show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-left: 4px solid #34d399;
+  }
+
+  .toast-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-left: 4px solid #f87171;
+  }
+
+  .toast-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-left: 4px solid #fbbf24;
+  }
+
+  .toast-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-left: 4px solid #60a5fa;
+  }
+
+  .toast-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .toast-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .json-formatter-container {
+      padding: 1.5rem;
+    }
+
+    .editor-container {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .toolbar-group {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      flex: 1;
+      min-width: 0;
+      justify-content: center;
+    }
+
+    .editor-wrapper {
+      height: 300px;
+    }
+
+    .settings-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .panel-info {
+      flex-direction: column;
+      gap: 0.25rem;
+      align-items: flex-end;
+    }
+
+    .feature-badges {
+      justify-content: center;
+    }
+
+    .instructions-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .toast-container {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+    }
+
+    .toast {
+      min-width: auto;
+      max-width: none;
+      width: 100%;
+    }
+  }
+</style>
