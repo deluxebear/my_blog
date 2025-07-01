@@ -1,0 +1,2676 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+---
+
+<Layout
+  title="Cron表达式工具 - 数得其道"
+  description="Cron表达式生成、解析和验证工具，支持多种格式，提供可视化编辑器和下次执行时间预测"
+>
+  <Header />
+
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">Cron表达式工具</h1>
+        <p class="page-description">
+          专业的Cron表达式处理工具，支持标准和扩展格式，提供可视化编辑和时间预测功能
+        </p>
+        <div class="feature-badges">
+          <span class="badge">表达式生成</span>
+          <span class="badge">语法验证</span>
+          <span class="badge">时间预测</span>
+          <span class="badge">可视化编辑</span>
+          <span class="badge">多种格式</span>
+        </div>
+      </header>
+
+      <div class="cron-tool-container industrial-border">
+        <!-- 表达式输入区域 -->
+        <div class="expression-section">
+          <div class="section-header">
+            <h2>Cron表达式</h2>
+            <div class="format-selector">
+              <label>格式:</label>
+              <select id="format-select">
+                <option value="standard">标准格式 (5字段) - Unix/Linux cron</option>
+                <option value="extended">扩展格式 (6字段) - 带年份字段</option>
+                <option value="quartz">Quartz格式 (7字段) - Java/Spring</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="expression-input-container">
+            <input
+              type="text"
+              id="cron-input"
+              class="expression-input"
+              placeholder="0 0 12 * * ?"
+              autocomplete="off"
+            />
+            <div class="input-actions">
+              <button class="action-btn" id="validate-btn" title="验证表达式">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </button>
+              <button class="action-btn" id="clear-btn" title="清空">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="validation-result" id="validation-result"></div>
+          
+          <div class="field-explanation" id="field-explanation">
+            <div class="explanation-item">
+              <span class="field-label">分钟</span>
+              <span class="field-range">(0-59)</span>
+            </div>
+            <div class="explanation-item">
+              <span class="field-label">小时</span>
+              <span class="field-range">(0-23)</span>
+            </div>
+            <div class="explanation-item">
+              <span class="field-label">日期</span>
+              <span class="field-range">(1-31)</span>
+            </div>
+            <div class="explanation-item">
+              <span class="field-label">月份</span>
+              <span class="field-range">(1-12)</span>
+            </div>
+            <div class="explanation-item">
+              <span class="field-label">星期</span>
+              <span class="field-range">(0-7)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 可视化编辑器 -->
+        <div class="visual-editor-section">
+          <div class="section-header">
+            <h2>可视化编辑器</h2>
+            <button class="toggle-btn" id="editor-toggle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="18,15 12,9 6,15"></polyline>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="editor-content" id="editor-content">
+            <div class="editor-intro">
+              <p>通过下面的选项快速生成Cron表达式，无需记忆复杂语法</p>
+              <div class="live-preview">
+                <label>实时预览:</label>
+                <code class="preview-expression" id="preview-expression">0 0 * * *</code>
+              </div>
+            </div>
+
+            <div class="field-editor-grid">
+              <!-- 秒设置 (仅Quartz格式) -->
+              <div class="field-editor" id="second-field" style="display: none;">
+                <div class="field-header">
+                  <label>秒</label>
+                  <span class="field-range">0-59</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="second-type" value="zero" checked data-field="second">
+                    <span>0秒(整分钟)</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="second-type" value="every" data-field="second">
+                    <span>每秒</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="second-type" value="specific" data-field="second">
+                    <span>指定秒数</span>
+                    <div class="inline-inputs">
+                      <select class="second-select" disabled>
+                        <option value="0">0秒</option>
+                        <option value="15">15秒</option>
+                        <option value="30">30秒</option>
+                        <option value="45">45秒</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="second-type" value="interval" data-field="second">
+                    <span>每隔</span>
+                    <div class="inline-inputs">
+                      <input type="number" class="second-interval-input" min="1" max="59" value="30" disabled>
+                      <span>秒</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 分钟设置 -->
+              <div class="field-editor">
+                <div class="field-header">
+                  <label>分钟</label>
+                  <span class="field-range">0-59</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="minute-type" value="every" checked data-field="minute">
+                    <span>每分钟</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="minute-type" value="specific" data-field="minute">
+                    <span>指定分钟</span>
+                    <div class="inline-inputs">
+                      <select class="minute-select" disabled>
+                        <option value="0">0分</option>
+                        <option value="15">15分</option>
+                        <option value="30">30分</option>
+                        <option value="45">45分</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="minute-type" value="interval" data-field="minute">
+                    <span>每隔</span>
+                    <div class="inline-inputs">
+                      <input type="number" class="interval-input" min="1" max="59" value="15" disabled>
+                      <span>分钟</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 小时设置 -->
+              <div class="field-editor">
+                <div class="field-header">
+                  <label>小时</label>
+                  <span class="field-range">0-23</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="hour-type" value="every" checked data-field="hour">
+                    <span>每小时</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="hour-type" value="specific" data-field="hour">
+                    <span>指定时间</span>
+                    <div class="inline-inputs">
+                      <select class="hour-select" disabled>
+                        <option value="0">0点(凌晨)</option>
+                        <option value="6">6点(早晨)</option>
+                        <option value="9">9点(上午)</option>
+                        <option value="12">12点(中午)</option>
+                        <option value="15">15点(下午)</option>
+                        <option value="18">18点(傍晚)</option>
+                        <option value="21">21点(晚上)</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="hour-type" value="range" data-field="hour">
+                    <span>时间段</span>
+                    <div class="inline-inputs">
+                      <select class="hour-range-start" disabled>
+                        <option value="9">9点</option>
+                        <option value="8">8点</option>
+                        <option value="10">10点</option>
+                      </select>
+                      <span>到</span>
+                      <select class="hour-range-end" disabled>
+                        <option value="17">17点</option>
+                        <option value="18">18点</option>
+                        <option value="22">22点</option>
+                      </select>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 日期设置 -->
+              <div class="field-editor">
+                <div class="field-header">
+                  <label>日期</label>
+                  <span class="field-range">1-31</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="day-type" value="every" checked data-field="day">
+                    <span>每天</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="day-type" value="specific" data-field="day">
+                    <span>指定日期</span>
+                    <div class="inline-inputs">
+                      <select class="day-select" disabled>
+                        <option value="1">1号</option>
+                        <option value="2">2号</option>
+                        <option value="3">3号</option>
+                        <option value="4">4号</option>
+                        <option value="5">5号</option>
+                        <option value="6">6号</option>
+                        <option value="7">7号</option>
+                        <option value="8">8号</option>
+                        <option value="9">9号</option>
+                        <option value="10">10号</option>
+                        <option value="11">11号</option>
+                        <option value="12">12号</option>
+                        <option value="13">13号</option>
+                        <option value="14">14号</option>
+                        <option value="15">15号</option>
+                        <option value="16">16号</option>
+                        <option value="17">17号</option>
+                        <option value="18">18号</option>
+                        <option value="19">19号</option>
+                        <option value="20">20号</option>
+                        <option value="21">21号</option>
+                        <option value="22">22号</option>
+                        <option value="23">23号</option>
+                        <option value="24">24号</option>
+                        <option value="25">25号</option>
+                        <option value="26">26号</option>
+                        <option value="27">27号</option>
+                        <option value="28">28号</option>
+                        <option value="29">29号</option>
+                        <option value="30">30号</option>
+                        <option value="31">31号</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="day-type" value="last" data-field="day">
+                    <span>月末最后一天</span>
+                    <div class="inline-inputs">
+                      <span class="note">(L)</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 月份设置 -->
+              <div class="field-editor">
+                <div class="field-header">
+                  <label>月份</label>
+                  <span class="field-range">1-12</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="month-type" value="every" checked data-field="month">
+                    <span>每月</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="month-type" value="specific" data-field="month">
+                    <span>指定月份</span>
+                    <div class="inline-inputs">
+                      <select class="month-select" disabled>
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="month-type" value="quarter" data-field="month">
+                    <span>每季度</span>
+                    <div class="inline-inputs">
+                      <span class="note">(3、6、9、12月)</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 星期设置 -->
+              <div class="field-editor">
+                <div class="field-header">
+                  <label>星期</label>
+                  <span class="field-range">周日=0,7</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="weekday-type" value="any" checked data-field="weekday">
+                    <span>任意星期</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="weekday-type" value="specific" data-field="weekday">
+                    <span>指定星期</span>
+                    <div class="inline-inputs">
+                      <select class="weekday-select" disabled>
+                        <option value="1">周一</option>
+                        <option value="2">周二</option>
+                        <option value="3">周三</option>
+                        <option value="4">周四</option>
+                        <option value="5">周五</option>
+                        <option value="6">周六</option>
+                        <option value="0">周日</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="weekday-type" value="workdays" data-field="weekday">
+                    <span>仅工作日</span>
+                    <div class="inline-inputs">
+                      <span class="note">(周一到周五)</span>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="weekday-type" value="weekend" data-field="weekday">
+                    <span>仅周末</span>
+                    <div class="inline-inputs">
+                      <span class="note">(周六和周日)</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 年份设置 (扩展格式和Quartz格式) -->
+              <div class="field-editor" id="year-field" style="display: none;">
+                <div class="field-header">
+                  <label>年份</label>
+                  <span class="field-range">1970-3000</span>
+                </div>
+                <div class="field-options">
+                  <label class="option-radio">
+                    <input type="radio" name="year-type" value="every" checked data-field="year">
+                    <span>任意年份</span>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="year-type" value="specific" data-field="year">
+                    <span>指定年份</span>
+                    <div class="inline-inputs">
+                      <input type="number" class="year-input" min="2024" max="2030" value="2024" disabled>
+                    </div>
+                  </label>
+                  <label class="option-radio">
+                    <input type="radio" name="year-type" value="range" data-field="year">
+                    <span>年份范围</span>
+                    <div class="inline-inputs">
+                      <input type="number" class="year-start-input" min="2024" max="2030" value="2024" disabled>
+                      <span>到</span>
+                      <input type="number" class="year-end-input" min="2024" max="2030" value="2026" disabled>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="editor-actions">
+              <button class="generate-btn" id="generate-from-editor">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                </svg>
+                生成表达式
+              </button>
+              <button class="reset-btn" id="reset-editor">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                  <path d="M3 21v-5h5"></path>
+                </svg>
+                重置
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 执行时间预测 -->
+        <div class="prediction-section">
+          <div class="section-header">
+            <h2>执行时间预测</h2>
+            <div class="prediction-controls">
+              <label>显示条数:</label>
+              <select id="prediction-count">
+                <option value="5">5条</option>
+                <option value="10" selected>10条</option>
+                <option value="20">20条</option>
+                <option value="50">50条</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="prediction-result" id="prediction-result">
+            <div class="no-prediction">
+              <span>请输入有效的Cron表达式以查看执行时间预测</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 表达式说明 -->
+        <div class="description-section">
+          <div class="section-header">
+            <h2>表达式说明</h2>
+          </div>
+          
+          <div class="description-content" id="description-content">
+            <div class="no-description">
+              <span>请输入有效的Cron表达式以查看详细说明</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 系统兼容性说明 -->
+      <section class="compatibility-section">
+        <div class="compatibility-content industrial-border">
+          <h2 class="compatibility-title">系统兼容性</h2>
+          <div class="format-compatibility">
+            <!-- 5字段格式 -->
+            <div class="format-item">
+              <div class="format-header">
+                <h3>标准格式 (5字段)</h3>
+                <span class="format-pattern">分 时 日 月 周</span>
+              </div>
+              <div class="systems-list">
+                <div class="system-category">
+                  <h4>🐧 Unix/Linux 系统</h4>
+                  <ul>
+                    <li><strong>crontab</strong> - 系统标准定时任务</li>
+                    <li><strong>anacron</strong> - 处理系统关机期间的任务</li>
+                    <li><strong>fcron</strong> - 高级cron替代品</li>
+                  </ul>
+                </div>
+                <div class="system-category">
+                  <h4>🐳 容器化环境</h4>
+                  <ul>
+                    <li><strong>Docker</strong> - 容器内定时任务</li>
+                    <li><strong>Kubernetes CronJob</strong> - K8s定时任务</li>
+                  </ul>
+                </div>
+                <div class="system-category">
+                  <h4>☁️ 云服务</h4>
+                  <ul>
+                    <li><strong>AWS CloudWatch Events</strong> - 亚马逊事件调度</li>
+                    <li><strong>Google Cloud Scheduler</strong> - 谷歌云调度器</li>
+                    <li><strong>Azure Logic Apps</strong> - 微软逻辑应用</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6字段格式 -->
+            <div class="format-item">
+              <div class="format-header">
+                <h3>扩展格式 (6字段)</h3>
+                <span class="format-pattern">分 时 日 月 周 年</span>
+              </div>
+              <div class="systems-list">
+                <div class="system-category">
+                  <h4>🗄️ 数据库系统</h4>
+                  <ul>
+                    <li><strong>PostgreSQL pg_cron</strong> - PG数据库定时任务</li>
+                    <li><strong>Oracle DBMS_SCHEDULER</strong> - Oracle调度器</li>
+                  </ul>
+                </div>
+                <div class="system-category">
+                  <h4>📊 监控工具</h4>
+                  <ul>
+                    <li><strong>Zabbix</strong> - 系统监控</li>
+                    <li><strong>Nagios</strong> - 网络监控</li>
+                  </ul>
+                </div>
+                <div class="system-category">
+                  <h4>🔧 自动化工具</h4>
+                  <ul>
+                    <li><strong>Ansible</strong> - 配置管理(部分场景)</li>
+                    <li><strong>Jenkins</strong> - CI/CD流水线(扩展插件)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7字段格式 -->
+            <div class="format-item">
+              <div class="format-header">
+                <h3>Quartz格式 (7字段)</h3>
+                <span class="format-pattern">秒 分 时 日 月 周 年</span>
+              </div>
+              <div class="systems-list">
+                <div class="system-category">
+                  <h4>☕ Java生态</h4>
+                  <ul>
+                    <li><strong>Spring Framework</strong> - @Scheduled注解</li>
+                    <li><strong>Quartz Scheduler</strong> - Java定时任务框架</li>
+                    <li><strong>Elastic Job</strong> - 分布式定时任务</li>
+                    <li><strong>XXL-JOB</strong> - 分布式任务调度平台</li>
+                  </ul>
+                </div>
+                <div class="system-category">
+                  <h4>🏢 企业应用</h4>
+                  <ul>
+                    <li><strong>Apache Airflow</strong> - 工作流调度</li>
+                    <li><strong>Jenkins</strong> - CI/CD定时构建</li>
+                    <li><strong>Control-M</strong> - 企业作业调度</li>
+                  </ul>
+                </div>
+                <div class="system-category">
+                  <h4>🌐 Web框架</h4>
+                  <ul>
+                    <li><strong>Spring Boot</strong> - 微服务定时任务</li>
+                    <li><strong>Grails</strong> - Groovy Web框架</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 使用场景模板 -->
+      <section class="templates-section">
+        <div class="templates-content industrial-border">
+          <h2 class="templates-title">常见使用场景</h2>
+          
+          <div class="scenarios-grid">
+            <!-- 系统维护场景 -->
+            <div class="scenario-category">
+              <h3>🔧 系统维护</h3>
+              <div class="scenario-templates">
+                <button class="template-btn" data-expression="0 2 * * *" data-desc="每天凌晨2点执行系统维护">
+                  <span class="template-name">数据库备份</span>
+                  <span class="template-expression">0 2 * * *</span>
+                  <span class="template-use-case">适用于：数据库备份、系统清理</span>
+                </button>
+                <button class="template-btn" data-expression="0 0 * * 0" data-desc="每周日凌晨执行">
+                  <span class="template-name">周度维护</span>
+                  <span class="template-expression">0 0 * * 0</span>
+                  <span class="template-use-case">适用于：系统重启、日志清理</span>
+                </button>
+                <button class="template-btn" data-expression="0 3 1 * *" data-desc="每月1号凌晨3点">
+                  <span class="template-name">月度报告</span>
+                  <span class="template-expression">0 3 1 * *</span>
+                  <span class="template-use-case">适用于：月度统计、归档处理</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 业务处理场景 -->
+            <div class="scenario-category">
+              <h3>💼 业务处理</h3>
+              <div class="scenario-templates">
+                <button class="template-btn" data-expression="0 9 * * 1-5" data-desc="工作日早上9点">
+                  <span class="template-name">工作日报表</span>
+                  <span class="template-expression">0 9 * * 1-5</span>
+                  <span class="template-use-case">适用于：日报生成、邮件发送</span>
+                </button>
+                <button class="template-btn" data-expression="*/30 9-17 * * 1-5" data-desc="工作时间每30分钟">
+                  <span class="template-name">数据同步</span>
+                  <span class="template-expression">*/30 9-17 * * 1-5</span>
+                  <span class="template-use-case">适用于：库存同步、订单处理</span>
+                </button>
+                <button class="template-btn" data-expression="0 18 * * 5" data-desc="每周五下午6点">
+                  <span class="template-name">周报生成</span>
+                  <span class="template-expression">0 18 * * 5</span>
+                  <span class="template-use-case">适用于：周报统计、工作总结</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 监控告警场景 -->
+            <div class="scenario-category">
+              <h3>📊 监控告警</h3>
+              <div class="scenario-templates">
+                <button class="template-btn" data-expression="*/5 * * * *" data-desc="每5分钟检查一次">
+                  <span class="template-name">系统监控</span>
+                  <span class="template-expression">*/5 * * * *</span>
+                  <span class="template-use-case">适用于：服务状态检查、性能监控</span>
+                </button>
+                <button class="template-btn" data-expression="*/1 * * * *" data-desc="每分钟检查">
+                  <span class="template-name">实时监控</span>
+                  <span class="template-expression">*/1 * * * *</span>
+                  <span class="template-use-case">适用于：关键服务监控、异常检测</span>
+                </button>
+                <button class="template-btn" data-expression="0 */1 * * *" data-desc="每小时整点">
+                  <span class="template-name">资源检查</span>
+                  <span class="template-expression">0 */1 * * *</span>
+                  <span class="template-use-case">适用于：磁盘空间、内存使用率</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 用户服务场景 -->
+            <div class="scenario-category">
+              <h3>👥 用户服务</h3>
+              <div class="scenario-templates">
+                <button class="template-btn" data-expression="0 8 * * *" data-desc="每天早上8点">
+                  <span class="template-name">用户提醒</span>
+                  <span class="template-expression">0 8 * * *</span>
+                  <span class="template-use-case">适用于：签到提醒、每日推送</span>
+                </button>
+                <button class="template-btn" data-expression="0 20 * * *" data-desc="每天晚上8点">
+                  <span class="template-name">晚间推送</span>
+                  <span class="template-expression">0 20 * * *</span>
+                  <span class="template-use-case">适用于：新闻推送、活动通知</span>
+                </button>
+                <button class="template-btn" data-expression="0 12 * * 6" data-desc="每周六中午12点">
+                  <span class="template-name">周末活动</span>
+                  <span class="template-expression">0 12 * * 6</span>
+                  <span class="template-use-case">适用于：周末活动、优惠推送</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 使用说明 -->
+      <section class="usage-section">
+        <div class="usage-content industrial-border">
+          <h2 class="usage-title">使用说明</h2>
+          <div class="usage-grid">
+            <div class="usage-item">
+              <div class="usage-icon">📝</div>
+              <h3>表达式格式</h3>
+              <p>根据目标系统选择正确的字段格式，确保表达式能正确解析和执行。</p>
+            </div>
+            <div class="usage-item">
+              <div class="usage-icon">🎯</div>
+              <h3>可视化编辑</h3>
+              <p>提供直观的可视化编辑器，无需记忆复杂语法即可快速生成表达式。</p>
+            </div>
+            <div class="usage-item">
+              <div class="usage-icon">⏰</div>
+              <h3>时间预测</h3>
+              <p>实时预测下次执行时间，帮助验证表达式的正确性和执行频率。</p>
+            </div>
+            <div class="usage-item">
+              <div class="usage-icon">🔄</div>
+              <h3>格式转换</h3>
+              <p>支持不同字段格式间的转换，方便在不同系统间迁移定时任务。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Cron expression utility class
+  class CronExpression {
+    constructor() {
+      this.formats = {
+        standard: {
+          fields: ['minute', 'hour', 'day', 'month', 'weekday'],
+          description: '标准格式 (分 时 日 月 周)'
+        },
+        extended: {
+          fields: ['minute', 'hour', 'day', 'month', 'weekday', 'year'],
+          description: '扩展格式 (分 时 日 月 周 年)'
+        },
+        quartz: {
+          fields: ['second', 'minute', 'hour', 'day', 'month', 'weekday', 'year'],
+          description: 'Quartz格式 (秒 分 时 日 月 周 年)'
+        }
+      };
+      
+      this.fieldRanges = {
+        second: [0, 59],
+        minute: [0, 59],
+        hour: [0, 23],
+        day: [1, 31],
+        month: [1, 12],
+        weekday: [0, 7],
+        year: [1970, 3000]
+      };
+      
+      this.monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      this.weekdayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    }
+
+    parse(expression, format = 'standard') {
+      const fields = expression.trim().split(/\s+/);
+      const expectedFields = this.formats[format].fields;
+      
+      if (fields.length !== expectedFields.length) {
+        throw new Error(`Expected ${expectedFields.length} fields, got ${fields.length}`);
+      }
+      
+      const parsed = {};
+      for (let i = 0; i < fields.length; i++) {
+        parsed[expectedFields[i]] = fields[i];
+      }
+      
+      return parsed;
+    }
+
+    validate(expression, format = 'standard') {
+      try {
+        const parsed = this.parse(expression, format);
+        const errors = [];
+        
+        for (const [field, value] of Object.entries(parsed)) {
+          const fieldErrors = this.validateField(field, value);
+          if (fieldErrors.length > 0) {
+            errors.push(...fieldErrors.map(err => `${field}: ${err}`));
+          }
+        }
+        
+        return {
+          valid: errors.length === 0,
+          errors,
+          parsed
+        };
+      } catch (error) {
+        return {
+          valid: false,
+          errors: [error.message],
+          parsed: null
+        };
+      }
+    }
+
+    validateField(field, value) {
+      const errors = [];
+      const range = this.fieldRanges[field];
+      
+      if (!range) {
+        errors.push('Unknown field');
+        return errors;
+      }
+      
+      // Special characters
+      if (value === '*' || value === '?') {
+        return errors;
+      }
+      
+      // Handle different patterns
+      if (value.includes('/')) {
+        // Interval pattern: */n or range/n
+        const parts = value.split('/');
+        if (parts.length !== 2) {
+          errors.push('Invalid interval syntax');
+          return errors;
+        }
+        
+        const interval = parseInt(parts[1]);
+        if (isNaN(interval) || interval <= 0) {
+          errors.push('Invalid interval value');
+        }
+        
+        if (parts[0] !== '*') {
+          // Range interval
+          const rangeErrors = this.validateField(field, parts[0]);
+          errors.push(...rangeErrors);
+        }
+      } else if (value.includes('-')) {
+        // Range pattern: n-m
+        const parts = value.split('-');
+        if (parts.length !== 2) {
+          errors.push('Invalid range syntax');
+          return errors;
+        }
+        
+        const start = this.parseFieldValue(field, parts[0]);
+        const end = this.parseFieldValue(field, parts[1]);
+        
+        if (start === null || end === null) {
+          errors.push('Invalid range values');
+        } else if (start > end) {
+          errors.push('Range start must be less than or equal to end');
+        }
+      } else if (value.includes(',')) {
+        // List pattern: n,m,o
+        const parts = value.split(',');
+        for (const part of parts) {
+          const partErrors = this.validateField(field, part.trim());
+          errors.push(...partErrors);
+        }
+      } else {
+        // Single value or special patterns
+        if (value.includes('L')) {
+          // Last day patterns
+          if (field !== 'day' && field !== 'weekday') {
+            errors.push('L modifier only valid for day and weekday fields');
+          }
+        } else if (value.includes('W')) {
+          // Weekday patterns
+          if (field !== 'day') {
+            errors.push('W modifier only valid for day field');
+          }
+        } else if (value.includes('#')) {
+          // Nth weekday patterns
+          if (field !== 'weekday') {
+            errors.push('# modifier only valid for weekday field');
+          }
+        } else {
+          // Regular numeric value
+          const numValue = this.parseFieldValue(field, value);
+          if (numValue === null) {
+            errors.push('Invalid value format');
+          } else if (numValue < range[0] || numValue > range[1]) {
+            errors.push(`Value must be between ${range[0]} and ${range[1]}`);
+          }
+        }
+      }
+      
+      return errors;
+    }
+
+    parseFieldValue(field, value) {
+      // Handle named values
+      if (field === 'month' && this.monthNames.includes(value.toUpperCase())) {
+        return this.monthNames.indexOf(value.toUpperCase()) + 1;
+      }
+      
+      if (field === 'weekday' && this.weekdayNames.includes(value.toUpperCase())) {
+        return this.weekdayNames.indexOf(value.toUpperCase());
+      }
+      
+      const numValue = parseInt(value);
+      return isNaN(numValue) ? null : numValue;
+    }
+
+    describe(expression, format = 'standard') {
+      const validation = this.validate(expression, format);
+      if (!validation.valid) {
+        return 'Invalid expression';
+      }
+      
+      const parsed = validation.parsed;
+      const descriptions = [];
+      
+      // Build human-readable description
+      const minute = this.describeField('minute', parsed.minute);
+      const hour = this.describeField('hour', parsed.hour);
+      const day = this.describeField('day', parsed.day);
+      const month = this.describeField('month', parsed.month);
+      const weekday = this.describeField('weekday', parsed.weekday);
+      
+      let description = '在';
+      
+      if (parsed.year && parsed.year !== '*') {
+        description += this.describeField('year', parsed.year) + '年';
+      }
+      
+      if (month !== '每月') {
+        description += month;
+      }
+      
+      if (day !== '每天' && weekday !== '每天') {
+        if (day !== '每天') description += day;
+        if (weekday !== '每天') description += weekday;
+      } else if (day !== '每天') {
+        description += day;
+      } else if (weekday !== '每天') {
+        description += weekday;
+      }
+      
+      if (hour !== '每小时') {
+        description += hour + '时';
+      }
+      
+      if (minute !== '每分钟') {
+        description += minute + '分';
+      }
+      
+      if (parsed.second && parsed.second !== '*' && parsed.second !== '0') {
+        description += this.describeField('second', parsed.second) + '秒';
+      }
+      
+      description += '执行';
+      
+      return description;
+    }
+
+    describeField(field, value) {
+      if (value === '*') {
+        return field === 'minute' ? '每分钟' : 
+               field === 'hour' ? '每小时' :
+               field === 'day' ? '每天' :
+               field === 'month' ? '每月' :
+               field === 'weekday' ? '每天' :
+               field === 'year' ? '每年' : '每' + field;
+      }
+      
+      if (value === '?') {
+        return '不指定';
+      }
+      
+      if (value.includes('/')) {
+        const parts = value.split('/');
+        const interval = parts[1];
+        const base = parts[0] === '*' ? '每' : this.describeField(field, parts[0]);
+        return `${base}${interval}个单位`;
+      }
+      
+      if (value.includes('-')) {
+        const parts = value.split('-');
+        return `${parts[0]}-${parts[1]}`;
+      }
+      
+      if (value.includes(',')) {
+        return value.split(',').join('、');
+      }
+      
+      return value;
+    }
+
+    getNextExecutions(expression, format = 'standard', count = 10) {
+      const validation = this.validate(expression, format);
+      if (!validation.valid) {
+        return [];
+      }
+      
+      // Simple implementation - in production you'd use a proper cron library
+      const executions = [];
+      const now = new Date();
+      let current = new Date(now);
+      
+      // This is a simplified implementation
+      // In practice, you'd use a library like node-cron or cron-parser
+      for (let i = 0; i < count && executions.length < count; i++) {
+        current = new Date(current.getTime() + 60000); // Add 1 minute
+        if (this.matchesExpression(current, validation.parsed, format)) {
+          executions.push(new Date(current));
+        }
+      }
+      
+      return executions;
+    }
+
+    matchesExpression(date, parsed, format) {
+      // Simplified matching logic
+      // In practice, you'd implement proper cron matching
+      return true; // Placeholder
+    }
+  }
+
+  // Initialize the tool
+  class CronTool {
+    constructor() {
+      this.cronExpr = new CronExpression();
+      this.currentFormat = 'standard';
+      this.init();
+    }
+
+    init() {
+      this.bindEvents();
+      this.updateFieldExplanation();
+    }
+
+    bindEvents() {
+      const cronInput = document.getElementById('cron-input');
+      const formatSelect = document.getElementById('format-select');
+      const validateBtn = document.getElementById('validate-btn');
+      const clearBtn = document.getElementById('clear-btn');
+      const editorToggle = document.getElementById('editor-toggle');
+      const predictionCount = document.getElementById('prediction-count');
+
+      cronInput.addEventListener('input', () => this.handleInputChange());
+      formatSelect.addEventListener('change', () => this.handleFormatChange());
+      validateBtn.addEventListener('click', () => this.validateExpression());
+      clearBtn.addEventListener('click', () => this.clearInput());
+      editorToggle.addEventListener('click', () => this.toggleEditor());
+      predictionCount.addEventListener('change', () => this.updatePredictions());
+
+      // Template buttons
+      document.querySelectorAll('.template-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          let expression = btn.dataset.expression;
+          // Convert expression to match current format
+          expression = this.convertExpressionToFormat(expression);
+          cronInput.value = expression;
+          this.handleInputChange();
+        });
+      });
+
+      // Visual editor radio buttons
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => this.updateFromVisualEditor());
+      });
+
+      // Visual editor select and input elements
+      document.querySelectorAll('.second-select, .minute-select, .hour-select, .day-select, .month-select, .weekday-select').forEach(select => {
+        select.addEventListener('change', () => this.updateFromVisualEditor());
+      });
+
+      document.querySelectorAll('.second-interval-input, .interval-input, .hour-range-start, .hour-range-end, .year-input, .year-start-input, .year-end-input').forEach(input => {
+        input.addEventListener('input', () => this.updateFromVisualEditor());
+      });
+
+      // Generate and reset buttons
+      document.getElementById('generate-from-editor').addEventListener('click', () => {
+        this.generateExpressionFromEditor();
+      });
+      document.getElementById('reset-editor').addEventListener('click', () => this.resetVisualEditor());
+    }
+
+    handleInputChange() {
+      const expression = document.getElementById('cron-input').value.trim();
+      if (expression) {
+        this.validateExpression();
+        this.updatePredictions();
+        this.updateDescription();
+      } else {
+        this.clearResults();
+      }
+    }
+
+    handleFormatChange() {
+      this.currentFormat = document.getElementById('format-select').value;
+      this.updateFieldExplanation();
+      this.updateVisualEditorFields();
+      
+      // Convert current expression to new format
+      const input = document.getElementById('cron-input');
+      const currentExpression = input.value.trim();
+      
+      if (currentExpression) {
+        const convertedExpression = this.convertExpressionToFormat(currentExpression);
+        input.value = convertedExpression;
+        document.getElementById('preview-expression').textContent = convertedExpression;
+      } else {
+        this.updateDefaultExpression();
+        document.getElementById('preview-expression').textContent = input.value;
+      }
+      
+      this.handleInputChange();
+    }
+
+    updateVisualEditorFields() {
+      const secondField = document.getElementById('second-field');
+      const yearField = document.getElementById('year-field');
+      
+      // Show/hide fields based on format
+      if (this.currentFormat === 'quartz') {
+        // Quartz: show both second and year fields
+        secondField.style.display = 'block';
+        yearField.style.display = 'block';
+      } else if (this.currentFormat === 'extended') {
+        // Extended: show only year field
+        secondField.style.display = 'none';
+        yearField.style.display = 'block';
+      } else {
+        // Standard: hide both fields
+        secondField.style.display = 'none';
+        yearField.style.display = 'none';
+      }
+    }
+
+    updateDefaultExpression() {
+      // Set appropriate default expression based on format
+      const input = document.getElementById('cron-input');
+      
+      if (this.currentFormat === 'quartz') {
+        input.value = '0 0 0 * * ? *'; // 7 fields: 秒 分 时 日 月 周 年
+      } else if (this.currentFormat === 'extended') {
+        input.value = '0 0 * * * *'; // 6 fields: 分 时 日 月 周 年
+      } else {
+        input.value = '0 0 * * *'; // 5 fields: 分 时 日 月 周
+      }
+    }
+
+    convertExpressionToFormat(expression) {
+      const fields = expression.trim().split(/\s+/);
+      
+      // If already correct format, return as is
+      if ((this.currentFormat === 'standard' && fields.length === 5) ||
+          (this.currentFormat === 'extended' && fields.length === 6) ||
+          (this.currentFormat === 'quartz' && fields.length === 7)) {
+        return expression;
+      }
+      
+      // Convert based on target format
+      if (this.currentFormat === 'quartz' && fields.length === 5) {
+        // 5 fields to 7 fields: add second (0) at beginning and year (*) at end
+        return '0 ' + expression + ' *';
+      } else if (this.currentFormat === 'quartz' && fields.length === 6) {
+        // 6 fields to 7 fields: add second (0) at beginning
+        return '0 ' + expression;
+      } else if (this.currentFormat === 'extended' && fields.length === 5) {
+        // 5 fields to 6 fields: add year (*) at end
+        return expression + ' *';
+      } else if (this.currentFormat === 'extended' && fields.length === 7) {
+        // 7 fields to 6 fields: remove first field (seconds)
+        return fields.slice(1).join(' ');
+      } else if (this.currentFormat === 'standard' && fields.length === 6) {
+        // 6 fields to 5 fields: remove last field (year)
+        return fields.slice(0, 5).join(' ');
+      } else if (this.currentFormat === 'standard' && fields.length === 7) {
+        // 7 fields to 5 fields: remove first (seconds) and last (year) fields
+        return fields.slice(1, 6).join(' ');
+      }
+      
+      // If conversion not possible, return appropriate default
+      return this.getDefaultExpressionForFormat();
+    }
+
+    getDefaultExpressionForFormat() {
+      if (this.currentFormat === 'quartz') {
+        return '0 0 0 * * ? *';
+      } else if (this.currentFormat === 'extended') {
+        return '0 0 * * * *';
+      } else {
+        return '0 0 * * *';
+      }
+    }
+
+    validateExpression() {
+      const expression = document.getElementById('cron-input').value.trim();
+      const result = document.getElementById('validation-result');
+      
+      if (!expression) {
+        result.innerHTML = '';
+        return;
+      }
+
+      const validation = this.cronExpr.validate(expression, this.currentFormat);
+      
+      if (validation.valid) {
+        result.innerHTML = `
+          <div class="validation-success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+            表达式语法正确
+          </div>
+        `;
+      } else {
+        result.innerHTML = `
+          <div class="validation-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <div class="error-details">
+              ${validation.errors.map(error => `<div>${error}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    updatePredictions() {
+      const expression = document.getElementById('cron-input').value.trim();
+      const count = parseInt(document.getElementById('prediction-count').value);
+      const result = document.getElementById('prediction-result');
+      
+      if (!expression) {
+        result.innerHTML = '<div class="no-prediction"><span>请输入有效的Cron表达式以查看执行时间预测</span></div>';
+        return;
+      }
+
+      const validation = this.cronExpr.validate(expression, this.currentFormat);
+      if (!validation.valid) {
+        result.innerHTML = '<div class="no-prediction"><span>表达式无效，无法预测执行时间</span></div>';
+        return;
+      }
+
+      // Generate real execution times based on cron expression
+      const executions = this.calculateNextExecutions(expression, count);
+      
+      if (executions.length === 0) {
+        result.innerHTML = '<div class="no-prediction"><span>无法计算执行时间，请检查表达式</span></div>';
+        return;
+      }
+      
+      result.innerHTML = `
+        <div class="prediction-list">
+          ${executions.map((time, index) => `
+            <div class="prediction-item">
+              <span class="prediction-index">${index + 1}.</span>
+              <span class="prediction-time">${time.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })}</span>
+              <span class="prediction-relative">(${this.getRelativeTime(time)})</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    updateDescription() {
+      const expression = document.getElementById('cron-input').value.trim();
+      const content = document.getElementById('description-content');
+      
+      if (!expression) {
+        content.innerHTML = '<div class="no-description"><span>请输入有效的Cron表达式以查看详细说明</span></div>';
+        return;
+      }
+
+      const description = this.cronExpr.describe(expression, this.currentFormat);
+      content.innerHTML = `
+        <div class="description-text">
+          <h3>执行规则</h3>
+          <p>${description}</p>
+          
+          <h3>表达式字段</h3>
+          <div class="field-breakdown">
+            ${this.getFieldBreakdown(expression)}
+          </div>
+        </div>
+      `;
+    }
+
+    calculateNextExecutions(expression, count) {
+      try {
+        const parsed = this.cronExpr.parse(expression, this.currentFormat);
+        const executions = [];
+        const now = new Date();
+        let current = new Date(now);
+        
+        // Add 1 minute to start from next possible time
+        current.setMinutes(current.getMinutes() + 1);
+        current.setSeconds(0);
+        current.setMilliseconds(0);
+        
+        let attempts = 0;
+        const maxAttempts = count * 1000; // Prevent infinite loops
+        
+        while (executions.length < count && attempts < maxAttempts) {
+          if (this.matchesCronExpression(current, parsed)) {
+            executions.push(new Date(current));
+          }
+          
+          // Increment time based on the smallest unit in the expression
+          if (this.currentFormat === 'quartz') {
+            current.setSeconds(current.getSeconds() + 1);
+          } else {
+            current.setMinutes(current.getMinutes() + 1);
+          }
+          
+          attempts++;
+        }
+        
+        return executions;
+      } catch (error) {
+        console.error('Error calculating executions:', error);
+        return [];
+      }
+    }
+
+    matchesCronExpression(date, parsed) {
+      try {
+        const fields = this.cronExpr.formats[this.currentFormat].fields;
+        
+        for (let i = 0; i < fields.length; i++) {
+          const field = fields[i];
+          const value = parsed[field];
+          
+          if (!this.matchesField(date, field, value)) {
+            return false;
+          }
+        }
+        
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    matchesField(date, field, value) {
+      if (value === '*' || value === '?') {
+        return true;
+      }
+      
+      let dateValue;
+      switch (field) {
+        case 'second':
+          dateValue = date.getSeconds();
+          break;
+        case 'minute':
+          dateValue = date.getMinutes();
+          break;
+        case 'hour':
+          dateValue = date.getHours();
+          break;
+        case 'day':
+          dateValue = date.getDate();
+          break;
+        case 'month':
+          dateValue = date.getMonth() + 1; // JS months are 0-based
+          break;
+        case 'weekday':
+          dateValue = date.getDay(); // JS: 0=Sunday, 1=Monday, etc.
+          break;
+        case 'year':
+          dateValue = date.getFullYear();
+          break;
+        default:
+          return false;
+      }
+      
+      // Handle special values
+      if (value === 'L' && field === 'day') {
+        // Last day of month
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        return dateValue === lastDay;
+      }
+      
+      // Handle ranges (e.g., "1-5")
+      if (value.includes('-')) {
+        const [start, end] = value.split('-').map(v => parseInt(v));
+        return dateValue >= start && dateValue <= end;
+      }
+      
+      // Handle intervals (e.g., "*/15")
+      if (value.includes('/')) {
+        const [base, interval] = value.split('/');
+        const intervalNum = parseInt(interval);
+        
+        if (base === '*') {
+          return dateValue % intervalNum === 0;
+        } else {
+          const baseNum = parseInt(base);
+          return dateValue >= baseNum && (dateValue - baseNum) % intervalNum === 0;
+        }
+      }
+      
+      // Handle lists (e.g., "1,3,5")
+      if (value.includes(',')) {
+        const values = value.split(',').map(v => parseInt(v.trim()));
+        return values.includes(dateValue);
+      }
+      
+      // Handle specific value
+      const numValue = parseInt(value);
+      if (!isNaN(numValue)) {
+        return dateValue === numValue;
+      }
+      
+      return false;
+    }
+
+    getRelativeTime(time) {
+      const now = new Date();
+      const diff = time.getTime() - now.getTime();
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      
+      if (days > 0) return `${days}天后`;
+      if (hours > 0) return `${hours}小时后`;
+      if (minutes > 0) return `${minutes}分钟后`;
+      return '即将执行';
+    }
+
+    getFieldBreakdown(expression) {
+      const fields = expression.split(/\s+/);
+      const fieldNames = this.cronExpr.formats[this.currentFormat].fields;
+      
+      return fields.map((field, index) => `
+        <div class="field-item">
+          <span class="field-name">${this.getFieldDisplayName(fieldNames[index])}</span>
+          <span class="field-value">${field}</span>
+          <span class="field-desc">${this.getFieldDescription(fieldNames[index], field)}</span>
+        </div>
+      `).join('');
+    }
+
+    getFieldDisplayName(field) {
+      const names = {
+        second: '秒',
+        minute: '分钟',
+        hour: '小时',
+        day: '日期',
+        month: '月份',
+        weekday: '星期',
+        year: '年份'
+      };
+      return names[field] || field;
+    }
+
+    getFieldDescription(field, value) {
+      if (value === '*') return '任意值';
+      if (value === '?') return '不指定';
+      if (value.includes('/')) return '间隔执行';
+      if (value.includes('-')) return '范围值';
+      if (value.includes(',')) return '多个值';
+      return '指定值';
+    }
+
+    updateFieldExplanation() {
+      const explanation = document.getElementById('field-explanation');
+      const fields = this.cronExpr.formats[this.currentFormat].fields;
+      
+      const fieldInfo = {
+        second: { label: '秒', range: '(0-59)' },
+        minute: { label: '分钟', range: '(0-59)' },
+        hour: { label: '小时', range: '(0-23)' },
+        day: { label: '日期', range: '(1-31)' },
+        month: { label: '月份', range: '(1-12)' },
+        weekday: { label: '星期', range: '(0-7)' },
+        year: { label: '年份', range: '(1970-3000)' }
+      };
+      
+      // Add format-specific notes
+      let formatNote = '';
+      if (this.currentFormat === 'quartz') {
+        formatNote = '<div class="format-note">Quartz格式：包含秒字段，星期字段可用?表示不指定</div>';
+      } else if (this.currentFormat === 'extended') {
+        formatNote = '<div class="format-note">扩展格式：包含年份字段，适用于需要指定年份的定时任务</div>';
+      } else {
+        formatNote = '<div class="format-note">标准格式：Unix/Linux系统通用格式</div>';
+      }
+      
+      explanation.innerHTML = formatNote + '<div class="explanation-fields">' + fields.map(field => `
+        <div class="explanation-item">
+          <span class="field-label">${fieldInfo[field].label}</span>
+          <span class="field-range">${fieldInfo[field].range}</span>
+        </div>
+      `).join('') + '</div>';
+    }
+
+    toggleEditor() {
+      const content = document.getElementById('editor-content');
+      const toggle = document.getElementById('editor-toggle');
+      
+      // Check current display state more reliably
+      const isHidden = content.style.display === 'none' || 
+                      window.getComputedStyle(content).display === 'none';
+      
+      if (isHidden) {
+        content.style.display = 'block';
+        toggle.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="18,15 12,9 6,15"></polyline>
+          </svg>
+        `;
+      } else {
+        content.style.display = 'none';
+        toggle.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="6,9 12,15 18,9"></polyline>
+          </svg>
+        `;
+      }
+    }
+
+    updateVisualEditor() {
+      // Update expression from visual editor
+      this.updateFromVisualEditor();
+    }
+
+    generateExpressionFromEditor() {
+      // Force generate expression and update all displays
+      this.updateFromVisualEditor();
+      
+      // Ensure all displays are properly updated
+      const expression = document.getElementById('cron-input').value.trim();
+      if (expression) {
+        console.log('Force updating displays for expression:', expression);
+        this.validateExpression();
+        this.updatePredictions();
+        this.updateDescription();
+      }
+    }
+
+    updateFromVisualEditor() {
+      const values = [];
+      
+      // Second field (only for Quartz format)
+      if (this.currentFormat === 'quartz') {
+        const secondType = document.querySelector('input[name="second-type"]:checked').value;
+        let secondValue = '0';
+        if (secondType === 'every') {
+          secondValue = '*';
+        } else if (secondType === 'specific') {
+          secondValue = document.querySelector('.second-select').value;
+        } else if (secondType === 'interval') {
+          const interval = document.querySelector('.second-interval-input').value;
+          secondValue = `*/${interval}`;
+        }
+        values.push(secondValue);
+      }
+      
+      // Minute field
+      const minuteType = document.querySelector('input[name="minute-type"]:checked').value;
+      let minuteValue = '*';
+      if (minuteType === 'specific') {
+        minuteValue = document.querySelector('.minute-select').value;
+      } else if (minuteType === 'interval') {
+        const interval = document.querySelector('.interval-input').value;
+        minuteValue = `*/${interval}`;
+      }
+      values.push(minuteValue);
+      
+      // Hour field
+      const hourType = document.querySelector('input[name="hour-type"]:checked').value;
+      let hourValue = '*';
+      if (hourType === 'specific') {
+        hourValue = document.querySelector('.hour-select').value;
+      } else if (hourType === 'range') {
+        const start = document.querySelector('.hour-range-start').value;
+        const end = document.querySelector('.hour-range-end').value;
+        hourValue = `${start}-${end}`;
+      }
+      values.push(hourValue);
+      
+      // Day field
+      const dayType = document.querySelector('input[name="day-type"]:checked').value;
+      let dayValue = '*';
+      if (dayType === 'specific') {
+        dayValue = document.querySelector('.day-select').value;
+      } else if (dayType === 'last') {
+        dayValue = 'L'; // Last day of month
+      }
+      values.push(dayValue);
+      
+      // Month field
+      const monthType = document.querySelector('input[name="month-type"]:checked').value;
+      let monthValue = '*';
+      if (monthType === 'specific') {
+        monthValue = document.querySelector('.month-select').value;
+      } else if (monthType === 'quarter') {
+        monthValue = '3,6,9,12';
+      }
+      values.push(monthValue);
+      
+      // Weekday field
+      const weekdayType = document.querySelector('input[name="weekday-type"]:checked').value;
+      let weekdayValue = '*';
+      if (weekdayType === 'specific') {
+        weekdayValue = document.querySelector('.weekday-select').value;
+      } else if (weekdayType === 'workdays') {
+        weekdayValue = '1-5';
+      } else if (weekdayType === 'weekend') {
+        weekdayValue = '0,6';
+      } else if (weekdayType === 'any') {
+        // For Quartz format, use ? for weekday when day is not specifically constrained
+        const dayType = document.querySelector('input[name="day-type"]:checked').value;
+        if (this.currentFormat === 'quartz' && dayType === 'every') {
+          weekdayValue = '?';
+        } else {
+          weekdayValue = this.currentFormat === 'quartz' ? '?' : '*';
+        }
+      }
+      values.push(weekdayValue);
+      
+      // Year field (for extended and Quartz formats)
+      if (this.currentFormat === 'extended' || this.currentFormat === 'quartz') {
+        const yearType = document.querySelector('input[name="year-type"]:checked').value;
+        let yearValue = '*';
+        if (yearType === 'specific') {
+          yearValue = document.querySelector('.year-input').value;
+        } else if (yearType === 'range') {
+          const start = document.querySelector('.year-start-input').value;
+          const end = document.querySelector('.year-end-input').value;
+          yearValue = `${start}-${end}`;
+        }
+        values.push(yearValue);
+      }
+      
+      const expression = values.join(' ');
+      console.log(`Generated expression for ${this.currentFormat} format:`, expression, 'Fields:', values.length);
+      
+      // Update both main input and live preview
+      document.getElementById('cron-input').value = expression;
+      document.getElementById('preview-expression').textContent = expression;
+      
+      this.handleInputChange();
+      this.updateFieldStates();
+    }
+
+    updateFieldStates() {
+      // Enable/disable controls based on radio button selection
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const container = radio.closest('.field-editor');
+          const inputs = container.querySelectorAll('select, input:not([type="radio"])');
+          
+          inputs.forEach(input => {
+            input.disabled = !radio.checked || !input.closest('.inline-inputs');
+          });
+          
+          // Enable only the controls in the selected option
+          if (radio.checked) {
+            const parentOption = radio.closest('.option-radio');
+            const relatedInputs = parentOption.querySelectorAll('select, input:not([type="radio"])');
+            relatedInputs.forEach(input => {
+              input.disabled = false;
+            });
+          }
+        });
+      });
+    }
+
+    resetVisualEditor() {
+      // Reset all radio buttons to default (first option)
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        if (radio.value === 'every' || radio.value === 'any' || radio.value === 'zero') {
+          radio.checked = true;
+        } else {
+          radio.checked = false;
+        }
+      });
+      
+      // Reset all select and input values
+      document.querySelector('.second-select').value = '0';
+      document.querySelector('.minute-select').value = '0';
+      document.querySelector('.hour-select').value = '0';
+      document.querySelector('.day-select').value = '1';
+      document.querySelector('.month-select').value = '1';
+      document.querySelector('.weekday-select').value = '1';
+      document.querySelector('.second-interval-input').value = '30';
+      document.querySelector('.interval-input').value = '15';
+      document.querySelector('.hour-range-start').value = '9';
+      document.querySelector('.hour-range-end').value = '17';
+      document.querySelector('.year-input').value = '2024';
+      document.querySelector('.year-start-input').value = '2024';
+      document.querySelector('.year-end-input').value = '2026';
+      
+      this.updateFromVisualEditor();
+      this.updateFieldStates();
+    }
+
+    clearInput() {
+      document.getElementById('cron-input').value = '';
+      this.clearResults();
+    }
+
+    clearResults() {
+      document.getElementById('validation-result').innerHTML = '';
+      document.getElementById('prediction-result').innerHTML = '<div class="no-prediction"><span>请输入有效的Cron表达式以查看执行时间预测</span></div>';
+      document.getElementById('description-content').innerHTML = '<div class="no-description"><span>请输入有效的Cron表达式以查看详细说明</span></div>';
+    }
+  }
+
+  // Initialize the tool when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    const tool = new CronTool();
+    
+    // Initialize visual editor states and format
+    tool.updateVisualEditorFields();
+    tool.updateDefaultExpression();
+    tool.updateFieldStates();
+    tool.handleInputChange();
+  });
+</script>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .page-description {
+    font-size: 1.25rem;
+    color: var(--color-secondary);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .feature-badges {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .badge {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .cron-tool-container {
+    background-color: var(--color-card);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-code-bg);
+  }
+
+  .section-header h2 {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .format-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .format-selector select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .expression-section {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .expression-input-container {
+    position: relative;
+    padding: 1.5rem;
+  }
+
+  .expression-input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .expression-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-alpha);
+  }
+
+  .input-actions {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-card);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:hover {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+  }
+
+  .validation-result {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .validation-success {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background-color: #10b98120;
+    border: 1px solid #10b981;
+    border-radius: 6px;
+    color: #059669;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .validation-error {
+    padding: 0.75rem;
+    background-color: #ef444420;
+    border: 1px solid #ef4444;
+    border-radius: 6px;
+    color: #dc2626;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .validation-error svg {
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+  }
+
+  .error-details {
+    margin-top: 0.5rem;
+  }
+
+  .field-explanation {
+    padding: 1rem 1.5rem;
+    background-color: var(--color-code-bg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .format-note {
+    text-align: center;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background-color: var(--color-accent-alpha);
+    border: 1px solid var(--color-accent);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .explanation-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .explanation-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .field-range {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-secondary);
+    margin-top: 0.25rem;
+  }
+
+  .visual-editor-section {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-card);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-btn:hover {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .editor-content {
+    padding: 1.5rem;
+    display: block;
+  }
+
+  .editor-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .editor-intro p {
+    margin: 0 0 1rem 0;
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+  }
+
+  .live-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--color-bg);
+    border: 2px solid var(--color-accent);
+    border-radius: 6px;
+  }
+
+  .live-preview label {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .preview-expression {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+    background-color: var(--color-card);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .field-editor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .field-editor {
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: fit-content;
+  }
+
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .field-header label {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .field-range {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-secondary);
+    background-color: var(--color-bg);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--color-border);
+  }
+
+  .field-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .option-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-bg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    min-height: 36px;
+  }
+
+  .option-radio:hover {
+    background-color: var(--color-card);
+    border-color: var(--color-accent);
+  }
+
+  .option-radio input[type="radio"] {
+    margin: 0;
+    accent-color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .option-radio input[type="radio"]:checked + span {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .option-radio > span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .inline-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .inline-inputs select,
+  .inline-inputs input {
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    min-width: 50px;
+  }
+
+  .inline-inputs input[type="number"] {
+    width: 50px;
+  }
+
+  .inline-inputs .note {
+    font-size: 0.65rem;
+    color: var(--color-secondary);
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  .inline-inputs span {
+    font-size: 0.7rem;
+    color: var(--color-secondary);
+    white-space: nowrap;
+  }
+
+  .editor-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .generate-btn,
+  .reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--color-accent);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .generate-btn {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .generate-btn:hover {
+    background-color: var(--color-text);
+    border-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  .reset-btn {
+    background-color: var(--color-bg);
+    color: var(--color-accent);
+  }
+
+  .reset-btn:hover {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    transform: translateY(-1px);
+  }
+
+  .templates-section {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .templates-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .templates-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .scenarios-grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .scenario-category {
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .scenario-category h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  .scenario-templates {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .template-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-bg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .template-btn:hover {
+    background-color: var(--color-card);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--color-accent-alpha);
+  }
+
+  .template-name {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  .template-expression {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+    background-color: var(--color-code-bg);
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .template-use-case {
+    font-size: 0.7rem;
+    color: var(--color-secondary);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .compatibility-section {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .compatibility-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .compatibility-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .format-compatibility {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .format-item {
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .format-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .format-header h3 {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .format-pattern {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-secondary);
+    background-color: var(--color-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+  }
+
+  .systems-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .system-category {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 1rem;
+  }
+
+  .system-category h4 {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  .system-category ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .system-category li {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    padding: 0.25rem 0;
+  }
+
+  .system-category li strong {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  .system-category li::before {
+    content: "▸";
+    color: var(--color-accent);
+    margin-right: 0.5rem;
+    font-weight: bold;
+  }
+
+  .prediction-section {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .prediction-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .prediction-controls select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .prediction-result {
+    padding: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .no-prediction {
+    text-align: center;
+    color: var(--color-secondary);
+    font-style: italic;
+    padding: 2rem;
+  }
+
+  .prediction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .prediction-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .prediction-index {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    min-width: 24px;
+  }
+
+  .prediction-time {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    flex: 1;
+  }
+
+  .prediction-relative {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+  }
+
+  .description-section {
+    padding: 1.5rem;
+  }
+
+  .no-description {
+    text-align: center;
+    color: var(--color-secondary);
+    font-style: italic;
+    padding: 2rem;
+  }
+
+  .description-text h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-accent);
+  }
+
+  .description-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .field-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .field-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    background-color: var(--color-code-bg);
+    border-radius: 4px;
+  }
+
+  .field-name {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    min-width: 60px;
+  }
+
+  .field-value {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    border: 1px solid var(--color-border);
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .field-desc {
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+    flex: 1;
+  }
+
+  .usage-section {
+    margin-top: 3rem;
+  }
+
+  .usage-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .usage-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .usage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .usage-item {
+    text-align: center;
+  }
+
+  .usage-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .usage-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .usage-item p {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 1200px) {
+    .field-editor-grid {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    
+    .option-radio {
+      font-size: 0.7rem;
+      padding: 0.4rem;
+    }
+    
+    .inline-inputs select,
+    .inline-inputs input {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.3rem;
+      min-width: 45px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .field-editor-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .field-editor {
+      padding: 0.75rem;
+    }
+
+    .field-header {
+      margin-bottom: 0.5rem;
+    }
+
+    .field-header label {
+      font-size: 0.8rem;
+    }
+
+    .field-range {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.3rem;
+    }
+
+    .option-radio {
+      font-size: 0.65rem;
+      padding: 0.4rem;
+      min-height: 32px;
+      gap: 0.4rem;
+    }
+
+    .inline-inputs {
+      gap: 0.2rem;
+    }
+
+    .inline-inputs select,
+    .inline-inputs input {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.2rem;
+      min-width: 40px;
+    }
+
+    .inline-inputs input[type="number"] {
+      width: 40px;
+    }
+
+    .templates-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .prediction-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .field-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .field-name {
+      min-width: auto;
+    }
+
+    .field-value {
+      min-width: auto;
+      align-self: stretch;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .field-editor-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .option-radio > span {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
+  }
+</style>
