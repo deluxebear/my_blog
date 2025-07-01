@@ -1,0 +1,1690 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+---
+
+<Layout
+  title="在线图片压缩工具 - 数得其道"
+  description="在线图片压缩工具，支持JPEG、PNG、WebP等格式，无损压缩和有损压缩，完全在浏览器中运行"
+>
+  <Header />
+
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">在线图片压缩工具</h1>
+        <p class="page-description">
+          智能图片压缩，支持多种格式转换，在保证质量的同时大幅减小文件体积
+        </p>
+        <div class="format-support" id="format-support">
+          <div class="format-item">JPEG</div>
+          <div class="format-item">PNG</div>
+          <div class="format-item">WebP</div>
+          <div class="format-item">AVIF</div>
+        </div>
+      </header>
+
+      <div class="compressor-container industrial-border">
+        <!-- 上传区域 -->
+        <div class="upload-section">
+          <div class="upload-area" id="upload-area">
+            <div class="upload-content">
+              <div class="upload-icon">🖼️</div>
+              <h3>选择或拖拽图片文件</h3>
+              <p class="upload-description">
+                支持 JPEG、PNG、WebP、AVIF 格式
+              </p>
+              <p class="upload-limit">最大支持 50MB</p>
+              <button class="select-file-btn" id="select-file-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                选择图片
+              </button>
+            </div>
+            <input
+              type="file"
+              id="file-input"
+              accept="image/jpeg,image/png,image/webp,image/avif,image/bmp,image/tiff"
+              hidden
+            />
+          </div>
+        </div>
+
+        <!-- 图片编辑区域 -->
+        <div class="editor-section hidden" id="editor-section">
+          <div class="image-comparison">
+            <!-- 原图显示 -->
+            <div class="image-panel">
+              <div class="panel-header">
+                <h3>原图</h3>
+                <div class="image-info" id="original-info">
+                  <span class="size-info" id="original-size">-</span>
+                  <span class="dimension-info" id="original-dimensions">-</span>
+                </div>
+              </div>
+              <div class="image-container">
+                <img id="original-image" alt="原图" />
+              </div>
+            </div>
+
+            <!-- 压缩后图片显示 -->
+            <div class="image-panel">
+              <div class="panel-header">
+                <h3>压缩后</h3>
+                <div class="image-info" id="compressed-info">
+                  <span class="size-info" id="compressed-size">-</span>
+                  <span class="dimension-info" id="compressed-dimensions">-</span>
+                  <span class="compression-ratio" id="compression-ratio">-</span>
+                </div>
+              </div>
+              <div class="image-container">
+                <img id="compressed-image" alt="压缩后" />
+                <div class="loading-overlay hidden" id="loading-overlay">
+                  <div class="loading-spinner"></div>
+                  <span>压缩中...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 控制面板 -->
+          <div class="controls-panel">
+            <div class="control-section">
+              <h4>输出格式</h4>
+              <div class="format-selector">
+                <label class="format-option">
+                  <input type="radio" name="output-format" value="mozjpeg" checked />
+                  <span>MozJPEG</span>
+                </label>
+                <label class="format-option">
+                  <input type="radio" name="output-format" value="webp" />
+                  <span>WebP</span>
+                </label>
+                <label class="format-option">
+                  <input type="radio" name="output-format" value="avif" />
+                  <span>AVIF</span>
+                </label>
+                <label class="format-option">
+                  <input type="radio" name="output-format" value="png" />
+                  <span>PNG</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="control-section">
+              <h4>压缩质量</h4>
+              <div class="quality-control">
+                <input
+                  type="range"
+                  id="quality-slider"
+                  min="10"
+                  max="100"
+                  value="80"
+                  class="slider"
+                />
+                <span class="quality-value" id="quality-value">80%</span>
+              </div>
+            </div>
+
+            <div class="control-section" id="advanced-options">
+              <h4>高级选项</h4>
+              <div class="advanced-controls" id="advanced-controls">
+                <!-- 动态生成的高级选项 -->
+              </div>
+            </div>
+
+            <div class="control-section">
+              <h4>尺寸调整</h4>
+              <div class="resize-controls">
+                <label class="resize-option">
+                  <input type="checkbox" id="enable-resize" />
+                  启用尺寸调整
+                </label>
+                <div class="dimension-inputs hidden" id="dimension-inputs">
+                  <div class="input-group">
+                    <label>📐 宽度</label>
+                    <div class="input-with-unit">
+                      <input type="number" id="width-input" placeholder="auto" />
+                      <span class="unit">px</span>
+                    </div>
+                  </div>
+                  <div class="input-group">
+                    <label>📏 高度</label>
+                    <div class="input-with-unit">
+                      <input type="number" id="height-input" placeholder="auto" />
+                      <span class="unit">px</span>
+                    </div>
+                  </div>
+                  <label class="maintain-ratio">
+                    <input type="checkbox" id="maintain-ratio" checked />
+                    🔗 保持纵横比
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button class="compress-btn" id="compress-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17,8 12,3 7,8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                开始压缩
+              </button>
+              <button class="download-btn hidden" id="download-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                下载压缩图片
+              </button>
+              <button class="reset-btn" id="reset-btn">
+                重新选择
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 消息通知 -->
+      <div class="toast-container" id="toast-container">
+        <!-- 动态生成的通知将插入这里 -->
+      </div>
+
+      <!-- 使用说明 -->
+      <section class="instructions-section">
+        <div class="instructions-content industrial-border">
+          <h2 class="instructions-title">功能特点</h2>
+          <div class="instructions-grid">
+            <div class="instruction-item">
+              <div class="instruction-icon">🎯</div>
+              <h3>智能压缩</h3>
+              <p>采用先进的压缩算法，在保证图片质量的同时最大化减小文件体积</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🔄</div>
+              <h3>格式转换</h3>
+              <p>支持JPEG、PNG、WebP、AVIF等多种现代图片格式互相转换</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🔒</div>
+              <h3>隐私安全</h3>
+              <p>所有处理都在浏览器本地进行，图片不会上传到服务器</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">⚡</div>
+              <h3>即时预览</h3>
+              <p>实时显示压缩效果和文件大小变化，支持参数调整</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline>
+  class ImageCompressor {
+    constructor() {
+      this.originalFile = null;
+      this.originalImage = null;
+      this.compressedBlob = null;
+      this.worker = null;
+      this.encoders = null;
+      this.messageId = 0;
+
+      this.initElements();
+      this.bindEvents();
+      this.initWorker();
+    }
+
+    initElements() {
+      // 上传相关元素
+      this.uploadArea = document.getElementById("upload-area");
+      this.fileInput = document.getElementById("file-input");
+      this.selectFileBtn = document.getElementById("select-file-btn");
+
+      // 编辑区域元素
+      this.editorSection = document.getElementById("editor-section");
+      this.originalImage = document.getElementById("original-image");
+      this.compressedImage = document.getElementById("compressed-image");
+      this.loadingOverlay = document.getElementById("loading-overlay");
+
+      // 信息显示元素
+      this.originalInfo = document.getElementById("original-info");
+      this.originalSize = document.getElementById("original-size");
+      this.originalDimensions = document.getElementById("original-dimensions");
+      this.compressedInfo = document.getElementById("compressed-info");
+      this.compressedSize = document.getElementById("compressed-size");
+      this.compressedDimensions = document.getElementById("compressed-dimensions");
+      this.compressionRatio = document.getElementById("compression-ratio");
+
+      // 控制元素
+      this.formatRadios = document.querySelectorAll('input[name="output-format"]');
+      this.qualitySlider = document.getElementById("quality-slider");
+      this.qualityValue = document.getElementById("quality-value");
+      this.enableResize = document.getElementById("enable-resize");
+      this.dimensionInputs = document.getElementById("dimension-inputs");
+      this.widthInput = document.getElementById("width-input");
+      this.heightInput = document.getElementById("height-input");
+      this.maintainRatio = document.getElementById("maintain-ratio");
+
+      // 按钮元素
+      this.compressBtn = document.getElementById("compress-btn");
+      this.downloadBtn = document.getElementById("download-btn");
+      this.resetBtn = document.getElementById("reset-btn");
+    }
+
+    bindEvents() {
+      // 文件上传事件
+      this.selectFileBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.fileInput.click();
+      });
+
+      this.uploadArea.addEventListener("click", (e) => {
+        if (e.target === this.selectFileBtn || this.selectFileBtn.contains(e.target)) {
+          return;
+        }
+        this.fileInput.click();
+      });
+
+      this.fileInput.addEventListener("change", (e) => this.handleFileSelect(e));
+
+      // 拖拽上传事件
+      this.uploadArea.addEventListener("dragover", (e) => this.handleDragOver(e));
+      this.uploadArea.addEventListener("dragleave", (e) => this.handleDragLeave(e));
+      this.uploadArea.addEventListener("drop", (e) => this.handleDrop(e));
+
+      // 控制事件
+      this.qualitySlider.addEventListener("input", (e) => {
+        this.qualityValue.textContent = e.target.value + "%";
+        this.autoCompress();
+      });
+
+      this.formatRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+          this.updateAdvancedOptions();
+          this.autoCompress();
+        });
+      });
+
+      this.enableResize.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          this.dimensionInputs.classList.remove("hidden");
+        } else {
+          this.dimensionInputs.classList.add("hidden");
+        }
+        this.autoCompress();
+      });
+
+      this.widthInput.addEventListener("input", () => {
+        if (this.maintainRatio.checked && this.originalImage) {
+          this.updateHeightFromWidth();
+        }
+        this.autoCompress();
+      });
+
+      this.heightInput.addEventListener("input", () => {
+        if (this.maintainRatio.checked && this.originalImage) {
+          this.updateWidthFromHeight();
+        }
+        this.autoCompress();
+      });
+
+      // 按钮事件
+      this.compressBtn.addEventListener("click", () => this.compressImage());
+      this.downloadBtn.addEventListener("click", () => this.downloadCompressed());
+      this.resetBtn.addEventListener("click", () => this.reset());
+    }
+
+    async initWorker() {
+      // 初始化编码器信息（不再使用 Worker）
+      this.encoders = {
+        mozjpeg: {
+          name: 'MozJPEG',
+          extension: 'jpg',
+          mimeType: 'image/jpeg',
+          supportsQuality: true,
+          options: {
+            progressive: true,
+            optimize: true,
+            baseline: false
+          }
+        },
+        webp: {
+          name: 'WebP',
+          extension: 'webp',
+          mimeType: 'image/webp',
+          supportsQuality: true,
+          options: {
+            lossless: false,
+            nearLossless: 100
+          }
+        },
+        avif: {
+          name: 'AVIF',
+          extension: 'avif',
+          mimeType: 'image/avif',
+          supportsQuality: true,
+          options: {
+            speed: 6
+          }
+        },
+        png: {
+          name: 'PNG',
+          extension: 'png',
+          mimeType: 'image/png',
+          supportsQuality: false,
+          options: {
+            compressionLevel: 6
+          }
+        }
+      };
+      
+      // 更新高级选项显示
+      this.updateAdvancedOptions();
+    }
+
+    handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.processFile(file);
+      }
+    }
+
+    handleDragOver(event) {
+      event.preventDefault();
+      this.uploadArea.classList.add("drag-over");
+    }
+
+    handleDragLeave(event) {
+      event.preventDefault();
+      this.uploadArea.classList.remove("drag-over");
+    }
+
+    handleDrop(event) {
+      event.preventDefault();
+      this.uploadArea.classList.remove("drag-over");
+
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+        this.processFile(files[0]);
+      }
+    }
+
+    async processFile(file) {
+      // 检查文件类型
+      if (!file.type.startsWith('image/')) {
+        this.showError("请选择有效的图片文件");
+        return;
+      }
+
+      // 检查文件大小 (50MB限制)
+      if (file.size > 50 * 1024 * 1024) {
+        this.showError("文件大小不能超过 50MB");
+        return;
+      }
+
+      this.originalFile = file;
+      
+      try {
+        // 加载原图
+        await this.loadOriginalImage();
+        
+        // 显示编辑区域
+        this.editorSection.classList.remove("hidden");
+        
+        // 设置默认参数
+        this.setDefaultParameters();
+        
+        // 自动进行第一次压缩
+        await this.autoCompress();
+        
+        this.showSuccess("图片加载成功！");
+      } catch (error) {
+        console.error("处理文件失败:", error);
+        this.showError("加载图片失败: " + error.message);
+      }
+    }
+
+    loadOriginalImage() {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.originalImage.onload = () => {
+            // 更新原图信息
+            this.updateOriginalInfo();
+            resolve();
+          };
+          this.originalImage.onerror = reject;
+          this.originalImage.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(this.originalFile);
+      });
+    }
+
+    updateOriginalInfo() {
+      this.originalSize.textContent = this.formatFileSize(this.originalFile.size);
+      this.originalDimensions.textContent = `${this.originalImage.naturalWidth} × ${this.originalImage.naturalHeight}`;
+    }
+
+    setDefaultParameters() {
+      // 根据原图格式设置默认输出格式
+      const format = this.originalFile.type.split('/')[1];
+      const formatMap = {
+        'jpeg': 'mozjpeg',
+        'jpg': 'mozjpeg',
+        'png': 'png',
+        'webp': 'webp',
+        'avif': 'avif'
+      };
+      
+      const defaultFormat = formatMap[format] || 'mozjpeg';
+      const radio = document.querySelector(`input[value="${defaultFormat}"]`);
+      if (radio) {
+        radio.checked = true;
+        this.updateAdvancedOptions();
+      }
+
+      // 设置默认尺寸
+      this.widthInput.value = this.originalImage.naturalWidth;
+      this.heightInput.value = this.originalImage.naturalHeight;
+    }
+
+    updateHeightFromWidth() {
+      const width = parseInt(this.widthInput.value);
+      if (width && this.originalImage) {
+        const ratio = this.originalImage.naturalHeight / this.originalImage.naturalWidth;
+        this.heightInput.value = Math.round(width * ratio);
+      }
+    }
+
+    updateWidthFromHeight() {
+      const height = parseInt(this.heightInput.value);
+      if (height && this.originalImage) {
+        const ratio = this.originalImage.naturalWidth / this.originalImage.naturalHeight;
+        this.widthInput.value = Math.round(height * ratio);
+      }
+    }
+
+    async autoCompress() {
+      if (!this.originalFile) return;
+      
+      // 防抖处理
+      clearTimeout(this.compressTimeout);
+      this.compressTimeout = setTimeout(() => {
+        this.compressImage();
+      }, 300);
+    }
+
+    async compressImage() {
+      if (!this.originalFile) return;
+
+      try {
+        this.showLoading(true);
+        this.downloadBtn.classList.add("hidden");
+        this.updateProgress(10, "开始压缩...");
+
+        // 获取压缩选项
+        const options = this.getCompressionOptions();
+        
+        // 在主线程中进行压缩（更简单可靠）
+        const compressedBlob = await this.performCompression(options);
+        
+        this.compressedBlob = compressedBlob;
+        this.compressedExtension = this.getFileExtension(options.encoder);
+        
+        // 显示压缩后的图片
+        const url = URL.createObjectURL(compressedBlob);
+        this.compressedImage.src = url;
+        
+        // 更新压缩信息
+        this.updateCompressedInfo(compressedBlob);
+        
+        // 显示下载按钮
+        this.downloadBtn.classList.remove("hidden");
+        
+        this.updateProgress(100, "压缩完成");
+        this.showLoading(false);
+        
+      } catch (error) {
+        console.error("压缩失败:", error);
+        this.showError("图片压缩失败: " + error.message);
+        this.showLoading(false);
+      }
+    }
+
+    async performCompression(options) {
+      this.updateProgress(30, "处理图片...");
+      
+      // 创建 canvas 来处理图片
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      
+      // 获取目标尺寸
+      let { width, height } = this.getTargetDimensions(options);
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // 设置高质量缩放
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      
+      this.updateProgress(50, "绘制图片...");
+      
+      // 绘制图片
+      ctx.drawImage(this.originalImage, 0, 0, width, height);
+      
+      this.updateProgress(70, "编码压缩...");
+      
+      // 根据编码器类型进行压缩
+      const { encoder, encoderOptions } = options;
+      const mimeType = this.getMimeType(encoder);
+      const quality = (encoderOptions.quality || 80) / 100;
+      
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              this.updateProgress(90, "完成处理...");
+              resolve(blob);
+            } else {
+              reject(new Error("图片转换失败"));
+            }
+          },
+          mimeType,
+          // 只有支持质量的格式才传递质量参数
+          (mimeType.includes('jpeg') || mimeType.includes('webp') || mimeType.includes('avif')) ? quality : undefined
+        );
+      });
+    }
+
+    getTargetDimensions(options) {
+      let width = this.originalImage.naturalWidth;
+      let height = this.originalImage.naturalHeight;
+      
+      if (options.resize && (options.resize.width || options.resize.height)) {
+        const targetWidth = options.resize.width;
+        const targetHeight = options.resize.height;
+        
+        if (targetWidth && targetHeight) {
+          width = targetWidth;
+          height = targetHeight;
+        } else if (targetWidth) {
+          width = targetWidth;
+          height = Math.round(this.originalImage.naturalHeight * (targetWidth / this.originalImage.naturalWidth));
+        } else if (targetHeight) {
+          height = targetHeight;
+          width = Math.round(this.originalImage.naturalWidth * (targetHeight / this.originalImage.naturalHeight));
+        }
+      }
+      
+      return { width, height };
+    }
+
+    getMimeType(encoder) {
+      const mimeTypes = {
+        'mozjpeg': 'image/jpeg',
+        'webp': 'image/webp',
+        'avif': 'image/avif',
+        'png': 'image/png'
+      };
+      return mimeTypes[encoder] || 'image/jpeg';
+    }
+
+    getFileExtension(encoder) {
+      const extensions = {
+        'mozjpeg': 'jpg',
+        'webp': 'webp',
+        'avif': 'avif',
+        'png': 'png'
+      };
+      return extensions[encoder] || 'jpg';
+    }
+
+    updateCompressedInfo(blob) {
+      this.compressedSize.textContent = this.formatFileSize(blob.size);
+      const dimensions = this.getTargetDimensions(this.getCompressionOptions());
+      this.compressedDimensions.textContent = `${dimensions.width} × ${dimensions.height}`;
+      
+      // 计算压缩比
+      const ratio = ((this.originalFile.size - blob.size) / this.originalFile.size * 100).toFixed(1);
+      this.compressionRatio.textContent = `减小 ${ratio}%`;
+      this.compressionRatio.className = 'compression-ratio ' + (ratio > 0 ? 'positive' : 'negative');
+    }
+
+    getCompressionOptions() {
+      const encoder = document.querySelector('input[name="output-format"]:checked').value;
+      const quality = parseInt(this.qualitySlider.value);
+      
+      const options = {
+        encoder,
+        encoderOptions: {
+          quality
+        }
+      };
+
+      // 添加高级选项
+      const advancedInputs = document.querySelectorAll('#advanced-controls input, #advanced-controls select');
+      if (advancedInputs.length > 0) {
+        advancedInputs.forEach(input => {
+          const value = input.type === 'checkbox' ? input.checked : 
+                       input.type === 'number' ? parseInt(input.value) : input.value;
+          options.encoderOptions[input.name] = value;
+        });
+      }
+
+      // 如果启用了尺寸调整
+      if (this.enableResize.checked) {
+        const width = parseInt(this.widthInput.value);
+        const height = parseInt(this.heightInput.value);
+        
+        if (width > 0 || height > 0) {
+          options.resize = {
+            width: width > 0 ? width : undefined,
+            height: height > 0 ? height : undefined,
+            method: 'lanczos'
+          };
+        }
+      }
+
+      return options;
+    }
+
+    updateAdvancedOptions() {
+      if (!this.encoders) return;
+      
+      const selectedFormat = document.querySelector('input[name="output-format"]:checked')?.value;
+      const advancedControls = document.getElementById('advanced-controls');
+      
+      if (!selectedFormat || !this.encoders[selectedFormat]) {
+        advancedControls.innerHTML = '';
+        return;
+      }
+      
+      const encoder = this.encoders[selectedFormat];
+      advancedControls.innerHTML = '';
+      
+      // 为每个编码器选项创建控件
+      Object.entries(encoder.options).forEach(([key, defaultValue]) => {
+        if (key === 'quality') return; // 质量已经有专门的滑块
+        
+        const controlDiv = document.createElement('div');
+        controlDiv.className = 'advanced-control';
+        
+        const label = document.createElement('label');
+        label.textContent = this.getOptionLabel(key);
+        
+        let input;
+        if (typeof defaultValue === 'boolean') {
+          input = document.createElement('input');
+          input.type = 'checkbox';
+          input.checked = defaultValue;
+        } else if (typeof defaultValue === 'number') {
+          input = document.createElement('input');
+          input.type = 'number';
+          input.value = defaultValue;
+          input.step = defaultValue < 1 ? '0.1' : '1';
+          // 添加特殊的数字输入框样式类
+          input.classList.add('number-input');
+        } else {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.value = defaultValue;
+        }
+        
+        input.name = key;
+        input.addEventListener('change', () => this.autoCompress());
+        
+        controlDiv.appendChild(label);
+        controlDiv.appendChild(input);
+        advancedControls.appendChild(controlDiv);
+      });
+    }
+    
+    getOptionLabel(key) {
+      const labels = {
+        progressive: '渐进式',
+        optimize: '优化',
+        baseline: '基线',
+        smoothing: '平滑',
+        method: '方法',
+        lossless: '无损',
+        nearLossless: '近无损',
+        speed: '速度',
+        compressionLevel: '压缩级别',
+        interlaced: '交错'
+      };
+      return labels[key] || key.charAt(0).toUpperCase() + key.slice(1);
+    }
+
+
+    showLoading(show) {
+      if (show) {
+        this.loadingOverlay.classList.remove("hidden");
+      } else {
+        this.loadingOverlay.classList.add("hidden");
+      }
+    }
+
+    downloadCompressed() {
+      if (!this.compressedBlob) {
+        this.showError("请先压缩图片");
+        return;
+      }
+
+      const originalName = this.originalFile.name.split('.')[0];
+      const extension = this.compressedExtension || 'jpg';
+      const fileName = `${originalName}_compressed.${extension}`;
+      
+      const url = URL.createObjectURL(this.compressedBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      this.showSuccess(`图片已下载: ${fileName}`);
+    }
+
+    reset() {
+      this.originalFile = null;
+      this.compressedBlob = null;
+      this.compressedExtension = null;
+      this.editorSection.classList.add("hidden");
+      this.fileInput.value = "";
+      
+      // 重置控制参数
+      this.qualitySlider.value = 80;
+      this.qualityValue.textContent = "80%";
+      this.enableResize.checked = false;
+      this.dimensionInputs.classList.add("hidden");
+      const defaultRadio = document.querySelector('input[value="mozjpeg"]');
+      if (defaultRadio) {
+        defaultRadio.checked = true;
+        this.updateAdvancedOptions();
+      }
+    }
+
+    updateProgress(percent, message) {
+      // 创建进度条元素（如果不存在）
+      if (!this.progressSection) {
+        // 使用现有的进度显示元素
+        this.progressSection = document.getElementById("progress-section") || 
+                              document.querySelector(".progress-section");
+        this.progressPercent = document.getElementById("progress-percent");
+        this.progressFill = document.getElementById("progress-fill");
+        this.currentFileElement = document.getElementById("current-file");
+      }
+      
+      if (this.progressSection) {
+        this.progressSection.classList.remove("hidden");
+      }
+      
+      if (this.progressPercent) {
+        this.progressPercent.textContent = Math.round(percent) + "%";
+      }
+      
+      if (this.progressFill) {
+        this.progressFill.style.width = percent + "%";
+      }
+      
+      if (this.currentFileElement) {
+        this.currentFileElement.textContent = message;
+      }
+    }
+
+    formatFileSize(bytes) {
+      if (bytes === 0) return "0 Bytes";
+      const k = 1024;
+      const sizes = ["Bytes", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    showToast(message, type = "info", duration = 4000) {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+
+      const icons = {
+        success: "✅",
+        error: "❌",
+        warning: "⚠️",
+        info: "ℹ️",
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || icons.info}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add("toast-show");
+      }, 10);
+
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.classList.remove("toast-show");
+          setTimeout(() => {
+            if (toast.parentElement) {
+              toast.remove();
+            }
+          }, 300);
+        }
+      }, duration);
+    }
+
+    showError(message, duration = 5000) {
+      this.showToast(message, "error", duration);
+    }
+
+    showSuccess(message, duration = 4000) {
+      this.showToast(message, "success", duration);
+    }
+
+    showWarning(message, duration = 4000) {
+      this.showToast(message, "warning", duration);
+    }
+
+    showInfo(message, duration = 3000) {
+      this.showToast(message, "info", duration);
+    }
+  }
+
+  // 初始化应用
+  document.addEventListener("DOMContentLoaded", () => {
+    new ImageCompressor();
+  });
+</script>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-secondary);
+    margin-bottom: 2rem;
+    font-family: var(--font-sans);
+  }
+
+  .format-support {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .format-item {
+    padding: 0.25rem 0.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+  }
+
+  .compressor-container {
+    background-color: var(--color-card);
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  /* 上传区域 */
+  .upload-area {
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .upload-area:hover,
+  .upload-area.drag-over {
+    border-color: var(--color-accent);
+    background-color: var(--color-code-bg);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .upload-content h3 {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .upload-description {
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-sans);
+  }
+
+  .upload-limit {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .select-file-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .select-file-btn:hover {
+    background-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  /* 编辑器区域 */
+  .editor-section {
+    margin-top: 2rem;
+  }
+
+  .image-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .image-panel {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--color-code-bg);
+  }
+
+  .panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-card);
+  }
+
+  .panel-header h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .image-info {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+  }
+
+  .size-info {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .dimension-info {
+    color: var(--color-secondary);
+  }
+
+  .compression-ratio {
+    font-weight: 700;
+  }
+
+  .compression-ratio.positive {
+    color: #10b981;
+  }
+
+  .compression-ratio.negative {
+    color: #ef4444;
+  }
+
+  .image-container {
+    position: relative;
+    padding: 1rem;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-container img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: var(--font-mono);
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* 控制面板 */
+  .controls-panel {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: var(--color-code-bg);
+  }
+
+  .control-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .control-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .control-section h4 {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .format-selector {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .format-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .format-option:hover {
+    border-color: var(--color-accent);
+  }
+
+  .format-option input[type="radio"]:checked + span {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .quality-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .slider {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #e5e5e5, #d1d5db);
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .slider:hover {
+    background: linear-gradient(to right, #d1d5db, #9ca3af);
+  }
+
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-accent), #3b82f6);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-accent), #3b82f6);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .quality-value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent);
+    min-width: 50px;
+    text-align: center;
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(135deg, var(--color-code-bg), var(--color-bg));
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .resize-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .resize-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    cursor: pointer;
+  }
+
+  .dimension-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    flex-wrap: wrap;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-with-unit {
+    position: relative;
+    display: inline-block;
+  }
+
+  .input-with-unit .unit {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .input-group label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .input-group input {
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    background: linear-gradient(135deg, var(--color-bg), var(--color-code-bg));
+    width: 120px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .input-group input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.1);
+    transform: translateY(-2px);
+    background: var(--color-bg);
+  }
+
+  .input-group input:hover {
+    border-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  .maintain-ratio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .advanced-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .advanced-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .advanced-control label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .advanced-control input,
+  .advanced-control select {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    background-color: var(--color-bg);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .advanced-control input:focus,
+  .advanced-control select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.1);
+    transform: translateY(-1px);
+  }
+
+  .advanced-control input[type="number"],
+  .advanced-control .number-input {
+    text-align: center;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--color-bg), var(--color-code-bg));
+    position: relative;
+  }
+
+  /* 隐藏数字输入框的默认箭头 */
+  .advanced-control input[type="number"]::-webkit-outer-spin-button,
+  .advanced-control input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .advanced-control input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  .advanced-control input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    cursor: pointer;
+    accent-color: var(--color-accent);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .compress-btn,
+  .download-btn,
+  .reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .compress-btn {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .download-btn {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .reset-btn {
+    background-color: transparent;
+    color: var(--color-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .compress-btn:hover,
+  .download-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .reset-btn:hover {
+    border-color: var(--color-text);
+    color: var(--color-text);
+  }
+
+  /* 使用说明 */
+  .instructions-section {
+    margin-bottom: 2rem;
+  }
+
+  .instructions-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .instructions-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .instruction-item {
+    text-align: center;
+  }
+
+  .instruction-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .instruction-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .instruction-item p {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* 消息通知样式 */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 500px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    backdrop-filter: blur(10px);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toast-show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-left: 4px solid #34d399;
+  }
+
+  .toast-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-left: 4px solid #f87171;
+  }
+
+  .toast-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-left: 4px solid #fbbf24;
+  }
+
+  .toast-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-left: 4px solid #60a5fa;
+  }
+
+  .toast-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .toast-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .compressor-container {
+      padding: 1.5rem;
+    }
+
+    .upload-area {
+      padding: 2rem 1rem;
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .image-comparison {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .format-selector {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dimension-inputs {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .input-group input {
+      width: 100%;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .instructions-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .toast-container {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+    }
+
+    .toast {
+      min-width: auto;
+      max-width: none;
+      width: 100%;
+    }
+  }
+</style>
