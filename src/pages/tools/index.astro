@@ -1,80 +1,108 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+
+// 工具接口定义
+interface Tool {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  url: string;
+  category: string;
+  features: string[];
+  comingSoon?: boolean;
+}
 
 // 工具列表数据
-const tools = [
+const tools: Tool[] = [
   {
-    id: 'ip-info',
-    name: 'IP信息查看器',
-    description: '查看访问者的外网IP地址、地理位置、ISP信息等详细网络信息',
-    icon: '🌐',
-    url: '/tools/ip-info',
-    category: '网络工具',
-    features: ['IP地址检测', '地理位置', 'ISP信息', '网络类型']
+    id: "ip-info",
+    name: "IP信息查看器",
+    description: "查看访问者的外网IP地址、地理位置、ISP信息等详细网络信息",
+    icon: "🌐",
+    url: "/tools/ip-info",
+    category: "网络工具",
+    features: ["IP地址检测", "地理位置", "ISP信息", "网络类型"],
   },
   {
-    id: 'password-generator',
-    name: '密码生成器',
-    description: '生成安全的随机密码，支持自定义长度、字符类型和复杂度要求',
-    icon: '🔐',
-    url: '/tools/password-generator',
-    category: '安全工具',
-    features: ['自定义长度', '字符类型选择', '强度检测', '批量生成']
+    id: "password-generator",
+    name: "密码生成器",
+    description: "生成安全的随机密码，支持自定义长度、字符类型和复杂度要求",
+    icon: "🔐",
+    url: "/tools/password-generator",
+    category: "安全工具",
+    features: ["自定义长度", "字符类型选择", "强度检测", "批量生成"],
   },
   {
-    id: 'url-encoder',
-    name: 'URL编解码工具',
-    description: 'URL编码和解码工具，支持中文URL编码、批量处理和格式验证',
-    icon: '🔗',
-    url: '/tools/url-encoder',
-    category: '编码工具',
-    features: ['URL编解码', '中文支持', '批量处理', '格式验证']
+    id: "url-encoder",
+    name: "URL编解码工具",
+    description: "URL编码和解码工具，支持中文URL编码、批量处理和格式验证",
+    icon: "🔗",
+    url: "/tools/url-encoder",
+    category: "编码工具",
+    features: ["URL编解码", "中文支持", "批量处理", "格式验证"],
   },
   {
-    id: 'base64-encoder',
-    name: 'BASE64编解码',
-    description: 'BASE64编码和解码工具，支持文本和文件的编解码操作',
-    icon: '🔄',
-    url: '/tools/base64-encoder',
-    category: '编码工具',
-    features: ['文本编解码', '文件支持', '批量处理', '格式验证']
+    id: "base64-encoder",
+    name: "BASE64编解码",
+    description: "BASE64编码和解码工具，支持文本和文件的编解码操作",
+    icon: "🔄",
+    url: "/tools/base64-encoder",
+    category: "编码工具",
+    features: ["文本编解码", "文件支持", "批量处理", "格式验证"],
   },
   {
-    id: 'coming-soon-1',
-    name: 'JSON格式化工具',
-    description: '格式化、验证和美化JSON数据，支持语法高亮和错误检测',
-    icon: '📋',
-    url: '#',
-    category: '开发工具',
-    features: ['JSON格式化', '语法验证', '压缩/美化', '错误定位'],
-    comingSoon: true
+    id: "archive-extractor",
+    name: "在线解压缩工具",
+    description:
+      "强大的在线解压缩工具，支持ZIP、RAR、7Z、TAR等多种格式，支持大文件处理",
+    icon: "📦",
+    url: "/tools/archive-extractor",
+    category: "文件工具",
+    features: ["多格式支持", "大文件处理", "预览功能", "选择性解压"],
   },
   {
-    id: 'coming-soon-3',
-    name: '颜色选择器',
-    description: '专业的颜色选择和转换工具，支持多种颜色格式转换',
-    icon: '🎨',
-    url: '#',
-    category: '设计工具',
-    features: ['颜色选择', '格式转换', '调色板', '对比度检测'],
-    comingSoon: true
-  }
+    id: "coming-soon-1",
+    name: "JSON格式化工具",
+    description: "格式化、验证和美化JSON数据，支持语法高亮和错误检测",
+    icon: "📋",
+    url: "#",
+    category: "开发工具",
+    features: ["JSON格式化", "语法验证", "压缩/美化", "错误定位"],
+    comingSoon: true,
+  },
+  {
+    id: "coming-soon-3",
+    name: "颜色选择器",
+    description: "专业的颜色选择和转换工具，支持多种颜色格式转换",
+    icon: "🎨",
+    url: "#",
+    category: "设计工具",
+    features: ["颜色选择", "格式转换", "调色板", "对比度检测"],
+    comingSoon: true,
+  },
 ];
 
 // 按类别分组工具
-const toolsByCategory = tools.reduce((acc, tool) => {
-  if (!acc[tool.category]) {
-    acc[tool.category] = [];
-  }
-  acc[tool.category].push(tool);
-  return acc;
-}, {});
+const toolsByCategory: Record<string, Tool[]> = tools.reduce(
+  (acc, tool) => {
+    if (!acc[tool.category]) {
+      acc[tool.category] = [];
+    }
+    acc[tool.category].push(tool);
+    return acc;
+  },
+  {} as Record<string, Tool[]>
+);
 ---
 
-<Layout title="开发工具集合 - 数字花园" description="实用的开发工具集合，包含IP查看器、密码生成器等常用开发工具">
+<Layout
+  title="开发工具集合 - 数字花园"
+  description="实用的开发工具集合，包含IP查看器、密码生成器等常用开发工具"
+>
   <Header />
-  
+
   <main class="main">
     <div class="container">
       <header class="page-header">
@@ -84,17 +112,23 @@ const toolsByCategory = tools.reduce((acc, tool) => {
         </p>
         <div class="tools-stats">
           <div class="stat">
-            <span class="stat-number">{tools.filter(t => !t.comingSoon).length}</span>
+            <span class="stat-number"
+              >{tools.filter((t) => !t.comingSoon).length}</span
+            >
             <span class="stat-label">可用工具</span>
           </div>
           <div class="stat-divider">|</div>
           <div class="stat">
-            <span class="stat-number">{tools.filter(t => t.comingSoon).length}</span>
+            <span class="stat-number"
+              >{tools.filter((t) => t.comingSoon).length}</span
+            >
             <span class="stat-label">即将推出</span>
           </div>
           <div class="stat-divider">|</div>
           <div class="stat">
-            <span class="stat-number">{Object.keys(toolsByCategory).length}</span>
+            <span class="stat-number"
+              >{Object.keys(toolsByCategory).length}</span
+            >
             <span class="stat-label">工具分类</span>
           </div>
         </div>
@@ -102,60 +136,78 @@ const toolsByCategory = tools.reduce((acc, tool) => {
 
       <!-- 工具分类展示 -->
       <section class="tools-section">
-        {Object.entries(toolsByCategory).map(([category, categoryTools]) => (
-          <div class="category-section">
-            <h2 class="category-title">{category}</h2>
-            <div class="tools-grid">
-              {categoryTools.map(tool => (
-                <article class={`tool-card industrial-border ${tool.comingSoon ? 'coming-soon' : ''}`}>
-                  <div class="tool-header">
-                    <div class="tool-icon">{tool.icon}</div>
-                    <div class="tool-title-section">
-                      <h3 class="tool-title">{tool.name}</h3>
-                      {tool.comingSoon && (
-                        <span class="coming-soon-badge">即将推出</span>
+        {
+          Object.entries(toolsByCategory).map(([category, categoryTools]) => (
+            <div class="category-section">
+              <h2 class="category-title">{category}</h2>
+              <div class="tools-grid">
+                {categoryTools.map((tool) => (
+                  <article
+                    class={`tool-card industrial-border ${tool.comingSoon ? "coming-soon" : ""}`}
+                  >
+                    <div class="tool-header">
+                      <div class="tool-icon">{tool.icon}</div>
+                      <div class="tool-title-section">
+                        <h3 class="tool-title">{tool.name}</h3>
+                        {tool.comingSoon && (
+                          <span class="coming-soon-badge">即将推出</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div class="tool-description">
+                      <p>{tool.description}</p>
+                    </div>
+
+                    <div class="tool-features">
+                      <h4 class="features-title">主要功能</h4>
+                      <ul class="features-list">
+                        {tool.features.map((feature) => (
+                          <li class="feature-item">{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div class="tool-footer">
+                      {tool.comingSoon ? (
+                        <button class="tool-link disabled" disabled>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                          >
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12,6 12,12 16,14" />
+                          </svg>
+                          敬请期待
+                        </button>
+                      ) : (
+                        <a href={tool.url} class="tool-link">
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                          >
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15,3 21,3 21,9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                          立即使用
+                        </a>
                       )}
                     </div>
-                  </div>
-                  
-                  <div class="tool-description">
-                    <p>{tool.description}</p>
-                  </div>
-                  
-                  <div class="tool-features">
-                    <h4 class="features-title">主要功能</h4>
-                    <ul class="features-list">
-                      {tool.features.map(feature => (
-                        <li class="feature-item">{feature}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div class="tool-footer">
-                    {tool.comingSoon ? (
-                      <button class="tool-link disabled" disabled>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <polyline points="12,6 12,12 16,14"></polyline>
-                        </svg>
-                        敬请期待
-                      </button>
-                    ) : (
-                      <a href={tool.url} class="tool-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                          <polyline points="15,3 21,3 21,9"></polyline>
-                          <line x1="10" y1="14" x2="21" y2="3"></line>
-                        </svg>
-                        立即使用
-                      </a>
-                    )}
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </section>
 
       <!-- 使用说明 -->
@@ -166,12 +218,16 @@ const toolsByCategory = tools.reduce((acc, tool) => {
             <div class="usage-item">
               <div class="usage-icon">🚀</div>
               <h3>快速访问</h3>
-              <p>所有工具都经过优化，无需注册即可直接使用，提供最佳的用户体验。</p>
+              <p>
+                所有工具都经过优化，无需注册即可直接使用，提供最佳的用户体验。
+              </p>
             </div>
             <div class="usage-item">
               <div class="usage-icon">🔒</div>
               <h3>隐私保护</h3>
-              <p>所有数据处理都在本地进行，不会上传到服务器，确保你的数据安全。</p>
+              <p>
+                所有数据处理都在本地进行，不会上传到服务器，确保你的数据安全。
+              </p>
             </div>
             <div class="usage-item">
               <div class="usage-icon">📱</div>

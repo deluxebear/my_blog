@@ -1,0 +1,1775 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+---
+
+<!-- 预加载 JSZip 模块 -->
+<script>
+  // 在页面加载时预加载模块
+  const preloadJSZip = async () => {
+    try {
+      console.log("准备加载 JSZip 库...");
+    } catch (error) {
+      console.log("JSZip 预加载准备失败:", error);
+    }
+  };
+
+  if (typeof window !== "undefined") {
+    preloadJSZip();
+  }
+</script>
+
+<Layout
+  title="在线解压缩工具 - 数得其道"
+  description="在线文件解压工具，支持在浏览器中直接解压多种压缩文件，无需安装任何软件"
+>
+  <Header />
+
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">在线解压缩工具</h1>
+        <p class="page-description">
+          支持多种压缩格式的在线解压工具，无需安装任何软件，完全在浏览器中运行
+        </p>
+        <div class="format-support" id="format-support">
+          <!-- 动态显示支持的格式 -->
+        </div>
+      </header>
+
+      <div class="extractor-container industrial-border">
+        <!-- 上传区域 -->
+        <div class="upload-section">
+          <div class="upload-area" id="upload-area">
+            <div class="upload-content">
+              <div class="upload-icon">📦</div>
+              <h3>选择或拖拽压缩文件</h3>
+              <p class="upload-description" id="upload-description">
+                正在加载支持格式...
+              </p>
+              <p class="upload-limit">最大支持 500MB</p>
+              <button class="select-file-btn" id="select-file-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                选择文件
+              </button>
+            </div>
+            <input
+              type="file"
+              id="file-input"
+              accept=".zip,.rar,.tar,.tar.gz,.tgz,.gz,.7z,.xz,.bz2,.lzma,.cab,.iso,.arj,.lzh,.chm"
+              hidden
+            />
+          </div>
+
+          <!-- 文件信息 -->
+          <div class="file-info hidden" id="file-info">
+            <div class="file-header">
+              <div class="file-icon">📄</div>
+              <div class="file-details">
+                <div class="file-name" id="file-name"></div>
+                <div class="file-meta">
+                  <span class="file-size" id="file-size"></span>
+                  <span class="file-type" id="file-type"></span>
+                </div>
+              </div>
+              <button
+                class="remove-file-btn"
+                id="remove-file-btn"
+                title="移除文件"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 解压设置 -->
+        <div class="extract-settings hidden" id="extract-settings">
+          <h3 class="settings-title">解压设置</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label class="setting-label">
+                <input type="checkbox" id="preserve-paths" checked />
+                保留目录结构
+              </label>
+            </div>
+            <div class="setting-item">
+              <label class="setting-label">
+                <input type="checkbox" id="overwrite-files" />
+                覆盖同名文件
+              </label>
+            </div>
+          </div>
+          <div class="extract-actions">
+            <button class="extract-btn" id="extract-btn">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17,8 12,3 7,8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              开始解压
+            </button>
+          </div>
+        </div>
+
+        <!-- 进度显示 -->
+        <div class="progress-section hidden" id="progress-section">
+          <div class="progress-header">
+            <h3>解压进度</h3>
+            <span class="progress-percent" id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-info">
+            <span id="current-file">准备中...</span>
+          </div>
+        </div>
+
+        <!-- 打包进度显示 -->
+        <div class="packing-section hidden" id="packing-section">
+          <div class="packing-header">
+            <h3>打包进度</h3>
+            <span class="packing-percent" id="packing-percent">0%</span>
+          </div>
+          <div class="packing-bar">
+            <div class="packing-fill" id="packing-fill"></div>
+          </div>
+          <div class="packing-info">
+            <span id="packing-status">准备中...</span>
+          </div>
+        </div>
+
+        <!-- 文件列表 -->
+        <div class="file-list hidden" id="file-list">
+          <div class="file-list-header">
+            <h3>压缩包内容</h3>
+            <div class="file-actions">
+              <button class="action-btn" id="select-all-btn">全选</button>
+              <button class="action-btn" id="deselect-all-btn">取消全选</button>
+              <button class="download-btn" id="download-selected-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span id="download-btn-text">下载选中文件</span>
+              </button>
+            </div>
+          </div>
+          <div class="file-tree" id="file-tree">
+            <!-- 文件树将在这里动态生成 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 消息通知 -->
+      <div class="toast-container" id="toast-container">
+        <!-- 动态生成的通知将插入这里 -->
+      </div>
+
+      <!-- 使用说明 -->
+      <section class="instructions-section">
+        <div class="instructions-content industrial-border">
+          <h2 class="instructions-title">使用说明</h2>
+          <div class="instructions-grid">
+            <div class="instruction-item">
+              <div class="instruction-icon">📁</div>
+              <h3>支持格式</h3>
+              <p>支持ZIP、RAR、TAR、GZ等多种主流压缩格式</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🔒</div>
+              <h3>本地处理</h3>
+              <p>所有解压操作都在浏览器本地进行，确保文件隐私安全</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">⚡</div>
+              <h3>高性能</h3>
+              <p>基于JavaScript和WebAssembly技术，提供高效的解压性能</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">📱</div>
+              <h3>跨平台</h3>
+              <p>支持Windows、Mac、Linux等所有现代浏览器</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline>
+  class ArchiveExtractor {
+    constructor() {
+      this.p7zipWorker = null;
+      this.currentFile = null;
+      this.extractedFiles = new Map();
+      this.selectedFiles = new Set();
+
+      this.initElements();
+      this.bindEvents();
+      this.loadLibarchive().then(() => {
+        this.updateSupportedFormatsUI();
+      });
+    }
+
+    initElements() {
+      // 上传相关元素
+      this.uploadArea = document.getElementById("upload-area");
+      this.fileInput = document.getElementById("file-input");
+      this.selectFileBtn = document.getElementById("select-file-btn");
+      this.fileInfo = document.getElementById("file-info");
+      this.fileName = document.getElementById("file-name");
+      this.fileSize = document.getElementById("file-size");
+      this.fileType = document.getElementById("file-type");
+      this.removeFileBtn = document.getElementById("remove-file-btn");
+
+      // 设置相关元素
+      this.extractSettings = document.getElementById("extract-settings");
+      this.preservePaths = document.getElementById("preserve-paths");
+      this.overwriteFiles = document.getElementById("overwrite-files");
+      this.extractBtn = document.getElementById("extract-btn");
+
+      // 进度相关元素
+      this.progressSection = document.getElementById("progress-section");
+      this.progressPercent = document.getElementById("progress-percent");
+      this.progressFill = document.getElementById("progress-fill");
+      this.currentFile = document.getElementById("current-file");
+
+      // 打包进度相关元素
+      this.packingSection = document.getElementById("packing-section");
+      this.packingPercent = document.getElementById("packing-percent");
+      this.packingFill = document.getElementById("packing-fill");
+      this.packingStatus = document.getElementById("packing-status");
+
+      // 文件列表相关元素
+      this.fileList = document.getElementById("file-list");
+      this.fileTree = document.getElementById("file-tree");
+      this.selectAllBtn = document.getElementById("select-all-btn");
+      this.deselectAllBtn = document.getElementById("deselect-all-btn");
+      this.downloadSelectedBtn = document.getElementById(
+        "download-selected-btn"
+      );
+      this.downloadBtnText = document.getElementById("download-btn-text");
+    }
+
+    bindEvents() {
+      // 文件上传事件
+      this.selectFileBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.fileInput.click();
+      });
+      this.uploadArea.addEventListener("click", (e) => {
+        // 只有当点击的不是按钮或其子元素时才触发
+        if (
+          e.target === this.selectFileBtn ||
+          this.selectFileBtn.contains(e.target)
+        ) {
+          return;
+        }
+        if (e.target === this.fileInput) return;
+        this.fileInput.click();
+      });
+      this.fileInput.addEventListener("click", (e) => e.stopPropagation());
+      this.fileInput.addEventListener("change", (e) =>
+        this.handleFileSelect(e)
+      );
+
+      // 拖拽上传事件
+      this.uploadArea.addEventListener("dragover", (e) =>
+        this.handleDragOver(e)
+      );
+      this.uploadArea.addEventListener("dragleave", (e) =>
+        this.handleDragLeave(e)
+      );
+      this.uploadArea.addEventListener("drop", (e) => this.handleDrop(e));
+
+      // 文件操作事件
+      this.removeFileBtn.addEventListener("click", () => this.removeFile());
+      this.extractBtn.addEventListener("click", () => this.extractArchive());
+
+      // 文件列表操作事件
+      this.selectAllBtn.addEventListener("click", () => this.selectAllFiles());
+      this.deselectAllBtn.addEventListener("click", () =>
+        this.deselectAllFiles()
+      );
+      this.downloadSelectedBtn.addEventListener("click", () =>
+        this.downloadSelectedFiles()
+      );
+    }
+
+    async loadLibarchive() {
+      try {
+        await this.loadLibarchiveWasm();
+        console.log("解压库加载成功");
+
+        // 显示加载成功的格式
+        const supportedFormats = this.getSupportedFormats();
+        if (supportedFormats.types.length > 0) {
+          this.showInfo(
+            `解压库加载完成，支持 ${supportedFormats.types.join("、")} 格式`,
+            3000
+          );
+        } else {
+          this.showWarning("部分解压库加载失败，功能可能受限");
+        }
+      } catch (error) {
+        console.error("解压库加载失败:", error);
+        this.showError("解压库加载失败，请刷新页面重试");
+      }
+    }
+
+    async loadLibarchiveWasm() {
+      try {
+        // 只初始化p7zip-wasm worker，支持所有格式
+        await this.initP7zipWorker();
+
+        console.log("解压库加载完成:", {
+          P7ZIP: !!this.p7zipWorker,
+          "支持格式": "ZIP, RAR, 7Z, TAR, GZ, XZ, BZ2, LZMA 等"
+        });
+
+        return Promise.resolve();
+      } catch (error) {
+        console.error("解压库加载失败:", error);
+        return Promise.resolve();
+      }
+    }
+
+    async loadJSZip() {
+      if (window.JSZip) return Promise.resolve();
+      
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('JSZip 加载失败'));
+        document.head.appendChild(script);
+      });
+    }
+
+    async initP7zipWorker() {
+      try {
+        // 创建p7zip worker
+        this.p7zipWorker = new Worker('/tools/p7zip-wasm/worker.js');
+        
+        // 等待worker准备就绪
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Worker 初始化超时'));
+          }, 10000);
+
+          this.p7zipWorker.onmessage = (e) => {
+            const data = e.data;
+            if (data.t === 'ready') {
+              clearTimeout(timeout);
+              console.log('P7zip Worker 准备就绪');
+              resolve();
+            } else if (data.t === 'error') {
+              clearTimeout(timeout);
+              reject(new Error(data.msg));
+            }
+          };
+
+          this.p7zipWorker.onerror = (error) => {
+            clearTimeout(timeout);
+            reject(error);
+          };
+        });
+      } catch (error) {
+        console.error('P7zip Worker 初始化失败:', error);
+        this.p7zipWorker = null;
+      }
+    }
+
+
+    handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // 清除之前的解压结果
+        this.clearPreviousResults();
+        this.processFile(file);
+      }
+    }
+
+    handleDragOver(event) {
+      event.preventDefault();
+      this.uploadArea.classList.add("drag-over");
+    }
+
+    handleDragLeave(event) {
+      event.preventDefault();
+      this.uploadArea.classList.remove("drag-over");
+    }
+
+    handleDrop(event) {
+      event.preventDefault();
+      this.uploadArea.classList.remove("drag-over");
+
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+        // 清除之前的解压结果
+        this.clearPreviousResults();
+        this.processFile(files[0]);
+      }
+    }
+
+    processFile(file) {
+      console.log("开始处理文件:", file.name, "大小:", file.size);
+      
+      // 检查文件大小 (500MB限制)
+      if (file.size > 500 * 1024 * 1024) {
+        this.showError("文件大小不能超过 500MB");
+        return;
+      }
+
+      // 检查文件格式
+      const fileExtension = file.name.toLowerCase().split(".").pop();
+      const supportedFormats = this.getSupportedFormats();
+      
+      console.log("文件扩展名:", fileExtension);
+      console.log("支持的格式:", supportedFormats);
+
+      if (!supportedFormats.extensions.includes(fileExtension)) {
+        console.log("文件格式不支持，当前支持:", supportedFormats.extensions);
+        this.showError(
+          `不支持的文件格式。支持的格式：${supportedFormats.extensions.join(", ").toUpperCase()}`
+        );
+        return;
+      }
+
+      console.log("文件格式验证通过，开始显示文件信息");
+      this.currentFile = file;
+      this.showFileInfo(file);
+      this.extractSettings.classList.remove("hidden");
+    }
+
+    showFileInfo(file) {
+      this.fileName.textContent = file.name;
+      this.fileSize.textContent = this.formatFileSize(file.size);
+      this.fileType.textContent = file.type || "未知类型";
+      this.fileInfo.classList.remove("hidden");
+    }
+
+    clearPreviousResults() {
+      // 清除解压相关的结果，但保留文件信息
+      this.extractedFiles.clear();
+      this.selectedFiles.clear();
+      this.progressSection.classList.add("hidden");
+      this.packingSection.classList.add("hidden");
+      this.fileList.classList.add("hidden");
+    }
+
+    removeFile() {
+      this.currentFile = null;
+      this.extractedFiles.clear();
+      this.selectedFiles.clear();
+      this.fileInfo.classList.add("hidden");
+      this.extractSettings.classList.add("hidden");
+      this.progressSection.classList.add("hidden");
+      this.packingSection.classList.add("hidden");
+      this.fileList.classList.add("hidden");
+      this.fileInput.value = "";
+    }
+
+    async extractArchive() {
+      if (!this.currentFile) {
+        this.showError("请先选择文件");
+        return;
+      }
+
+      if (!this.p7zipWorker) {
+        this.showError("解压库未加载完成，请稍候重试");
+        return;
+      }
+
+      try {
+        this.extractBtn.disabled = true;
+        this.progressSection.classList.remove("hidden");
+        this.updateProgress(0, "准备解压...");
+
+        const arrayBuffer = await this.currentFile.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        // 使用 libarchive 解压
+        await this.extractWithLibarchive(uint8Array);
+      } catch (error) {
+        console.error("解压失败:", error);
+        this.showError("解压失败: " + error.message);
+      } finally {
+        this.extractBtn.disabled = false;
+      }
+    }
+
+    getSupportedFormats() {
+      const formats = {
+        extensions: [],
+        types: [],
+      };
+
+      // p7zip-wasm 支持几乎所有常见的压缩格式
+      if (this.p7zipWorker) {
+        formats.extensions.push(
+          "zip", "rar", "7z", "tar", "tar.gz", "tgz", "gz", 
+          "xz", "bz2", "lzma", "cab", "iso", "arj", "lzh", "chm"
+        );
+        formats.types.push(
+          "ZIP", "RAR", "7Z", "TAR", "GZ", "XZ", "BZ2", "LZMA", 
+          "CAB", "ISO", "ARJ", "LZH", "CHM"
+        );
+      }
+      
+      // 记录调试信息
+      console.log("getSupportedFormats调用:", {
+        p7zipWorker: !!this.p7zipWorker,
+        supportedCount: formats.extensions.length
+      });
+
+      return formats;
+    }
+
+    updateSupportedFormatsUI() {
+      const supportedFormats = this.getSupportedFormats();
+
+      // 更新格式支持显示
+      const formatSupport = document.getElementById("format-support");
+      if (formatSupport) {
+        formatSupport.innerHTML = "";
+        supportedFormats.types.forEach((type) => {
+          const item = document.createElement("div");
+          item.className = "format-item";
+          item.textContent = type;
+          formatSupport.appendChild(item);
+        });
+      }
+
+      // 更新上传描述
+      const uploadDescription = document.getElementById("upload-description");
+      if (uploadDescription) {
+        if (supportedFormats.extensions.length > 0) {
+          uploadDescription.textContent = `支持 ${supportedFormats.types.join("、")} 格式文件`;
+        } else {
+          uploadDescription.textContent = "正在加载解压库...";
+        }
+      }
+
+      // 更新使用说明
+      const instructionText = document.querySelector(".instruction-item p");
+      if (instructionText && supportedFormats.types.length > 0) {
+        instructionText.textContent = `支持 ${supportedFormats.types.join("、")} 等多种压缩格式`;
+      }
+    }
+
+    detectFileFormat(file) {
+      const extension = file.name.toLowerCase().split(".").pop();
+      const name = file.name.toLowerCase();
+
+      // 检查是否是 p7zip 支持的格式
+      const supportedFormats = this.getSupportedFormats();
+      const isSupported = supportedFormats.extensions.some(ext => {
+        if (ext.includes('.')) {
+          // 处理复合扩展名如 tar.gz
+          return name.endsWith('.' + ext);
+        } else {
+          // 处理单一扩展名
+          return extension === ext;
+        }
+      });
+
+      if (isSupported) {
+        return "p7zip-format"; // 所有支持的格式都通过p7zip-wasm处理
+      }
+
+      return "unknown";
+    }
+
+    async extractWithLibarchive(data) {
+      this.updateProgress(5, "正在初始化解压器...");
+
+      const format = this.detectFileFormat(this.currentFile);
+      console.log("检测到文件格式:", format);
+
+      if (format === "p7zip-format") {
+        await this.extractWithP7zip(data);
+      } else {
+        throw new Error(`不支持的文件格式: ${this.currentFile.name}`);
+      }
+    }
+
+
+    async extractWithP7zip(data) {
+      this.updateProgress(10, "正在解析压缩文件...");
+
+      if (!this.p7zipWorker) {
+        // 提供详细的错误信息和解决方案
+        this.showError("解压库加载失败。建议：\n1. 刷新页面重试\n2. 将文件转换为ZIP格式\n3. 使用桌面解压软件");
+        throw new Error("解压库未加载，请尝试其他格式或工具");
+      }
+
+      try {
+        this.updateProgress(20, "正在初始化p7zip-wasm...");
+        
+        // 创建文件 Blob
+        const fileBlob = new Blob([data], { type: 'application/octet-stream' });
+        fileBlob.name = this.currentFile.name;
+        
+        console.log("开始使用p7zip-wasm解压文件:", this.currentFile.name);
+        
+        // 打开压缩文件
+        const openResult = await this.sendWorkerMessage({
+          t: 'open',
+          blob: fileBlob
+        });
+        
+        if (openResult.t === 'error') {
+          throw new Error(openResult.msg);
+        }
+        
+        this.updateProgress(40, "正在读取文件列表...");
+        
+        // 获取文件列表
+        const fileList = openResult.state.fileList;
+        console.log("压缩文件包含", fileList.length, "个条目");
+        
+        this.updateProgress(50, "正在解压文件...");
+        
+        // 解压所有文件
+        const entries = [];
+        for (let i = 0; i < fileList.length; i++) {
+          const file = fileList[i];
+          const progress = 50 + (i / fileList.length) * 40;
+          this.updateProgress(progress, `正在解压: ${file.path}`);
+          
+          // 跳过目录
+          if (file.type & 1) {
+            entries.push({
+              name: file.path,
+              size: 0,
+              isDirectory: true,
+              data: null,
+            });
+            continue;
+          }
+          
+          // 解压单个文件
+          try {
+            const extractResult = await this.sendWorkerMessage({
+              t: 'extract',
+              idx: file.idx,
+              name: file.path
+            });
+            
+            if (extractResult.t === 'extracted') {
+              const blob = extractResult.blob;
+              const arrayBuffer = await blob.arrayBuffer();
+              const uint8Array = new Uint8Array(arrayBuffer);
+              
+              entries.push({
+                name: file.path,
+                size: file.size,
+                isDirectory: false,
+                data: uint8Array,
+              });
+            } else if (extractResult.t === 'error') {
+              console.error("解压文件失败:", file.path, extractResult.msg);
+            }
+          } catch (extractError) {
+            console.error("解压文件异常:", file.path, extractError);
+          }
+        }
+        
+        this.updateProgress(90, "正在处理文件列表...");
+        
+        console.log(`成功解析 ${entries.length} 个文件条目`);
+        
+        await this.processExtractedEntries(entries);
+      } catch (error) {
+        console.error("p7zip-wasm 解压失败:", error);
+        
+        if (error.message.includes('Bad archive') || error.message.includes('Invalid format')) {
+          throw new Error("不是有效的压缩文件或文件已损坏");
+        } else if (error.message.includes('password') || error.message.includes('encrypted')) {
+          throw new Error("文件已加密，暂不支持加密文件解压");
+        } else if (error.message.includes('not supported')) {
+          throw new Error("不支持的文件格式或版本");
+        } else {
+          throw new Error("解压失败: " + error.message);
+        }
+      }
+    }
+
+    // Worker 消息通信帮助方法
+    sendWorkerMessage(message) {
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Worker 操作超时'));
+        }, 30000);
+
+        const handleMessage = (e) => {
+          const data = e.data;
+          if (data.t === 'opened' || data.t === 'extracted' || data.t === 'done') {
+            clearTimeout(timeout);
+            this.p7zipWorker.removeEventListener('message', handleMessage);
+            resolve(data);
+          } else if (data.t === 'error') {
+            clearTimeout(timeout);
+            this.p7zipWorker.removeEventListener('message', handleMessage);
+            reject(new Error(data.msg));
+          }
+        };
+
+        this.p7zipWorker.addEventListener('message', handleMessage);
+        this.p7zipWorker.postMessage(message);
+      });
+    }
+
+
+    async processExtractedEntries(entries) {
+      this.updateProgress(70, "正在处理解压结果...");
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const progress = 70 + (i / entries.length) * 25;
+
+        this.updateProgress(progress, `正在处理: ${entry.name}`);
+
+        this.extractedFiles.set(entry.name, entry);
+      }
+
+      this.updateProgress(100, "解压完成");
+      this.showFileList();
+
+      // 显示解压成功消息
+      const fileCount = entries.filter((e) => !e.isDirectory).length;
+      const dirCount = entries.filter((e) => e.isDirectory).length;
+      let message = `解压完成！共 ${fileCount} 个文件`;
+      if (dirCount > 0) {
+        message += `，${dirCount} 个文件夹`;
+      }
+      this.showSuccess(message);
+    }
+
+    showFileList() {
+      this.fileList.classList.remove("hidden");
+      this.fileTree.innerHTML = "";
+
+      const files = Array.from(this.extractedFiles.values());
+      const tree = this.buildFileTree(files);
+      this.renderFileTree(tree, this.fileTree);
+
+      // 默认选中所有非目录文件
+      this.selectedFiles.clear();
+      files.forEach((file) => {
+        if (!file.isDirectory) {
+          this.selectedFiles.add(file.name);
+        }
+      });
+      this.updateFileCheckboxes();
+    }
+
+    buildFileTree(files) {
+      const tree = {};
+
+      files.forEach((file) => {
+        const parts = file.name.split("/").filter((part) => part);
+        let current = tree;
+
+        parts.forEach((part, index) => {
+          if (!current[part]) {
+            current[part] = {
+              name: part,
+              fullPath: parts.slice(0, index + 1).join("/"),
+              isDirectory: index < parts.length - 1 || file.isDirectory,
+              children: {},
+              file: index === parts.length - 1 ? file : null,
+            };
+          }
+          current = current[part].children;
+        });
+      });
+
+      return tree;
+    }
+
+    renderFileTree(tree, container, level = 0) {
+      Object.values(tree).forEach((node) => {
+        const div = document.createElement("div");
+        div.className = "file-tree-item";
+        div.style.paddingLeft = level * 20 + "px";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "file-checkbox";
+        checkbox.value = node.fullPath;
+        checkbox.checked = this.selectedFiles.has(node.fullPath);
+
+        if (!node.isDirectory) {
+          checkbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+              this.selectedFiles.add(node.fullPath);
+            } else {
+              this.selectedFiles.delete(node.fullPath);
+            }
+            this.updateDownloadButtonText();
+          });
+        } else {
+          checkbox.disabled = true;
+        }
+
+        const icon = document.createElement("span");
+        icon.className = "file-icon";
+        icon.textContent = node.isDirectory ? "📁" : "📄";
+
+        const name = document.createElement("span");
+        name.className = "file-name";
+        name.textContent = node.name;
+
+        const size = document.createElement("span");
+        size.className = "file-size";
+        if (node.file && !node.isDirectory) {
+          size.textContent = this.formatFileSize(node.file.size);
+        }
+
+        div.appendChild(checkbox);
+        div.appendChild(icon);
+        div.appendChild(name);
+        div.appendChild(size);
+
+        container.appendChild(div);
+
+        if (Object.keys(node.children).length > 0) {
+          this.renderFileTree(node.children, container, level + 1);
+        }
+      });
+    }
+
+    selectAllFiles() {
+      this.selectedFiles.clear();
+      this.extractedFiles.forEach((file, path) => {
+        if (!file.isDirectory) {
+          this.selectedFiles.add(path);
+        }
+      });
+      this.updateFileCheckboxes();
+    }
+
+    deselectAllFiles() {
+      this.selectedFiles.clear();
+      this.updateFileCheckboxes();
+    }
+
+    updateFileCheckboxes() {
+      const checkboxes = this.fileTree.querySelectorAll(".file-checkbox");
+      checkboxes.forEach((checkbox) => {
+        checkbox.checked = this.selectedFiles.has(checkbox.value);
+      });
+      this.updateDownloadButtonText();
+    }
+
+    updateDownloadButtonText() {
+      const selectedCount = Array.from(this.selectedFiles).filter((path) => {
+        const file = this.extractedFiles.get(path);
+        return file && !file.isDirectory && file.data;
+      }).length;
+
+      if (selectedCount === 0) {
+        this.downloadBtnText.textContent = "下载选中文件";
+      } else if (selectedCount === 1) {
+        this.downloadBtnText.textContent = "下载文件";
+      } else {
+        this.downloadBtnText.textContent = `打包下载 (${selectedCount} 个文件)`;
+      }
+    }
+
+    async downloadSelectedFiles() {
+      if (this.selectedFiles.size === 0) {
+        this.showError("请先选择要下载的文件");
+        return;
+      }
+
+      // 过滤掉目录，只下载文件
+      const fileOnlyPaths = Array.from(this.selectedFiles).filter((path) => {
+        const file = this.extractedFiles.get(path);
+        return file && !file.isDirectory && file.data;
+      });
+
+      if (fileOnlyPaths.length === 0) {
+        this.showError("未选择有效的文件");
+        return;
+      }
+
+      try {
+        if (fileOnlyPaths.length === 1) {
+          // 单文件下载
+          const file = this.extractedFiles.get(fileOnlyPaths[0]);
+          const fileName = this.getFileName(file.name);
+          this.downloadFile(file.data, fileName);
+          this.showSuccess(`文件 "${fileName}" 下载成功！`);
+        } else {
+          // 多文件打包下载
+          console.log(`开始打包下载 ${fileOnlyPaths.length} 个文件`);
+          await this.downloadMultipleFiles();
+        }
+      } catch (error) {
+        console.error("下载失败:", error);
+        this.showError("下载失败: " + error.message);
+      }
+    }
+
+    getFileName(fullPath) {
+      // 从完整路径中提取文件名
+      return fullPath.split("/").pop() || fullPath;
+    }
+
+    downloadFile(data, filename) {
+      const blob = new Blob([data]);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async downloadMultipleFiles() {
+      // 加载 JSZip 用于多文件打包
+      if (!window.JSZip) {
+        try {
+          await this.loadJSZip();
+        } catch (error) {
+          this.showError("多文件打包需要 JSZip 库支持");
+          return;
+        }
+      }
+
+      try {
+        // 显示打包进度
+        this.showPackingProgress(true);
+        this.updatePackingProgress(0, "准备打包文件...");
+
+        const JSZip = window.JSZip;
+        const zip = new JSZip();
+
+        // 只获取有效的文件（非目录且有数据）
+        const validFiles = Array.from(this.selectedFiles)
+          .map((path) => this.extractedFiles.get(path))
+          .filter((file) => file && !file.isDirectory && file.data);
+
+        if (validFiles.length === 0) {
+          throw new Error("没有有效的文件可以打包");
+        }
+
+        let processedCount = 0;
+
+        // 添加选中的文件到ZIP
+        for (const file of validFiles) {
+          // 保持原有的目录结构
+          zip.file(file.name, file.data);
+          processedCount++;
+
+          const progress = (processedCount / validFiles.length) * 70;
+          this.updatePackingProgress(
+            progress,
+            `正在添加: ${this.getFileName(file.name)}`
+          );
+        }
+
+        this.updatePackingProgress(75, "正在生成ZIP文件...");
+
+        // 生成ZIP文件
+        const zipBlob = await zip.generateAsync(
+          {
+            type: "blob",
+            compression: "DEFLATE",
+            compressionOptions: {
+              level: 6,
+            },
+          },
+          (metadata) => {
+            // 显示ZIP生成进度
+            const progress = 75 + metadata.percent * 0.25;
+            this.updatePackingProgress(
+              progress,
+              `压缩进度: ${Math.round(metadata.percent)}%`
+            );
+          }
+        );
+
+        this.updatePackingProgress(100, "打包完成");
+
+        // 生成下载文件名
+        const originalFileName = this.currentFile.name.replace(/\.[^/.]+$/, "");
+        const downloadFileName = `${originalFileName}_extracted_files.zip`;
+
+        // 下载打包后的文件
+        this.downloadFile(zipBlob, downloadFileName);
+
+        // 显示成功消息并隐藏进度条
+        setTimeout(() => {
+          this.showPackingProgress(false);
+          this.showSuccess(
+            `成功打包下载 ${validFiles.length} 个文件！文件名：${downloadFileName}`
+          );
+        }, 1000);
+      } catch (error) {
+        console.error("多文件打包失败:", error);
+        this.showError("文件打包失败: " + error.message);
+        this.showPackingProgress(false);
+      }
+    }
+
+    updateProgress(percent, message) {
+      this.progressPercent.textContent = Math.round(percent) + "%";
+      this.progressFill.style.width = percent + "%";
+      this.currentFile.textContent = message;
+    }
+
+    showPackingProgress(show) {
+      if (show) {
+        this.packingSection.classList.remove("hidden");
+      } else {
+        this.packingSection.classList.add("hidden");
+      }
+    }
+
+    updatePackingProgress(percent, message) {
+      this.packingPercent.textContent = Math.round(percent) + "%";
+      this.packingFill.style.width = percent + "%";
+      this.packingStatus.textContent = message;
+    }
+
+    formatFileSize(bytes) {
+      if (bytes === 0) return "0 Bytes";
+      const k = 1024;
+      const sizes = ["Bytes", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    showToast(message, type = "info", duration = 4000) {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+
+      // 创建通知元素
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+
+      // 图标映射
+      const icons = {
+        success: "✅",
+        error: "❌",
+        warning: "⚠️",
+        info: "ℹ️",
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || icons.info}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      // 添加到容器
+      container.appendChild(toast);
+
+      // 添加进入动画
+      setTimeout(() => {
+        toast.classList.add("toast-show");
+      }, 10);
+
+      // 自动移除
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.classList.remove("toast-show");
+          setTimeout(() => {
+            if (toast.parentElement) {
+              toast.remove();
+            }
+          }, 300);
+        }
+      }, duration);
+    }
+
+    showError(message, duration = 5000) {
+      this.showToast(message, "error", duration);
+    }
+
+    showSuccess(message, duration = 4000) {
+      this.showToast(message, "success", duration);
+    }
+
+    showWarning(message, duration = 4000) {
+      this.showToast(message, "warning", duration);
+    }
+
+    showInfo(message, duration = 3000) {
+      this.showToast(message, "info", duration);
+    }
+  }
+
+  // 初始化应用
+  document.addEventListener("DOMContentLoaded", () => {
+    new ArchiveExtractor();
+  });
+</script>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-secondary);
+    margin-bottom: 2rem;
+    font-family: var(--font-sans);
+  }
+
+  .format-support {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .format-item {
+    padding: 0.25rem 0.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+  }
+
+  .extractor-container {
+    background-color: var(--color-card);
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  /* 上传区域 */
+  .upload-area {
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .upload-area:hover,
+  .upload-area.drag-over {
+    border-color: var(--color-accent);
+    background-color: var(--color-code-bg);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .upload-content h3 {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .upload-description {
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-sans);
+  }
+
+  .upload-limit {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .select-file-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .select-file-btn:hover {
+    background-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  /* 文件信息 */
+  .file-info {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-code-bg);
+  }
+
+  .file-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .file-icon {
+    font-size: 2rem;
+  }
+
+  .file-details {
+    flex: 1;
+  }
+
+  .file-name {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .file-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-secondary);
+  }
+
+  .remove-file-btn {
+    padding: 0.5rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .remove-file-btn:hover {
+    color: var(--color-text);
+    border-color: var(--color-text);
+  }
+
+  /* 解压设置 */
+  .extract-settings {
+    margin-top: 2rem;
+  }
+
+  .settings-title {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .setting-label input[type="checkbox"] {
+    margin: 0;
+  }
+
+  .extract-actions {
+    text-align: center;
+  }
+
+  .extract-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 2rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .extract-btn:hover:not(:disabled) {
+    background-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  .extract-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* 进度显示 */
+  .progress-section,
+  .packing-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-code-bg);
+  }
+
+  .progress-header,
+  .packing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .progress-header h3,
+  .packing-header h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .progress-percent,
+  .packing-percent {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .progress-bar,
+  .packing-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill,
+  .packing-fill {
+    height: 100%;
+    background-color: var(--color-accent);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-info,
+  .packing-info {
+    font-size: 0.875rem;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
+  }
+
+  /* 打包进度特殊样式 */
+  .packing-section {
+    border-color: var(--color-accent);
+  }
+
+  .packing-fill {
+    background: linear-gradient(90deg, var(--color-accent), #4ade80);
+  }
+
+  /* 文件列表 */
+  .file-list {
+    margin-top: 2rem;
+  }
+
+  .file-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+
+  .file-list-header h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .file-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .action-btn {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:hover {
+    background-color: var(--color-code-bg);
+    border-color: var(--color-text);
+  }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .download-btn:hover {
+    background-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  .file-tree {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-code-bg);
+  }
+
+  .file-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .file-tree-item:last-child {
+    border-bottom: none;
+  }
+
+  .file-tree-item:hover {
+    background-color: var(--color-bg);
+  }
+
+  .file-checkbox {
+    margin: 0;
+  }
+
+  .file-tree-item .file-icon {
+    font-size: 1rem;
+  }
+
+  .file-tree-item .file-name {
+    flex: 1;
+  }
+
+  .file-tree-item .file-size {
+    color: var(--color-secondary);
+    font-size: 0.75rem;
+  }
+
+  /* 使用说明 */
+  .instructions-section {
+    margin-bottom: 2rem;
+  }
+
+  .instructions-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .instructions-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .instruction-item {
+    text-align: center;
+  }
+
+  .instruction-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .instruction-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .instruction-item p {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* 消息通知样式 */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 500px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    backdrop-filter: blur(10px);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toast-show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-left: 4px solid #34d399;
+  }
+
+  .toast-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-left: 4px solid #f87171;
+  }
+
+  .toast-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-left: 4px solid #fbbf24;
+  }
+
+  .toast-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-left: 4px solid #60a5fa;
+  }
+
+  .toast-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .toast-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .toast-container {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+    }
+
+    .toast {
+      min-width: auto;
+      max-width: none;
+      width: 100%;
+    }
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .extractor-container {
+      padding: 1.5rem;
+    }
+
+    .upload-area {
+      padding: 2rem 1rem;
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .file-list-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .file-actions {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .settings-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .instructions-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .format-support {
+      justify-content: center;
+    }
+  }
+</style>
