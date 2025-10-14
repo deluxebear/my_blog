@@ -1,0 +1,1620 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+
+// 注意：qrcode 库将在客户端脚本中使用，这里只是确保它被包含
+---
+
+<Layout
+  title="二维码生成器 - 数得其道"
+  description="在线生成二维码，支持文本、URL、自定义大小、颜色和Logo"
+>
+  <Header />
+
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">二维码生成器</h1>
+        <p class="page-description">
+          快速生成二维码，支持自定义样式、添加Logo、实时预览和多格式下载
+        </p>
+        <div class="feature-badges">
+          <span class="badge">实时生成</span>
+          <span class="badge">自定义颜色</span>
+          <span class="badge">添加Logo</span>
+          <span class="badge">多格式导出</span>
+        </div>
+      </header>
+
+      <!-- 二维码生成器主界面 -->
+      <section class="generator-section">
+        <div class="generator-container">
+          <!-- 左侧：配置面板 -->
+          <div class="config-panel industrial-border">
+            <h2 class="panel-title">配置选项</h2>
+
+            <!-- 内容输入 -->
+            <div class="config-section primary-section">
+              <h3 class="section-title">内容</h3>
+              <div class="input-group">
+                <label for="qr-content" class="input-label">输入文本或URL</label
+                >
+                <textarea
+                  id="qr-content"
+                  class="qr-input"
+                  rows="4"
+                  placeholder="例如: https://www.jetems.com 或任意文本内容..."
+                ></textarea>
+                <div class="input-info">
+                  <span id="char-count">0</span> / <span id="max-chars"
+                    >2953</span
+                  > 字符
+                </div>
+              </div>
+
+              <!-- 生成按钮 -->
+              <div class="generate-section-top">
+                <button class="generate-btn" id="generate-btn">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                  生成二维码
+                </button>
+              </div>
+
+              <!-- 快速模板 -->
+              <div class="template-section">
+                <label class="input-label">快速模板</label>
+                <div class="template-buttons">
+                  <button class="template-btn" data-template="url">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                      ></path>
+                      <path
+                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                      ></path>
+                    </svg>
+                    网址
+                  </button>
+                  <button class="template-btn" data-template="email">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                      ></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    邮箱
+                  </button>
+                  <button class="template-btn" data-template="tel">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                      ></path>
+                    </svg>
+                    电话
+                  </button>
+                  <button class="template-btn" data-template="wifi">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                      <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                      <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                      <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                    </svg>
+                    WiFi
+                  </button>
+                  <button class="template-btn" data-template="sms">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                      ></path>
+                    </svg>
+                    短信
+                  </button>
+                  <button class="template-btn" data-template="vcard">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                      ></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    名片
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 高级配置（可折叠） -->
+            <div class="advanced-config">
+              <button class="toggle-btn" id="toggle-advanced">
+                <svg
+                  class="toggle-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
+                高级配置（可选）
+              </button>
+
+              <div class="collapsible-content" id="advanced-content">
+                <!-- 基本设置 -->
+                <div class="config-section">
+                  <h3 class="section-title">基本设置</h3>
+
+                  <!-- 二维码大小 -->
+                  <div class="input-group">
+                    <label for="qr-size" class="input-label">
+                      二维码大小: <span id="size-value">300</span> px
+                    </label>
+                    <input
+                      type="range"
+                      id="qr-size"
+                      min="100"
+                      max="1000"
+                      value="300"
+                      step="50"
+                      class="range-slider"
+                    />
+                    <div class="range-marks">
+                      <span>100</span>
+                      <span>300</span>
+                      <span>500</span>
+                      <span>1000</span>
+                    </div>
+                  </div>
+
+                  <!-- 纠错等级 -->
+                  <div class="input-group">
+                    <label class="input-label">纠错等级</label>
+                    <div class="radio-group">
+                      <label class="radio-item">
+                        <input type="radio" name="error-correction" value="L" />
+                        <span>L (低)</span>
+                      </label>
+                      <label class="radio-item">
+                        <input
+                          type="radio"
+                          name="error-correction"
+                          value="M"
+                          checked
+                        />
+                        <span>M (中)</span>
+                      </label>
+                      <label class="radio-item">
+                        <input type="radio" name="error-correction" value="Q" />
+                        <span>Q (高)</span>
+                      </label>
+                      <label class="radio-item">
+                        <input type="radio" name="error-correction" value="H" />
+                        <span>H (最高)</span>
+                      </label>
+                    </div>
+                    <div class="help-text">
+                      纠错等级越高，二维码的容错能力越强，但数据密度也越高
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 颜色设置 -->
+                <div class="config-section">
+                  <h3 class="section-title">颜色设置</h3>
+
+                  <div class="color-group">
+                    <div class="color-item">
+                      <label for="fg-color" class="input-label">前景色</label>
+                      <div class="color-input-wrapper">
+                        <input
+                          type="color"
+                          id="fg-color"
+                          value="#000000"
+                          class="color-picker"
+                        />
+                        <input
+                          type="text"
+                          id="fg-color-hex"
+                          value="#000000"
+                          class="color-hex"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="color-item">
+                      <label for="bg-color" class="input-label">背景色</label>
+                      <div class="color-input-wrapper">
+                        <input
+                          type="color"
+                          id="bg-color"
+                          value="#FFFFFF"
+                          class="color-picker"
+                        />
+                        <input
+                          type="text"
+                          id="bg-color-hex"
+                          value="#FFFFFF"
+                          class="color-hex"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 预设配色 -->
+                  <div class="preset-colors">
+                    <label class="input-label">预设配色</label>
+                    <div class="preset-buttons">
+                      <button
+                        class="preset-btn"
+                        data-fg="#000000"
+                        data-bg="#FFFFFF"
+                        title="经典黑白"
+                      >
+                        <span class="preset-fg" style="background: #000000;"
+                        ></span>
+                        <span class="preset-bg" style="background: #FFFFFF;"
+                        ></span>
+                      </button>
+                      <button
+                        class="preset-btn"
+                        data-fg="#8B4513"
+                        data-bg="#E8DCC0"
+                        title="复古棕"
+                      >
+                        <span class="preset-fg" style="background: #8B4513;"
+                        ></span>
+                        <span class="preset-bg" style="background: #E8DCC0;"
+                        ></span>
+                      </button>
+                      <button
+                        class="preset-btn"
+                        data-fg="#1E40AF"
+                        data-bg="#DBEAFE"
+                        title="科技蓝"
+                      >
+                        <span class="preset-fg" style="background: #1E40AF;"
+                        ></span>
+                        <span class="preset-bg" style="background: #DBEAFE;"
+                        ></span>
+                      </button>
+                      <button
+                        class="preset-btn"
+                        data-fg="#047857"
+                        data-bg="#D1FAE5"
+                        title="自然绿"
+                      >
+                        <span class="preset-fg" style="background: #047857;"
+                        ></span>
+                        <span class="preset-bg" style="background: #D1FAE5;"
+                        ></span>
+                      </button>
+                      <button
+                        class="preset-btn"
+                        data-fg="#DC2626"
+                        data-bg="#FEE2E2"
+                        title="热情红"
+                      >
+                        <span class="preset-fg" style="background: #DC2626;"
+                        ></span>
+                        <span class="preset-bg" style="background: #FEE2E2;"
+                        ></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Logo设置 -->
+                <div class="config-section">
+                  <h3 class="section-title">Logo设置 (可选)</h3>
+
+                  <div class="logo-upload">
+                    <input
+                      type="file"
+                      id="logo-upload"
+                      accept="image/*"
+                      hidden
+                    />
+                    <button class="upload-btn" id="logo-upload-btn">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                        ></path>
+                        <polyline points="17,8 12,3 7,8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      上传Logo图片
+                    </button>
+                    <div class="logo-preview hidden" id="logo-preview">
+                      <img id="logo-image" alt="Logo预览" />
+                      <button class="remove-logo-btn" id="remove-logo-btn"
+                        >×</button
+                      >
+                    </div>
+                  </div>
+
+                  <div class="input-group">
+                    <label for="logo-size" class="input-label">
+                      Logo大小: <span id="logo-size-value">20</span>%
+                    </label>
+                    <input
+                      type="range"
+                      id="logo-size"
+                      min="10"
+                      max="40"
+                      value="20"
+                      step="5"
+                      class="range-slider"
+                      disabled
+                    />
+                  </div>
+
+                  <label class="checkbox-item">
+                    <input type="checkbox" id="logo-background" disabled />
+                    <span>Logo白色背景</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧：预览和下载 -->
+          <div class="preview-panel industrial-border">
+            <h2 class="panel-title">预览与下载</h2>
+
+            <!-- 预览区域 -->
+            <div class="qr-preview">
+              <div class="preview-container" id="preview-container">
+                <div class="placeholder">
+                  <svg
+                    width="80"
+                    height="80"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1"
+                  >
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                  <p>输入内容后生成二维码</p>
+                </div>
+                <canvas id="qr-canvas" class="hidden"></canvas>
+              </div>
+            </div>
+
+            <!-- 下载选项 -->
+            <div class="download-section">
+              <h3 class="section-title">下载选项</h3>
+
+              <div class="download-buttons">
+                <button class="download-btn" id="download-png" disabled>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  PNG格式
+                </button>
+
+                <button class="download-btn" id="download-jpg" disabled>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  JPG格式
+                </button>
+
+                <button class="download-btn" id="download-svg" disabled>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  SVG格式
+                </button>
+              </div>
+
+              <div class="help-text">
+                <strong>格式说明：</strong>
+                <ul>
+                  <li><strong>PNG</strong> - 支持透明背景，适合网页和应用</li>
+                  <li><strong>JPG</strong> - 文件较小，适合打印</li>
+                  <li><strong>SVG</strong> - 矢量格式，可无限缩放</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 使用说明 -->
+      <section class="instructions-section">
+        <div class="instructions-content industrial-border">
+          <h2 class="instructions-title">功能特点</h2>
+          <div class="instructions-grid">
+            <div class="instruction-item">
+              <div class="instruction-icon">⚡</div>
+              <h3>实时生成</h3>
+              <p>
+                输入内容后即时生成二维码，支持文本、URL、邮箱、电话等多种格式
+              </p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🎨</div>
+              <h3>自定义样式</h3>
+              <p>自由调整二维码大小、颜色，提供多种预设配色方案</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🖼️</div>
+              <h3>添加Logo</h3>
+              <p>支持在二维码中心添加Logo图片，提升品牌识别度</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">📥</div>
+              <h3>多格式导出</h3>
+              <p>支持PNG、JPG、SVG三种格式下载，满足不同使用场景</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">🔒</div>
+              <h3>隐私保护</h3>
+              <p>所有数据在本地处理，不会上传到服务器，确保隐私安全</p>
+            </div>
+            <div class="instruction-item">
+              <div class="instruction-icon">📱</div>
+              <h3>快速模板</h3>
+              <p>提供网址、邮箱、电话、WiFi等快速模板，一键填充</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import QRCode from "qrcode";
+
+  class QRCodeGenerator {
+    constructor() {
+      this.qrCanvas = null;
+      this.currentQR = null;
+      this.logoImage = null;
+
+      this.initElements();
+      this.bindEvents();
+      this.updateCharCount();
+    }
+
+    initElements() {
+      // 输入元素
+      this.qrContent = document.getElementById("qr-content");
+      this.charCount = document.getElementById("char-count");
+      this.maxChars = document.getElementById("max-chars");
+
+      // 配置元素
+      this.qrSize = document.getElementById("qr-size");
+      this.sizeValue = document.getElementById("size-value");
+      this.fgColor = document.getElementById("fg-color");
+      this.bgColor = document.getElementById("bg-color");
+      this.fgColorHex = document.getElementById("fg-color-hex");
+      this.bgColorHex = document.getElementById("bg-color-hex");
+
+      // Logo 相关
+      this.logoUpload = document.getElementById("logo-upload");
+      this.logoUploadBtn = document.getElementById("logo-upload-btn");
+      this.logoPreview = document.getElementById("logo-preview");
+      this.logoImageEl = document.getElementById("logo-image");
+      this.removeLogoBtn = document.getElementById("remove-logo-btn");
+      this.logoSize = document.getElementById("logo-size");
+      this.logoSizeValue = document.getElementById("logo-size-value");
+      this.logoBackground = document.getElementById("logo-background");
+
+      // 预览和下载
+      this.previewContainer = document.getElementById("preview-container");
+      this.qrCanvas = document.getElementById("qr-canvas");
+      this.generateBtn = document.getElementById("generate-btn");
+      this.downloadPngBtn = document.getElementById("download-png");
+      this.downloadJpgBtn = document.getElementById("download-jpg");
+      this.downloadSvgBtn = document.getElementById("download-svg");
+    }
+
+    bindEvents() {
+      // 折叠/展开高级配置
+      const toggleBtn = document.getElementById("toggle-advanced");
+      const advancedContent = document.getElementById("advanced-content");
+      const toggleIcon = toggleBtn.querySelector(".toggle-icon");
+
+      toggleBtn.addEventListener("click", () => {
+        const isCollapsed = advancedContent.classList.toggle("collapsed");
+        toggleIcon.style.transform = isCollapsed
+          ? "rotate(0deg)"
+          : "rotate(180deg)";
+      });
+
+      // 默认折叠
+      advancedContent.classList.add("collapsed");
+
+      // 内容输入
+      this.qrContent.addEventListener("input", () => {
+        this.updateCharCount();
+      });
+
+      // 大小调整
+      this.qrSize.addEventListener("input", () => {
+        this.sizeValue.textContent = this.qrSize.value;
+      });
+
+      // Logo大小调整
+      this.logoSize.addEventListener("input", () => {
+        this.logoSizeValue.textContent = this.logoSize.value;
+      });
+
+      // 颜色选择
+      this.fgColor.addEventListener("input", (e) => {
+        this.fgColorHex.value = e.target.value.toUpperCase();
+      });
+
+      this.bgColor.addEventListener("input", (e) => {
+        this.bgColorHex.value = e.target.value.toUpperCase();
+      });
+
+      this.fgColorHex.addEventListener("input", (e) => {
+        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+          this.fgColor.value = e.target.value;
+        }
+      });
+
+      this.bgColorHex.addEventListener("input", (e) => {
+        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+          this.bgColor.value = e.target.value;
+        }
+      });
+
+      // 预设配色
+      document.querySelectorAll(".preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const fg = btn.dataset.fg;
+          const bg = btn.dataset.bg;
+          this.fgColor.value = fg;
+          this.bgColor.value = bg;
+          this.fgColorHex.value = fg.toUpperCase();
+          this.bgColorHex.value = bg.toUpperCase();
+        });
+      });
+
+      // Logo上传
+      this.logoUploadBtn.addEventListener("click", () => {
+        this.logoUpload.click();
+      });
+
+      this.logoUpload.addEventListener("change", (e) => {
+        this.handleLogoUpload(e);
+      });
+
+      this.removeLogoBtn.addEventListener("click", () => {
+        this.removeLogo();
+      });
+
+      // 快速模板
+      document.querySelectorAll(".template-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          this.applyTemplate(btn.dataset.template);
+        });
+      });
+
+      // 生成按钮
+      this.generateBtn.addEventListener("click", () => {
+        this.generateQRCode();
+      });
+
+      // 下载按钮
+      this.downloadPngBtn.addEventListener("click", () => {
+        this.downloadQRCode("png");
+      });
+
+      this.downloadJpgBtn.addEventListener("click", () => {
+        this.downloadQRCode("jpg");
+      });
+
+      this.downloadSvgBtn.addEventListener("click", () => {
+        this.downloadQRCode("svg");
+      });
+    }
+
+    updateCharCount() {
+      const length = this.qrContent.value.length;
+      this.charCount.textContent = length;
+
+      // 根据内容长度更新最大容量提示
+      const maxCapacity = this.getMaxCapacity();
+      this.maxChars.textContent = maxCapacity;
+    }
+
+    getMaxCapacity() {
+      const errorLevel = document.querySelector(
+        'input[name="error-correction"]:checked'
+      ).value;
+      const capacities = {
+        L: 2953,
+        M: 2331,
+        Q: 1663,
+        H: 1273,
+      };
+      return capacities[errorLevel] || 2953;
+    }
+
+    handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        alert("请选择图片文件");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          this.logoImage = img;
+          this.logoImageEl.src = e.target.result;
+          this.logoPreview.classList.remove("hidden");
+
+          // 启用Logo相关选项
+          this.logoSize.disabled = false;
+          this.logoBackground.disabled = false;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    removeLogo() {
+      this.logoImage = null;
+      this.logoPreview.classList.add("hidden");
+      this.logoUpload.value = "";
+
+      // 禁用Logo相关选项
+      this.logoSize.disabled = true;
+      this.logoBackground.disabled = true;
+    }
+
+    applyTemplate(template) {
+      const templates = {
+        url: "https://www.example.com",
+        email: "mailto:example@email.com",
+        tel: "tel:+86-13800138000",
+        sms: "SMSTO:+86-13800138000:您好！",
+        wifi: "WIFI:T:WPA;S:WiFi名称;P:密码;;",
+        vcard:
+          "BEGIN:VCARD\nVERSION:3.0\nFN:张三\nTEL:+86-13800138000\nEMAIL:zhangsan@email.com\nEND:VCARD",
+      };
+
+      this.qrContent.value = templates[template] || "";
+      this.updateCharCount();
+    }
+
+    generateQRCode() {
+      const content = this.qrContent.value.trim();
+
+      if (!content) {
+        alert("请输入内容");
+        return;
+      }
+
+      const size = parseInt(this.qrSize.value);
+      const errorLevel = document.querySelector(
+        'input[name="error-correction"]:checked'
+      ).value;
+      const fgColor = this.fgColor.value;
+      const bgColor = this.bgColor.value;
+
+      try {
+        // 清除之前的二维码
+        const ctx = this.qrCanvas.getContext("2d");
+        ctx.clearRect(0, 0, this.qrCanvas.width, this.qrCanvas.height);
+
+        // 设置Canvas大小
+        this.qrCanvas.width = size;
+        this.qrCanvas.height = size;
+
+        // 使用 QRCode 库生成二维码到 Canvas
+        QRCode.toCanvas(
+          this.qrCanvas,
+          content,
+          {
+            width: size,
+            margin: 1,
+            color: {
+              dark: fgColor,
+              light: bgColor,
+            },
+            errorCorrectionLevel: errorLevel,
+          },
+          (error) => {
+            if (error) {
+              console.error("生成二维码失败:", error);
+              alert("生成失败：" + error.message);
+              return;
+            }
+
+            // 如果有Logo，绘制Logo
+            if (this.logoImage) {
+              this.drawLogo(ctx, size);
+            }
+
+            // 显示预览
+            this.qrCanvas.classList.remove("hidden");
+            const placeholder =
+              this.previewContainer.querySelector(".placeholder");
+            if (placeholder) {
+              placeholder.style.display = "none";
+            }
+
+            // 启用下载按钮
+            this.downloadPngBtn.disabled = false;
+            this.downloadJpgBtn.disabled = false;
+            this.downloadSvgBtn.disabled = false;
+
+            // 保存当前内容用于SVG导出
+            this.currentContent = content;
+            this.currentSize = size;
+            this.currentFgColor = fgColor;
+            this.currentBgColor = bgColor;
+            this.currentErrorLevel = errorLevel;
+          }
+        );
+      } catch (error) {
+        console.error("生成二维码失败:", error);
+        alert("生成失败：" + error.message);
+      }
+    }
+
+    drawLogo(ctx, canvasSize) {
+      const logoSizePercent = parseInt(this.logoSize.value) / 100;
+      const logoSize = canvasSize * logoSizePercent;
+      const logoX = (canvasSize - logoSize) / 2;
+      const logoY = (canvasSize - logoSize) / 2;
+
+      // 如果启用Logo背景
+      if (this.logoBackground.checked) {
+        const padding = logoSize * 0.1;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(
+          logoX - padding,
+          logoY - padding,
+          logoSize + padding * 2,
+          logoSize + padding * 2
+        );
+      }
+
+      // 绘制Logo
+      ctx.drawImage(this.logoImage, logoX, logoY, logoSize, logoSize);
+    }
+
+    downloadQRCode(format) {
+      if (!this.currentContent) {
+        alert("请先生成二维码");
+        return;
+      }
+
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const filename = `qrcode-${timestamp}`;
+
+      if (format === "svg") {
+        this.downloadSVG(filename);
+      } else {
+        this.downloadImage(format, filename);
+      }
+    }
+
+    downloadImage(format, filename) {
+      const mimeType = format === "png" ? "image/png" : "image/jpeg";
+
+      this.qrCanvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${filename}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, mimeType);
+    }
+
+    downloadSVG(filename) {
+      // 将Canvas转换为SVG（通过base64编码的图片）
+      const dataURL = this.qrCanvas.toDataURL("image/png");
+      const size = this.currentSize;
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+  <image width="${size}" height="${size}" xlink:href="${dataURL}"/>
+</svg>`;
+
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${filename}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  // 页面加载完成后初始化
+  document.addEventListener("DOMContentLoaded", () => {
+    new QRCodeGenerator();
+  });
+</script>
+
+<style>
+  .main {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-secondary);
+    margin-bottom: 1.5rem;
+    font-family: var(--font-sans);
+  }
+
+  .feature-badges {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 0.25rem 0.75rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 12px;
+  }
+
+  /* 生成器容器 */
+  .generator-section {
+    margin-bottom: 3rem;
+  }
+
+  .generator-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .config-panel,
+  .preview-panel {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .panel-title {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  /* 配置区域 */
+  .config-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .config-section:last-of-type {
+    border-bottom: none;
+  }
+
+  /* 主要区域（内容输入）- 不折叠 */
+  .primary-section {
+    border-bottom: 2px solid var(--color-accent);
+  }
+
+  /* 高级配置折叠区域 */
+  .advanced-config {
+    margin-top: 1.5rem;
+  }
+
+  .toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+  }
+
+  .toggle-btn:hover {
+    background-color: var(--color-hover);
+    border-color: var(--color-accent);
+  }
+
+  .toggle-icon {
+    transition: transform 0.3s ease;
+    transform: rotate(0deg);
+    flex-shrink: 0;
+  }
+
+  .collapsible-content {
+    max-height: 2000px;
+    overflow: hidden;
+    transition:
+      max-height 0.3s ease,
+      opacity 0.3s ease;
+    opacity: 1;
+  }
+
+  .collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .section-title {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-text);
+  }
+
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+
+  .qr-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    resize: vertical;
+    outline: none;
+  }
+
+  .qr-input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .input-info {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-secondary);
+    margin-top: 0.25rem;
+  }
+
+  /* 快速模板 */
+  .template-section {
+    margin-top: 1rem;
+  }
+
+  .template-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .template-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text);
+  }
+
+  .template-btn:hover {
+    background-color: var(--color-hover);
+    border-color: var(--color-accent);
+  }
+
+  /* 滑块 */
+  .range-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--color-border);
+    border-radius: 3px;
+    outline: none;
+    margin: 0.5rem 0;
+  }
+
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--color-bg);
+  }
+
+  .range-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--color-bg);
+  }
+
+  .range-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .range-marks {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-secondary);
+  }
+
+  /* 单选按钮组 */
+  .radio-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .radio-item:hover {
+    background-color: var(--color-hover);
+  }
+
+  .radio-item input[type="radio"] {
+    accent-color: var(--color-accent);
+  }
+
+  .radio-item span {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text);
+  }
+
+  /* 颜色选择 */
+  .color-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .color-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .color-picker {
+    width: 50px;
+    height: 40px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    background: none;
+  }
+
+  .color-hex {
+    flex: 1;
+    padding: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    text-transform: uppercase;
+  }
+
+  /* 预设配色 */
+  .preset-colors {
+    margin-top: 1rem;
+  }
+
+  .preset-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .preset-btn {
+    width: 50px;
+    height: 40px;
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 4px;
+    background: none;
+    transition: all 0.2s ease;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .preset-btn:hover {
+    border-color: var(--color-accent);
+    transform: scale(1.05);
+  }
+
+  .preset-fg,
+  .preset-bg {
+    flex: 1;
+  }
+
+  /* Logo上传 */
+  .logo-upload {
+    margin-bottom: 1rem;
+  }
+
+  .upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-code-bg);
+    border: 1px dashed var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text);
+  }
+
+  .upload-btn:hover {
+    background-color: var(--color-hover);
+    border-color: var(--color-accent);
+  }
+
+  .logo-preview {
+    margin-top: 1rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .logo-preview img {
+    max-width: 100px;
+    max-height: 100px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .remove-logo-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  /* 复选框 */
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent);
+  }
+
+  .checkbox-item input[type="checkbox"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* 顶部生成按钮 */
+  .generate-section-top {
+    margin-top: 1.5rem;
+  }
+
+  .generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .generate-btn:hover {
+    background-color: var(--color-text);
+    border-color: var(--color-text);
+    transform: translateY(-1px);
+  }
+
+  /* 预览区域 */
+  .qr-preview {
+    margin-bottom: 2rem;
+  }
+
+  .preview-container {
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+
+  .placeholder {
+    text-align: center;
+    color: var(--color-muted);
+  }
+
+  .placeholder svg {
+    stroke: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+
+  .placeholder p {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  #qr-canvas {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  /* 下载区域 */
+  .download-section {
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .download-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .download-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+    background-color: var(--color-code-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text);
+  }
+
+  .download-btn:hover:not(:disabled) {
+    background-color: var(--color-hover);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .download-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .help-text {
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+    line-height: 1.6;
+    font-family: var(--font-sans);
+  }
+
+  .help-text ul {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.5rem;
+  }
+
+  .help-text li {
+    margin-bottom: 0.25rem;
+  }
+
+  /* 使用说明 */
+  .instructions-section {
+    margin-bottom: 2rem;
+  }
+
+  .instructions-content {
+    background-color: var(--color-card);
+    padding: 2rem;
+  }
+
+  .instructions-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-accent);
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .instruction-item {
+    text-align: center;
+  }
+
+  .instruction-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .instruction-item h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .instruction-item p {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 1024px) {
+    .generator-container {
+      grid-template-columns: 1fr;
+    }
+
+    .download-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1rem;
+    }
+
+    .config-panel,
+    .preview-panel {
+      padding: 1.5rem;
+    }
+
+    .template-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .radio-group {
+      grid-template-columns: 1fr;
+    }
+
+    .color-group {
+      grid-template-columns: 1fr;
+    }
+
+    .preset-buttons {
+      justify-content: center;
+    }
+
+    .preview-container {
+      min-height: 300px;
+      padding: 1rem;
+    }
+
+    .instructions-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>
