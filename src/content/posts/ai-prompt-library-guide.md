@@ -635,6 +635,7 @@ AI 会给出分析报告,你可以审查后再决定如何处理
 
 ## 延伸阅读与资源
 
+- **Prompt Library**: [英文原版文档](https://docs.lovable.dev/prompting/prompting-library)
 - **Prompt Engineering Guide**: [promptingguide.ai](https://www.promptingguide.ai)
 - **OpenAI Best Practices**: [OpenAI 官方文档](https://platform.openai.com/docs/guides/prompt-engineering)
 - **Supabase 文档**: [supabase.com/docs](https://supabase.com/docs)
@@ -657,3 +658,6 @@ AI 编程助手是强大的工具,但需要正确的沟通方式才能发挥其�
 记住:**AI 不会读心术**。你投入到提示词中的精力,直接决定了输出的质量。花时间编写清晰、详细的提示,将大大提高开发效率,减少返工时间。
 
 现在,选择一个适合你当前任务的模板,开始构建吧! 🚀
+
+**参考资源**:
+- [Lovable 体验链接](https://lovable.dev/?via=myfriends)
