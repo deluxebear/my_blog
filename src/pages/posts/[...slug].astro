@@ -1,16 +1,19 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
 
 export async function getStaticPaths() {
-  const posts = await Astro.glob('../../content/posts/*.{md,mdx}');
-  
-  return posts.map(post => ({
-    params: { 
-      slug: post.file.split('/').pop()?.replace(/\.mdx?$/, '') 
+  const posts = await Astro.glob("../../content/posts/*.{md,mdx}");
+
+  return posts.map((post) => ({
+    params: {
+      slug: post.file
+        .split("/")
+        .pop()
+        ?.replace(/\.mdx?$/, ""),
     },
-    props: { post }
+    props: { post },
   }));
 }
 
@@ -30,19 +33,19 @@ if (!headings || headings.length === 0) {
     processedHeadings = await post.getHeadings();
   } else {
     // 手动从内容中提取标题
-    const content = post.compiledContent?.() || '';
+    const content = post.compiledContent?.() || "";
     const headingRegex = /<h([1-6])[^>]*id="([^"]*)"[^>]*>(.*?)<\/h[1-6]>/gi;
     const extractedHeadings = [];
     let match;
-    
+
     while ((match = headingRegex.exec(content)) !== null) {
       extractedHeadings.push({
         depth: parseInt(match[1]),
         slug: match[2],
-        text: match[3].replace(/<[^>]*>/g, '') // 移除HTML标签
+        text: match[3].replace(/<[^>]*>/g, ""), // 移除HTML标签
       });
     }
-    
+
     processedHeadings = extractedHeadings;
   }
 }
@@ -50,42 +53,44 @@ if (!headings || headings.length === 0) {
 
 <Layout title={title} description={description} image={image}>
   <Header />
-  
+
   <main class="main">
     <div class="container">
       <article class="article">
         <header class="article-header">
-          {featured && (
-            <div class="featured-badge">
-              ⭐ 精选文章
-            </div>
-          )}
-          
+          {featured && <div class="featured-badge">⭐ 精选文章</div>}
+
           <h1 class="article-title">{title}</h1>
-          
+
           <div class="article-meta">
             <time class="article-date" datetime={pubDate.toISOString()}>
-              {pubDate.toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              {
+                pubDate.toLocaleDateString("zh-CN", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              }
             </time>
-            
-            {tags && tags.length > 0 && (
-              <div class="article-tags">
-                {tags.map(tag => (
-                  <span class="tag">{tag}</span>
-                ))}
-              </div>
-            )}
+
+            {
+              tags && tags.length > 0 && (
+                <div class="article-tags">
+                  {tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              )
+            }
           </div>
 
-          {image && (
-            <div class="article-image">
-              <img src={image} alt={title} />
-            </div>
-          )}
+          {
+            image && (
+              <div class="article-image">
+                <img src={image} alt={title} />
+              </div>
+            )
+          }
         </header>
 
         <div class="article-layout">
@@ -95,7 +100,7 @@ if (!headings || headings.length === 0) {
         </div>
       </article>
     </div>
-    
+
     <!-- 桌面端目录导航 - 固定在右侧，移动端隐藏 -->
     <div class="desktop-toc">
       <TableOfContents headings={processedHeadings || []} />
@@ -129,7 +134,6 @@ if (!headings || headings.length === 0) {
     font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
@@ -321,12 +325,12 @@ if (!headings || headings.length === 0) {
     .article {
       margin-right: 0; /* 移除右边距 */
     }
-    
+
     /* 隐藏桌面端目录 */
     .desktop-toc {
       display: none;
     }
-    
+
     .article-content {
       padding: 2rem;
     }
