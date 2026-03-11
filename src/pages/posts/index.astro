@@ -2,7 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import PostCard from '../../components/PostCard.astro';
-import SearchBox from '../../components/SearchBox.astro';
 
 // Get all posts and sort by date
 const allPosts = await Astro.glob('../../content/posts/*.{md,mdx}');
@@ -16,8 +15,15 @@ const posts = allPosts
   }))
   .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 
-// Get all unique tags
-const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort();
+const tagStats = [...new Set(posts.flatMap(post => post.data.tags || []))]
+  .map(tag => ({
+    tag,
+    count: posts.filter(post => post.data.tags?.includes(tag)).length,
+  }))
+  .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, 'zh-CN'));
+
+const featuredTags = tagStats.slice(0, 8);
+const remainingTags = tagStats.slice(8);
 ---
 
 <Layout title="所有文章 - 数得其道">
@@ -32,27 +38,32 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
         </p>
       </header>
 
-      <!-- Search Section -->
-      <section class="search-section">
-        <SearchBox />
-      </section>
-
       <!-- Tags Filter -->
       <section class="tags-section">
         <h2 class="tags-title">按标签筛选</h2>
+        <p class="tags-description">默认展示常用标签，其余标签按需展开，避免筛选区占用过多空间。</p>
         <div class="tags-container">
           <button class="tag-filter active" data-tag="all">
-            全部 ({posts.length})
+            全部
           </button>
-          {allTags.map(tag => {
-            const count = posts.filter(post => post.data.tags?.includes(tag)).length;
-            return (
-              <button class="tag-filter" data-tag={tag}>
-                {tag} ({count})
-              </button>
-            );
-          })}
+          {featuredTags.map(({ tag }) => (
+            <button class="tag-filter" data-tag={tag}>
+              {tag}
+            </button>
+          ))}
         </div>
+        {remainingTags.length > 0 && (
+          <details class="more-tags">
+            <summary>更多标签（{remainingTags.length}）</summary>
+            <div class="tags-container more-tags-container">
+              {remainingTags.map(({ tag }) => (
+                <button class="tag-filter" data-tag={tag}>
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </details>
+        )}
       </section>
 
       <!-- Posts Grid -->
@@ -99,10 +110,6 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     line-height: 1.6;
   }
 
-  .search-section {
-    margin-bottom: 3rem;
-  }
-
   .tags-section {
     margin-bottom: 3rem;
   }
@@ -114,6 +121,12 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     font-family: var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+  }
+
+  .tags-description {
+    margin-bottom: 1rem;
+    color: var(--color-secondary);
+    line-height: 1.6;
   }
 
   .tags-container {
@@ -135,6 +148,41 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     transition: all 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+  }
+
+  .more-tags {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    border: var(--border-width) var(--border-style) var(--color-border);
+    background-color: color-mix(in srgb, var(--color-card) 82%, transparent);
+  }
+
+  .more-tags summary {
+    cursor: pointer;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    list-style: none;
+  }
+
+  .more-tags summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .more-tags summary::before {
+    content: '+';
+    display: inline-block;
+    margin-right: 0.5rem;
+    color: var(--color-accent);
+  }
+
+  .more-tags[open] summary::before {
+    content: '-';
+  }
+
+  .more-tags-container {
+    margin-top: 1rem;
   }
 
   .tag-filter:hover {
@@ -225,8 +273,11 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
             visiblePosts++;
           } else {
             // Check if post has the selected tag
-            const postTags = postElement.querySelector('.post-tags')?.textContent || '';
-            if (postTags.toLowerCase().includes(selectedTag.toLowerCase())) {
+            const postTags = (postElement.getAttribute('data-tags') || '')
+              .split(',')
+              .map(tag => tag.trim().toLowerCase())
+              .filter(Boolean);
+            if (postTags.includes(selectedTag.toLowerCase())) {
               postElement.style.display = 'block';
               visiblePosts++;
             } else {

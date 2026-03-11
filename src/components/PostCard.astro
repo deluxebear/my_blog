@@ -17,7 +17,10 @@ const { post } = Astro.props;
 const { slug, data } = post;
 ---
 
-<article class={`post-card industrial-border ${data.featured ? 'featured' : ''}`}>
+<article
+  class={`post-card industrial-border ${data.featured ? 'featured' : ''}`}
+  data-tags={(data.tags || []).map(tag => tag.toLowerCase()).join(',')}
+>
   <a href={`/posts/${slug}`} class="post-link">
     {data.image && (
       <div class="post-image">
