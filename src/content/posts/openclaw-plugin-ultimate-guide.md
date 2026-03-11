@@ -4,6 +4,7 @@ description: "一篇把 OpenClaw 里的 Skill、Tool、Plugin 边界讲透的完
 pubDate: 2026-03-11
 tags: ["OpenClaw", "Plugin", "Skill", "Tool", "AI Agent", "开发指南"]
 featured: true
+image: "/post_imgs/openclaw-plugin-ultimate-guide.svg"
 ---
 
 # OpenClaw Plugin 最详细的终极指南：什么时候该写 Skill、Tool，什么时候该上 Plugin？
@@ -32,6 +33,23 @@ featured: true
 2. **怎么从零开发一个 Plugin**
 
 我会尽量把它写成一篇真正“能看懂、能上手、能少踩坑”的指南：小白能读明白，刚入门的开发者也能照着开始做。
+
+## 为什么值得读这篇文章？
+
+- 如果你一直分不清 Skill、Tool、Plugin，这篇会先把边界讲透。
+- 如果你已经会用 OpenClaw，但还不知道什么时候该上 Plugin，这篇会给你明确判断标准。
+- 如果你准备自己开发插件，这篇会把最小开发路径、常见坑和排错顺序一起讲清楚。
+
+## 背景与问题
+
+很多人第一次接触 OpenClaw Plugin 时，容易陷入两个常见误区：
+
+- 误以为 Plugin 只是“功能更多的 Tool”
+- 一上来就想做最重的 Channel、Provider 或 Memory 类插件
+
+结果往往是：概念没分清，工程细节又很容易踩坑。真正麻烦的地方，很多时候并不是代码本身，而是扩展边界、配置位置、加载顺序和生命周期介入方式。
+
+所以在进入具体 API 之前，先建立一个清晰的判断框架，反而能帮你少走很多弯路。
 
 ## 一、先把三种扩展方式讲清楚：Skill、Tool、Plugin
 
