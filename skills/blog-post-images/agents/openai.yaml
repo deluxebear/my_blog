@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Post Images"
+  short_description: "Standardize blog image storage and markdown references"
+  default_prompt: "Use $blog-post-images to add or revise cover images and inline screenshots for this Astro repository."

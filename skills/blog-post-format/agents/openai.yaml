@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Post Format"
+  short_description: "Constrain blog markdown structure and frontmatter"
+  default_prompt: "Use $blog-post-format to draft or revise a blog post for this Astro repository."
