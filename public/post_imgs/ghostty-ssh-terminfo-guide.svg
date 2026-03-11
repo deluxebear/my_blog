@@ -1,0 +1,22 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0A0F1C"/>
+  <rect x="42" y="42" width="1116" height="546" rx="26" fill="url(#g)" stroke="#334155"/>
+  <circle cx="1040" cy="118" r="120" fill="#22D3EE" fill-opacity="0.15"/>
+  <circle cx="188" cy="500" r="150" fill="#A78BFA" fill-opacity="0.14"/>
+  <text x="92" y="148" fill="#67E8F9" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Ghostty / SSH / terminfo</text>
+  <text x="92" y="238" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700">xterm-ghostty 报错怎么修？</text>
+  <text x="92" y="320" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="30">一篇讲清安装 terminfo、TERM 回退与自动化配置</text>
+  <rect x="92" y="404" width="432" height="72" rx="16" fill="#111827" stroke="#475569"/>
+  <text x="116" y="448" fill="#E2E8F0" font-family="Courier New, monospace" font-size="26">TERM=xterm-ghostty</text>
+  <path d="M560 438H708" stroke="#94A3B8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M694 422L718 438L694 454" stroke="#94A3B8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="738" y="404" width="274" height="72" rx="16" fill="#0F766E" stroke="#14B8A6"/>
+  <text x="875" y="448" text-anchor="middle" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">修复方案</text>
+  <text x="92" y="538" fill="#93C5FD" font-family="Arial, Helvetica, sans-serif" font-size="24">install terminfo / fallback xterm-256color / shell-integration-features</text>
+  <defs>
+    <linearGradient id="g" x1="42" y1="42" x2="1158" y2="588" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#1E1B4B"/>
+    </linearGradient>
+  </defs>
+</svg>
