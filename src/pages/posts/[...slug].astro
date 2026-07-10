@@ -116,7 +116,7 @@ if (!headings || headings.length === 0) {
   }
 
   .article {
-    max-width: 1000px;
+    max-width: 720px; /* 中文约 38–40 字/行的适读宽度 */
     margin: 0 auto;
   }
 
@@ -138,9 +138,9 @@ if (!headings || headings.length === 0) {
   }
 
   .article-title {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.3;
     margin-bottom: 1.5rem;
     color: var(--color-text);
   }
@@ -158,8 +158,6 @@ if (!headings || headings.length === 0) {
   .article-date {
     font-family: var(--font-mono);
     font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   .article-tags {
@@ -176,8 +174,6 @@ if (!headings || headings.length === 0) {
     font-size: 0.75rem;
     font-family: var(--font-mono);
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   .article-image {
@@ -220,6 +216,7 @@ if (!headings || headings.length === 0) {
     box-shadow: var(--shadow-sm);
     width: 100%;
     max-width: 100%;
+    font-size: 1.0625rem;
   }
 
   /* 在大屏幕上，整个文章容器向左偏移，为右侧目录留出空间 */
@@ -236,7 +233,7 @@ if (!headings || headings.length === 0) {
   .article-content :global(h4),
   .article-content :global(h5),
   .article-content :global(h6) {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     margin-top: 2rem;
     margin-bottom: 1rem;
     scroll-margin-top: 120px; /* 为固定头部留出空间 */
@@ -250,6 +247,7 @@ if (!headings || headings.length === 0) {
 
   .article-content :global(h2) {
     font-size: 2rem;
+    margin-top: 2.5rem;
     border-bottom: 2px solid var(--color-border);
     padding-bottom: 0.5rem;
   }
@@ -260,7 +258,7 @@ if (!headings || headings.length === 0) {
   }
 
   .article-content :global(p) {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
     line-height: 1.8;
   }
 
@@ -272,7 +270,7 @@ if (!headings || headings.length === 0) {
 
   .article-content :global(li) {
     margin-bottom: 0.5rem;
-    line-height: 1.6;
+    line-height: 1.8;
   }
 
   .article-content :global(blockquote) {
