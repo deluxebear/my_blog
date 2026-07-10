@@ -44,13 +44,10 @@ import logo from "../assets/logo.png";
 
 <style>
   .header {
-    background-color: var(--color-card);
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(10px);
     width: 100%;
-    overflow: hidden; /* 恢复为 hidden */
   }
 
   .container {
@@ -104,12 +101,10 @@ import logo from "../assets/logo.png";
   }
 
   .site-title {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 2px;
     line-height: 1.2;
   }
 
@@ -121,9 +116,7 @@ import logo from "../assets/logo.png";
     font-size: 0.75rem;
     color: var(--color-secondary);
     margin: 0;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-family: var(--font-sans);
     line-height: 1.2;
   }
 
@@ -144,86 +137,39 @@ import logo from "../assets/logo.png";
   }
 
   .nav-link {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-family: var(--font-sans);
+    font-weight: 600;
     padding: 0.75rem 1rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    font-size: 0.875rem;
+    transition: color 0.2s ease;
+    font-size: 0.9375rem;
     white-space: nowrap;
     position: relative;
     color: var(--color-secondary);
-    border: 2px solid transparent;
-    background-color: transparent;
   }
 
-  /* 默认悬停效果 */
   .nav-link:hover {
     color: var(--color-accent);
-    background-color: var(--color-hover);
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+    text-decoration: none;
   }
 
-  /* 当前页面激活状态 - 主要样式 */
+  /* 激活态：单一指示 —— 文字变色 + 底部 2px 短下划线 */
   .nav-link.active {
-    color: var(--color-bg) !important;
-    background-color: var(--color-accent) !important;
-    border-color: var(--color-accent) !important;
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    color: var(--color-accent);
   }
 
-  /* 当前页面激活状态的悬停效果 */
-  .nav-link.active:hover {
-    background-color: var(--color-text) !important;
-    border-color: var(--color-text) !important;
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  /* 当前页面指示器 - 底部边框 */
   .nav-link.active::after {
     content: "";
     position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    height: 3px;
-    background-color: var(--color-bg);
-    border-radius: 2px;
-  }
-
-  /* 当前页面指示器 - 顶部标记 */
-  .nav-link.active::before {
-    content: "●";
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--color-bg);
-    font-size: 0.75rem;
-    font-weight: bold;
-  }
-
-  /* RSS 链接特殊样式 */
-  .rss-link {
-    color: var(--color-accent) !important;
-    border-color: var(--color-accent);
-  }
-
-  .rss-link:hover {
+    bottom: 0.35rem;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
     background-color: var(--color-accent);
-    color: var(--color-bg) !important;
   }
 
-  .rss-link.active {
-    background-color: var(--color-accent) !important;
-    color: var(--color-bg) !important;
+  .rss-link {
+    color: var(--color-accent);
   }
 
   .theme-toggle {
@@ -243,7 +189,6 @@ import logo from "../assets/logo.png";
   .theme-toggle:hover {
     background-color: var(--color-accent);
     color: var(--color-bg);
-    transform: translateY(-1px);
   }
 
   .theme-icon {
@@ -312,15 +257,10 @@ import logo from "../assets/logo.png";
       padding: 0.5rem 0.75rem;
     }
 
-    /* 移动端当前页面指示器调整 */
-    .nav-link.active::before {
-      top: -6px;
-      font-size: 0.6rem;
-    }
-
     .nav-link.active::after {
-      bottom: -1px;
-      height: 2px;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0.25rem;
     }
 
     .theme-toggle {
