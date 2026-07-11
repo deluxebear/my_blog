@@ -222,8 +222,8 @@ if (!headings || headings.length === 0) {
   /* 在大屏幕上，整个文章容器向左偏移，为右侧目录留出空间 */
   @media (min-width: 1201px) {
     .article {
-      margin-left: 0;
-      margin-right: 340px; /* 为右侧目录留出空间 */
+      margin-left: auto;
+      margin-right: 340px; /* 为右侧目录留出空间，剩余空间由左边距吸收使正文居中 */
     }
   }
 
