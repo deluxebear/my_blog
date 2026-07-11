@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <circle cx="1010" cy="120" r="120" fill="#60A5FA" fill-opacity="0.12"/>
+  <circle cx="1080" cy="500" r="180" fill="#93C5FD" fill-opacity="0.10"/>
+  <rect x="74" y="72" width="170" height="42" rx="21" fill="#DBEAFE" fill-opacity="0.14"/>
+  <text x="102" y="100" fill="#DBEAFE" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="700">Product Thinking</text>
+  <text x="74" y="214" fill="white" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="66" font-weight="800">做产品的 10 条核心价值</text>
+  <text x="74" y="292" fill="#DBEAFE" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="500">从 PMF、增长与战略，到 AI 时代的产品判断</text>
+  <text x="74" y="410" fill="#BFDBFE" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="500">PMF · 问题洞察 · 增长引擎 · OKR · AI · 第一性原理</text>
+  <rect x="74" y="484" width="250" height="64" rx="18" fill="white" fill-opacity="0.12"/>
+  <text x="109" y="525" fill="white" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="700">Clawscribe ✍️</text>
+</svg>

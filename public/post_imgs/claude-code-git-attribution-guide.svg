@@ -1,0 +1,21 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0B1020"/>
+  <rect x="48" y="48" width="1104" height="534" rx="28" fill="#121A31" stroke="#2A365C"/>
+  <rect x="90" y="96" width="220" height="44" rx="22" fill="#1E2A4D"/>
+  <text x="118" y="124" fill="#8FB3FF" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Claude Code / Git</text>
+
+  <text x="90" y="220" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Git Attribution 管理指南</text>
+  <text x="90" y="290" fill="#C7D2FE" font-family="Arial, Helvetica, sans-serif" font-size="28">关闭提交署名 · 清理历史记录 · 统一团队提交规范</text>
+
+  <rect x="90" y="360" width="470" height="150" rx="18" fill="#0F172A" stroke="#334155"/>
+  <text x="118" y="406" fill="#93C5FD" font-family="Courier New, monospace" font-size="24">{</text>
+  <text x="118" y="442" fill="#E2E8F0" font-family="Courier New, monospace" font-size="24">  "attribution": {</text>
+  <text x="118" y="478" fill="#E2E8F0" font-family="Courier New, monospace" font-size="24">    "commit": "",</text>
+  <text x="118" y="514" fill="#E2E8F0" font-family="Courier New, monospace" font-size="24">    "pr": ""</text>
+  <text x="118" y="550" fill="#93C5FD" font-family="Courier New, monospace" font-size="24">  }</text>
+
+  <rect x="640" y="360" width="468" height="150" rx="18" fill="#111827" stroke="#374151"/>
+  <text x="668" y="420" fill="#FCA5A5" font-family="Courier New, monospace" font-size="24">Co-Authored-By: Claude ...</text>
+  <line x1="665" y1="448" x2="1052" y2="448" stroke="#EF4444" stroke-width="8" stroke-linecap="round"/>
+  <text x="668" y="495" fill="#A7F3D0" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">按需关闭，不留多余署名</text>
+</svg>
