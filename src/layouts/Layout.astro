@@ -55,10 +55,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <!-- 霞鹜文楷屏幕阅读版：按 unicode-range 分包，浏览器按需加载子集 -->
+    <!-- 霞鹜文楷屏幕阅读版：直连所用字族子集 CSS，按 unicode-range 按需加载 -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css"
+      href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/lxgwwenkaiscreen.css"
     />
 
     <!-- Highlight.js CSS -->
@@ -164,7 +164,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     --color-card: #3a3020;
     --color-code-bg: #4a3f2a;
     --color-hover: rgba(205, 133, 63, 0.1);
-    --color-muted: #a89272; /* 在 #2c2416 上 ≈5.1:1，WCAG AA */
+    --color-muted: #bfa98a; /* bg 6.75:1 / card 5.7:1 / code 4.55:1，全表面 WCAG AA */
   }
 
   * {
@@ -215,7 +215,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   }
 
   .header {
-    position: relative;
     background-color: rgba(232, 220, 192, 0.95);
     backdrop-filter: blur(8px);
     border-bottom: 2px solid var(--color-border);
@@ -331,8 +330,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     cursor: pointer;
     opacity: 0;
     transition: all 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     font-weight: 500;
     box-shadow: var(--shadow-sm);
     z-index: 10;
