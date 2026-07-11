@@ -1,0 +1,116 @@
+---
+import { fmtMonthDay, monthLabel, yearLabel } from "../utils/date";
+
+export interface PostItem {
+  slug: string;
+  title: string;
+  pubDate: Date;
+  tags: string[];
+}
+
+export interface Props {
+  posts: PostItem[];
+  groupBy?: "month" | "year";
+}
+
+const { posts, groupBy = "month" } = Astro.props;
+
+const label = (d: Date) => (groupBy === "year" ? yearLabel(d) : monthLabel(d));
+
+const groups: { key: string; items: PostItem[] }[] = [];
+for (const post of posts) {
+  const key = label(post.pubDate);
+  const last = groups[groups.length - 1];
+  if (last && last.key === key) {
+    last.items.push(post);
+  } else {
+    groups.push({ key, items: [post] });
+  }
+}
+---
+
+<div class="post-list">
+  {
+    groups.map((group) => (
+      <section class="post-group" data-group={group.key}>
+        <h2 class="group-label">{group.key}</h2>
+        <ul class="post-rows">
+          {group.items.map((post) => (
+            <li
+              class="post-row"
+              data-tags={(post.tags || []).map((t) => t.toLowerCase()).join(",")}
+            >
+              <a href={`/posts/${post.slug}`} class="row-title">
+                {post.title}
+              </a>
+              <span class="row-leader" aria-hidden="true" />
+              <time class="row-date" datetime={post.pubDate.toISOString()}>
+                {fmtMonthDay(post.pubDate)}
+              </time>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .post-group {
+    margin-bottom: 2rem;
+  }
+
+  .group-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 0.75rem;
+  }
+
+  .post-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .post-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75em;
+    padding: 0.45rem 0;
+  }
+
+  .row-title {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .row-title:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .row-leader {
+    flex: 1;
+    min-width: 2em;
+    border-bottom: 1px dotted var(--color-border);
+    transform: translateY(-0.25em);
+  }
+
+  .row-date {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .row-title {
+      font-size: 1rem;
+    }
+  }
+</style>
