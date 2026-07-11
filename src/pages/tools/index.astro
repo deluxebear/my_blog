@@ -103,164 +103,43 @@ const tools: Tool[] = [
   },
 ];
 
-// 按类别分组工具
-const toolsByCategory: Record<string, Tool[]> = tools.reduce(
-  (acc, tool) => {
-    if (!acc[tool.category]) {
-      acc[tool.category] = [];
-    }
-    acc[tool.category].push(tool);
-    return acc;
-  },
-  {} as Record<string, Tool[]>
-);
+const categories = [...new Set(tools.map((t) => t.category))];
 ---
 
-<Layout
-  title="开发工具集合 - 数字花园"
-  description="实用的开发工具集合，包含IP查看器、密码生成器等常用开发工具"
->
+<Layout title="在线工具 - 数得其道" description="实用的在线工具集合">
   <Header />
 
   <main class="main">
-    <div class="container">
+    <div class="container page">
       <header class="page-header">
-        <h1 class="page-title">开发工具集合</h1>
-        <p class="page-description">
-          精心收集的实用开发工具，提升你的开发效率和工作体验
-        </p>
-        <div class="tools-stats">
-          <div class="stat">
-            <span class="stat-number"
-              >{tools.filter((t) => !t.comingSoon).length}</span
-            >
-            <span class="stat-label">可用工具</span>
-          </div>
-          <div class="stat-divider">|</div>
-          <div class="stat">
-            <span class="stat-number"
-              >{tools.filter((t) => t.comingSoon).length}</span
-            >
-            <span class="stat-label">即将推出</span>
-          </div>
-          <div class="stat-divider">|</div>
-          <div class="stat">
-            <span class="stat-number"
-              >{Object.keys(toolsByCategory).length}</span
-            >
-            <span class="stat-label">工具分类</span>
-          </div>
-        </div>
+        <h1 class="page-title">在线工具</h1>
+        <p class="page-count">共 {tools.length} 个</p>
       </header>
 
-      <!-- 工具分类展示 -->
-      <section class="tools-section">
-        {
-          Object.entries(toolsByCategory).map(([category, categoryTools]) => (
-            <div class="category-section">
-              <h2 class="category-title">{category}</h2>
-              <div class="tools-grid">
-                {categoryTools.map((tool) => (
-                  <article
-                    class={`tool-card industrial-border ${tool.comingSoon ? "coming-soon" : ""}`}
-                  >
-                    <div class="tool-header">
-                      <div class="tool-icon">{tool.icon}</div>
-                      <div class="tool-title-section">
-                        <h3 class="tool-title">{tool.name}</h3>
-                        {tool.comingSoon && (
-                          <span class="coming-soon-badge">即将推出</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div class="tool-description">
-                      <p>{tool.description}</p>
-                    </div>
-
-                    <div class="tool-features">
-                      <h4 class="features-title">主要功能</h4>
-                      <ul class="features-list">
-                        {tool.features.map((feature) => (
-                          <li class="feature-item">{feature}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div class="tool-footer">
-                      {tool.comingSoon ? (
-                        <button class="tool-link disabled" disabled>
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                          >
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12,6 12,12 16,14" />
-                          </svg>
-                          敬请期待
-                        </button>
-                      ) : (
-                        <a href={tool.url} class="tool-link">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                          >
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                            <polyline points="15,3 21,3 21,9" />
-                            <line x1="10" y1="14" x2="21" y2="3" />
-                          </svg>
-                          立即使用
-                        </a>
-                      )}
-                    </div>
-                  </article>
+      {
+        categories.map((category) => (
+          <section class="tool-group">
+            <h2 class="group-label">{category}</h2>
+            <ul class="tool-rows">
+              {tools
+                .filter((t) => t.category === category)
+                .map((tool) => (
+                  <li class="tool-row">
+                    {tool.comingSoon ? (
+                      <span class="tool-name muted">{tool.name}</span>
+                    ) : (
+                      <a href={tool.url} class="tool-name">
+                        {tool.name}
+                      </a>
+                    )}
+                    <span class="tool-desc">— {tool.description}</span>
+                    {tool.comingSoon && <span class="soon">（即将上线）</span>}
+                  </li>
                 ))}
-              </div>
-            </div>
-          ))
-        }
-      </section>
-
-      <!-- 使用说明 -->
-      <section class="usage-section">
-        <div class="usage-content industrial-border">
-          <h2 class="usage-title">使用说明</h2>
-          <div class="usage-grid">
-            <div class="usage-item">
-              <div class="usage-icon">🚀</div>
-              <h3>快速访问</h3>
-              <p>
-                所有工具都经过优化，无需注册即可直接使用，提供最佳的用户体验。
-              </p>
-            </div>
-            <div class="usage-item">
-              <div class="usage-icon">🔒</div>
-              <h3>隐私保护</h3>
-              <p>
-                所有数据处理都在本地进行，不会上传到服务器，确保你的数据安全。
-              </p>
-            </div>
-            <div class="usage-item">
-              <div class="usage-icon">📱</div>
-              <h3>响应式设计</h3>
-              <p>完美适配各种设备，无论是桌面端还是移动端都能获得良好体验。</p>
-            </div>
-            <div class="usage-item">
-              <div class="usage-icon">⚡</div>
-              <h3>持续更新</h3>
-              <p>定期添加新工具和功能，根据用户反馈不断改进和优化。</p>
-            </div>
-          </div>
-        </div>
-      </section>
+            </ul>
+          </section>
+        ))
+      }
     </div>
   </main>
 </Layout>
@@ -268,347 +147,80 @@ const toolsByCategory: Record<string, Tool[]> = tools.reduce(
 <style>
   .main {
     min-height: calc(100vh - 80px);
-    padding: 2rem 0;
+    padding: 2.5rem 0 0;
+  }
+
+  .page {
+    max-width: 720px;
   }
 
   .page-header {
-    text-align: center;
-    margin-bottom: 4rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    border-bottom: 2px solid var(--color-text);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
   .page-title {
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .page-description {
-    font-size: 1.25rem;
-    color: var(--color-secondary);
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    line-height: 1.6;
-    font-family: var(--font-sans);
-  }
-
-  .tools-stats {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1rem;
-    background-color: var(--color-card);
-    border: 2px solid var(--color-border);
-    border-radius: 8px;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-
-  .stat {
-    text-align: center;
-  }
-
-  .stat-number {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-accent);
-    font-family: var(--font-mono);
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: var(--color-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: var(--font-mono);
-  }
-
-  .stat-divider {
-    color: var(--color-border);
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-
-  .tools-section {
-    margin-bottom: 4rem;
-  }
-
-  .category-section {
-    margin-bottom: 3rem;
-  }
-
-  .category-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-accent);
-    border-bottom: 2px solid var(--color-border);
-    padding-bottom: 0.5rem;
-  }
-
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
-  }
-
-  .tool-card {
-    background-color: var(--color-card);
-    padding: 0;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .tool-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .tool-card.coming-soon {
-    opacity: 0.7;
-    background-color: var(--color-code-bg);
-  }
-
-  .tool-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem 1.5rem 1rem;
-  }
-
-  .tool-icon {
-    font-size: 2.5rem;
-    flex-shrink: 0;
-  }
-
-  .tool-title-section {
-    flex: 1;
-  }
-
-  .tool-title {
-    font-family: var(--font-mono);
-    font-size: 1.125rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-text);
-    line-height: 1.2;
-  }
-
-  .coming-soon-badge {
-    display: inline-block;
-    background-color: var(--color-secondary);
-    color: var(--color-bg);
-    padding: 0.25rem 0.5rem;
-    font-size: 0.7rem;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 12px;
-  }
-
-  .tool-description {
-    padding: 0 1.5rem 1rem;
-    flex-grow: 1;
-  }
-
-  .tool-description p {
-    color: var(--color-secondary);
-    font-size: 0.9rem;
-    line-height: 1.5;
     margin: 0;
-    font-family: var(--font-sans);
   }
 
-  .tool-features {
-    padding: 0 1.5rem 1rem;
-  }
-
-  .features-title {
+  .page-count {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-accent);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin: 0;
   }
 
-  .features-list {
+  .tool-group {
+    margin-bottom: 2rem;
+  }
+
+  .group-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-rows {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
   }
 
-  .feature-item {
-    background-color: var(--color-code-bg);
-    color: var(--color-text);
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--color-border);
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-radius: 4px;
+  .tool-row {
+    padding: 0.45rem 0;
+    line-height: 1.7;
   }
 
-  .tool-footer {
-    padding: 1rem 1.5rem 1.5rem;
-    border-top: 1px solid var(--color-border);
-    margin-top: auto;
-  }
-
-  .tool-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background-color: var(--color-accent);
-    color: var(--color-bg);
-    text-decoration: none;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid var(--color-accent);
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .tool-link:hover {
-    background-color: var(--color-text);
-    border-color: var(--color-text);
-    transform: translateY(-1px);
-  }
-
-  .tool-link.disabled {
-    background-color: var(--color-muted);
-    border-color: var(--color-muted);
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-
-  .tool-link.disabled:hover {
-    transform: none;
-  }
-
-  .usage-section {
-    margin-bottom: 2rem;
-  }
-
-  .usage-content {
-    background-color: var(--color-card);
-    padding: 2rem;
-  }
-
-  .usage-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    text-align: center;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--color-accent);
-  }
-
-  .usage-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-  }
-
-  .usage-item {
-    text-align: center;
-  }
-
-  .usage-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .usage-item h3 {
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .usage-item p {
-    color: var(--color-secondary);
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 0;
+  .tool-name {
     font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--color-text);
   }
 
-  /* 响应式设计 */
-  @media (max-width: 768px) {
-    .page-title {
-      font-size: 2rem;
-    }
+  a.tool-name:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
 
-    .page-description {
-      font-size: 1rem;
-    }
+  .tool-name.muted {
+    color: var(--color-muted);
+  }
 
-    .tools-stats {
-      flex-direction: column;
-      gap: 1rem;
-    }
+  .tool-desc {
+    color: var(--color-secondary);
+    font-size: 0.9375rem;
+  }
 
-    .stat-divider {
-      display: none;
-    }
-
-    .tools-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .tool-header {
-      padding: 1rem 1rem 0.75rem;
-    }
-
-    .tool-description {
-      padding: 0 1rem 0.75rem;
-    }
-
-    .tool-features {
-      padding: 0 1rem 0.75rem;
-    }
-
-    .tool-footer {
-      padding: 0.75rem 1rem 1rem;
-    }
-
-    .usage-content {
-      padding: 1.5rem;
-    }
-
-    .usage-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
+  .soon {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
   }
 </style>
