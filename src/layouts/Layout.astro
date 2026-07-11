@@ -1,4 +1,6 @@
 ---
+import Footer from "../components/Footer.astro";
+
 export interface Props {
   title: string;
   description?: string;
@@ -69,6 +71,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <slot />
+    <Footer />
     <script>
       // Theme toggle functionality
       const theme = (() => {
