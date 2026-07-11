@@ -183,39 +183,54 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
         )
       }
 
-      <ul class="project-rows" id="project-rows">
-        {
-          projects.map((project) => (
-            <li class="project-row" data-topics={project.topics.join(",")}>
-              <div class="project-line">
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="project-name"
-                >
-                  {project.name}
-                </a>
-                {project.isArchived && <span class="archived">已归档</span>}
-              </div>
-              <p class="project-desc">{project.description}</p>
-              <p class="project-meta">
-                {project.language && (
-                  <span class="meta-lang">
-                    <span
-                      class="lang-dot"
-                      style={`background-color: ${getLanguageColor(project.language)}`}
-                    />
-                    {project.language}
-                  </span>
-                )}
-                <span>★ {project.stars}</span>
-                <span>⑂ {project.forks}</span>
-              </p>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        projects.length > 0 ? (
+          <ul class="project-rows" id="project-rows">
+            {
+              projects.map((project) => (
+                <li class="project-row" data-topics={project.topics.join(",")}>
+                  <div class="project-line">
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="project-name"
+                    >
+                      {project.name}
+                    </a>
+                    {project.isArchived && <span class="archived">已归档</span>}
+                  </div>
+                  <p class="project-desc">{project.description}</p>
+                  <p class="project-meta">
+                    {project.language && (
+                      <span class="meta-lang">
+                        <span
+                          class="lang-dot"
+                          style={`background-color: ${getLanguageColor(project.language)}`}
+                        />
+                        {project.language}
+                      </span>
+                    )}
+                    <span>★ {project.stars}</span>
+                    <span>⑂ {project.forks}</span>
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        ) : (
+          <div class="no-projects">
+            <p>暂时没有精选项目展示</p>
+            <a href="https://github.com/deluxebear" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              访问 GitHub 查看所有项目
+            </a>
+          </div>
+        )
+      }
+
+      <div class="no-results hidden" id="no-results">
+        <p>没有找到符合条件的项目</p>
+      </div>
     </div>
   </main>
 </Layout>
@@ -351,6 +366,30 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
   .hidden {
     display: none;
   }
+
+  .no-projects,
+  .no-results {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-secondary);
+    font-size: 1.125rem;
+    font-family: var(--font-mono);
+  }
+
+  .no-projects .btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .no-projects .btn:hover {
+    opacity: 0.8;
+  }
 </style>
 
 <script>
@@ -360,6 +399,11 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
     const allProjects = Array.from(document.querySelectorAll('#project-rows .project-row'));
 
     if (allProjects.length === 0) return;
+
+    const toggleNoResults = () => {
+      const anyVisible = document.querySelector('#project-rows .project-row:not(.hidden)') !== null;
+      document.getElementById('no-results')?.classList.toggle('hidden', anyVisible);
+    };
 
     filterTags.forEach(filter => {
       filter.addEventListener('click', () => {
@@ -383,6 +427,9 @@ const allTopics = [...new Set(projects.flatMap(p => p.topics))].sort();
             }
           }
         });
+
+        // 切换 no-results 显示
+        toggleNoResults();
       });
     });
   });
